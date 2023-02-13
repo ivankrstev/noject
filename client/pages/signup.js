@@ -4,6 +4,7 @@ import { Fragment, useState } from "react";
 import styles from "@/styles/SignUpLogIn.module.css";
 import visibilityOnIcon from "public/icons/visibility-on.svg";
 import visibilityOffIcon from "public/icons/visibility-off.svg";
+import Link from "next/link";
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -44,7 +45,13 @@ export default function Signup() {
               <Image src={showPassword ? visibilityOnIcon : visibilityOffIcon} width={20} />
             </button>
           </div>
-          <button className={[styles.btnSubmit].join(" ")}>Create account</button>
+          <button className={styles.btnSubmit}>Create account</button>
+          <p className={[styles.offerLogin, "colorGrey"].join(" ")}>
+            Already have an account?{" "}
+            <Link className={styles.alterBtns} href='/login'>
+              Log in
+            </Link>
+          </p>
         </form>
       </div>
     </Fragment>

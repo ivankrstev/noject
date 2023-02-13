@@ -4,6 +4,7 @@ import { Fragment, useState } from "react";
 import styles from "@/styles/SignUpLogIn.module.css";
 import visibilityOnIcon from "public/icons/visibility-on.svg";
 import visibilityOffIcon from "public/icons/visibility-off.svg";
+import Link from "next/link";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,7 +16,7 @@ export default function Login() {
       <div className={[styles.vh100, styles.center].join(" ")}>
         {/* //TODO Logo should be here */}
         <form className={styles.form}>
-          <h2 className={styles.textLeft}>Log In</h2>
+          <h2>Log In</h2>
           <div className={styles.inputLabelWrapper}>
             <label htmlFor='email-signup'>Email</label>
             <input type='email' id='email-signup' placeholder='Enter your email' />
@@ -34,7 +35,16 @@ export default function Login() {
               <Image src={showPassword ? visibilityOnIcon : visibilityOffIcon} width={20} />
             </button>
           </div>
-          <button className={[styles.btnSubmit].join(" ")}>Create account</button>
+          <button className={[styles.btnSubmit].join(" ")}>Log In</button>
+          <Link className={styles.alterBtns} href='/reset-password'>
+            Forgot password?
+          </Link>
+          <p className={[styles.offerLogin, "mt-0", "colorGrey"].join(" ")}>
+            Don't have an account?{" "}
+            <Link className={styles.alterBtns} href='/signup'>
+              Sign Up
+            </Link>
+          </p>
         </form>
       </div>
     </Fragment>
