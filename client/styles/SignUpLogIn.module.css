@@ -59,6 +59,7 @@
   cursor: pointer;
 }
 .btnSubmit {
+  min-width: 30%;
   margin-top: 0.4em;
   background-color: #0565d3;
   font-size: 1rem;
@@ -74,6 +75,24 @@
 .btnSubmit:hover {
   background-color: #0665cf;
 }
+.alterBtns {
+  color: #4681f4;
+  margin-top: 1em;
+  font-size: 0.85rem;
+}
+.alterBtns a {
+  color: #4681f4;
+}
+.alterBtns a:active {
+  color: #0665cf;
+}
+.mt-c1 {
+  margin-top: 1em;
+}
+.offerLogin {
+  margin-top: 1em;
+  font-size: 0.75rem;
+}
 @media only screen and (min-width: 300px) {
   .form {
     width: 87vw;
@@ -85,7 +104,10 @@
 }
 @media only screen and (min-width: 480px) {
   .form {
-    width: 40vw;
+    width: 45vw;
+  }
+  .offerLogin {
+    font-size: 0.8rem;
   }
 }
 @media only screen and (min-width: 768px) {
@@ -103,6 +125,9 @@
   .form label,
   .form input {
     font-size: 0.85em;
+  }
+  .offerLogin {
+    font-size: 0.9em;
   }
 }
 @media only screen and (min-width: 1440px) {
