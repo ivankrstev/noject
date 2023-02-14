@@ -5,6 +5,7 @@ import styles from "@/styles/SignUpLogIn.module.css";
 import visibilityOnIcon from "public/icons/visibility-on.svg";
 import visibilityOffIcon from "public/icons/visibility-off.svg";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,8 +15,8 @@ export default function Signup() {
         <title>Noject - Sign Up</title>
       </Head>
       <div className={[styles.vh100, styles.center].join(" ")}>
-        {/* //TODO Logo should be here */}
         <form className={styles.form}>
+          <Logo />
           <h2 className={styles.textLeft}>Sign Up</h2>
           <div className={styles.nameSepar}>
             <div className={styles.inputLabelWrapper}>

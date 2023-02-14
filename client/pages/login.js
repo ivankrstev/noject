@@ -2,9 +2,10 @@ import Head from "next/head";
 import Image from "next/image";
 import { Fragment, useState } from "react";
 import styles from "@/styles/SignUpLogIn.module.css";
-import visibilityOnIcon from "public/icons/visibility-on.svg";
-import visibilityOffIcon from "public/icons/visibility-off.svg";
+import visibilityOnIcon from "@/public/icons/visibility-on.svg";
+import visibilityOffIcon from "@/public/icons/visibility-off.svg";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,8 +15,8 @@ export default function Login() {
         <title>Noject - Log In</title>
       </Head>
       <div className={[styles.vh100, styles.center].join(" ")}>
-        {/* //TODO Logo should be here */}
         <form className={styles.form}>
+          <Logo />
           <h2>Log In</h2>
           <div className={styles.inputLabelWrapper}>
             <label htmlFor='email-signup'>Email</label>
@@ -32,7 +33,11 @@ export default function Login() {
               className={styles.btnShowPass}
               type='button'
               onClick={() => setShowPassword(!showPassword)}>
-              <Image src={showPassword ? visibilityOnIcon : visibilityOffIcon} width={20} />
+              <Image
+                src={showPassword ? visibilityOnIcon : visibilityOffIcon}
+                alt='Toggle password icons'
+                width={20}
+              />
             </button>
           </div>
           <button className={[styles.btnSubmit].join(" ")}>Log In</button>

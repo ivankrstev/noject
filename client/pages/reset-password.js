@@ -2,6 +2,7 @@ import Head from "next/head";
 import { Fragment, useState } from "react";
 import styles from "@/styles/SignUpLogIn.module.css";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
@@ -11,8 +12,8 @@ export default function ResetPassword() {
         <title>Noject - Reset password</title>
       </Head>
       <div className={[styles.vh100, styles.center].join(" ")}>
-        {/* //TODO Logo should be here */}
         <form className={styles.form}>
+          <Logo />
           <h2>Forgot password?</h2>
           <div className={[styles.inputLabelWrapper, "mt-c1"].join(" ")}>
             <label for='email'>Email address:</label>
