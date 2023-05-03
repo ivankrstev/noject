@@ -1,0 +1,10 @@
+:root {
+  --background: #fff;
+  --form-background: #eaf4fc;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #333333;
+    --form-background: #0B2447;
+  }
+}

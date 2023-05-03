@@ -14,7 +14,7 @@ export default function Signup() {
       <Head>
         <title>Noject - Sign Up</title>
       </Head>
-      <div className={[styles.vh100, styles.center].join(" ")}>
+      <div className={[styles.vh100, "center"].join(" ")}>
         <form className={styles.form}>
           <Logo />
           <h2 className={styles.textLeft}>Sign Up</h2>

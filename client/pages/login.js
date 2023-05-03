@@ -14,7 +14,7 @@ export default function Login() {
       <Head>
         <title>Noject - Log In</title>
       </Head>
-      <div className={[styles.vh100, styles.center].join(" ")}>
+      <div className={[styles.vh100, "center"].join(" ")}>
         <form className={styles.form}>
           <Logo />
           <h2>Log In</h2>

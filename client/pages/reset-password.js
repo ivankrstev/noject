@@ -11,13 +11,18 @@ export default function ResetPassword() {
       <Head>
         <title>Noject - Reset password</title>
       </Head>
-      <div className={[styles.vh100, styles.center].join(" ")}>
+      <div className={[styles.vh100, "center"].join(" ")}>
         <form className={styles.form}>
           <Logo />
           <h2>Forgot password?</h2>
           <div className={[styles.inputLabelWrapper, "mt-c1"].join(" ")}>
-            <label for='email'>Email address:</label>
-            <input type='email' id='email' onChange={(e) => setEmail(e.target.value)} />
+            <label for='email'>Email</label>
+            <input
+              placeholder='Enter your email address'
+              type='email'
+              id='email'
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <button className={styles.btnSubmit}>Send reset link</button>
           <span className={styles.alterBtns}>
