@@ -94,11 +94,10 @@ export default function Login() {
                     <label htmlFor='totpCode'>Authentication code:</label>
                     <div id='totpInputsWrapper' className={styles.totpCodeWrapper}>
                       <input
-                        onInput={async (e) => {
-                          console.log(await window.navigator.clipboard.readText());
-                          console.log(e);
-                          e.preventDefault();
-                          e.stopPropagation();
+                        onPaste={async (e) => {
+                          const code = await window.navigator.clipboard.readText();
+                          for (let i = 1; i < totpInputs.length; i++) totpInputs[i].value = code[i];
+                          document.activeElement.blur();
                         }}
                         id='totpCode'
                         onFocus={() =>
@@ -107,6 +106,7 @@ export default function Login() {
                         onChange={(e) => e.target.value.length > 0 && totpInputs[1].focus()}
                         className={styles.totpCode}
                         required
+                        maxLength='1'
                         pattern='[0-9]{1}'
                         type='text'
                       />
@@ -157,7 +157,7 @@ export default function Login() {
                       let totpCode = "";
                       totpInputs.forEach((e) => (totpCode += e.value));
                     }}
-                    className={[styles.btnSubmit].join(" ")}>
+                    className={styles.btnSubmit}>
                     Verify
                   </button>
                   <button
