@@ -5,6 +5,7 @@ export default function LogoWrapper() {
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
       <Image
+        priority
         width={90}
         src={logo}
         alt='Logo Icon'
