@@ -1,0 +1,8 @@
+.dashboard {
+  display: flex;
+  width: 100vw;
+  min-height: 100vh;
+}
+.dashMain {
+  width: 100%;
+}
