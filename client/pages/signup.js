@@ -6,11 +6,16 @@ import visibilityOnIcon from "public/icons/visibility-on.svg";
 import visibilityOffIcon from "public/icons/visibility-off.svg";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import { motion } from "framer-motion";
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   return (
-    <Fragment>
+    <motion.main
+      initial={{ opacity: 0, x: -200, y: 0 }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      exit={{ opacity: 0, x: 0, y: -100 }}
+      transition={{ type: "linear" }}>
       <Head>
         <title>Noject - Sign Up</title>
       </Head>
@@ -55,6 +60,6 @@ export default function Signup() {
           </p>
         </form>
       </div>
-    </Fragment>
+    </motion.main>
   );
 }

@@ -1,13 +1,21 @@
 import Head from "next/head";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import styles from "@/styles/SignUpLogIn.module.css";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import { motion } from "framer-motion";
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
   return (
-    <Fragment>
+    <motion.main
+      initial={{ opacity: 0, x: -200, y: 0 }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      exit={{ opacity: 0, x: 0, y: -100 }}
+      transitionEnd={{
+        display: "none",
+      }}
+      transition={{ type: "linear" }}>
       <Head>
         <title>Noject - Reset password</title>
       </Head>
@@ -32,6 +40,6 @@ export default function ResetPassword() {
           </span>
         </form>
       </div>
-    </Fragment>
+    </motion.main>
   );
 }
