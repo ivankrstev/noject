@@ -2,8 +2,8 @@ import Head from "next/head";
 import styles from "@/styles/Dashboard.module.css";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
-import { useState, useEffect, Fragment } from "react";
-import Task from "@/components/Task";
+import Project from "@/components/Project";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const variants = {
@@ -50,7 +50,7 @@ export default function Dasboard() {
             sidebarShowHide={sidebarShowHide}
             selectProject={selectProject}
           />
-          <Task />
+          <Project selectProject={selectProject} />
         </div>
       </div>
     </motion.main>
