@@ -54,6 +54,7 @@
   background: none;
   border: 0;
   cursor: pointer;
+  filter: var(--toggle-password);
 }
 .btnSubmit {
   min-width: 30%;
