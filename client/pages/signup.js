@@ -49,7 +49,11 @@ export default function Signup() {
                 className={styles.btnShowPass}
                 type='button'
                 onClick={() => setShowPassword(!showPassword)}>
-                <Image src={showPassword ? visibilityOnIcon : visibilityOffIcon} width={20} />
+                <Image
+                  alt='Toggle Password Visibility'
+                  src={showPassword ? visibilityOnIcon : visibilityOffIcon}
+                  width={20}
+                />
               </button>
             </div>
             <button className={styles.btnSubmit}>Create account</button>

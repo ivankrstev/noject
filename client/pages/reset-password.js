@@ -22,7 +22,7 @@ export default function ResetPassword() {
             <Logo />
             <h2>Forgot password?</h2>
             <div className={[styles.inputLabelWrapper, "mt-c1"].join(" ")}>
-              <label for='email'>Email</label>
+              <label htmlFor='email'>Email</label>
               <input
                 placeholder='Enter your email address'
                 type='email'
