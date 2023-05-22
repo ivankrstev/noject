@@ -1,3 +1,15 @@
+export const getAllSubTasks = (node) => {
+  // Get all subtasks (children, grandchildren, great grandchildren, ...)
+  const levelNode = parseInt(node?.getAttribute("level"));
+  let temp = node?.nextSibling;
+  let subTasks = [];
+  while (temp && parseInt(temp.getAttribute("level")) > levelNode) {
+    subTasks.push(temp);
+    temp = temp.nextSibling;
+  }
+  return subTasks;
+};
+
 const getChildTasks = (node) => {
   // Get only the child tasks of a task (not their grandchildren,great grandchildren, ...)
   const childsLevel = parseInt(node?.getAttribute("level")) + 1;
