@@ -7,17 +7,21 @@ import AccountPopover from "./AccountPopover";
 export default function Navbar(props) {
   return (
     <div className={styles.navbar}>
-      {!props.showSidebar && (
-        <button
-          title='Open Sidebar'
-          className={styles.sidebarOpenBtn}
-          onClick={() => props.sidebarShowHide()}>
-          <Image src={openMenuIcon} alt='Open Sidebar Icon' width={25} />
-        </button>
-      )}
-      <h3 className={styles.projectName}>{props.selectProject}</h3>
-      <ProjectSettingsPopover />
-      <AccountPopover />
+      <div>
+        {!props.showSidebar && (
+          <button
+            title='Open Sidebar'
+            className={styles.sidebarOpenBtn}
+            onClick={() => props.sidebarShowHide()}>
+            <Image src={openMenuIcon} alt='Open Sidebar Icon' width={25} />
+          </button>
+        )}
+        <h3 className={styles.projectName}>Noject</h3>
+      </div>
+      <div>
+        <ProjectSettingsPopover />
+        <AccountPopover />
+      </div>
     </div>
   );
 }

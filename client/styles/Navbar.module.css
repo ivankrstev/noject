@@ -6,12 +6,18 @@
   height: fit-content;
   padding: 0.65em 0.3em;
   padding-right: 0.9em;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
-.projectName {
-  margin-left: 0.56em;
+.navbar > div {
+  display: flex;
+  align-items: center;
+}
+.navbar h3 {
+  margin-left: 0.4em;
+  text-align: left;
 }
 .sidebarOpenBtn {
+  margin-left: 0.3em;
   outline: none;
   border: 0;
   background-color: transparent;
@@ -68,6 +74,7 @@
 }
 
 .settingsBtn {
+  margin-right: 0.3em;
   background-color: transparent;
   outline: none;
   border: 0;
