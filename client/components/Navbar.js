@@ -3,6 +3,7 @@ import Image from "next/image";
 import openMenuIcon from "@/public/icons/open-menu.svg";
 import ProjectSettingsPopover from "./ProjectSettingsPopover";
 import AccountPopover from "./AccountPopover";
+import Link from "next/link";
 
 export default function Navbar(props) {
   return (
@@ -19,6 +20,11 @@ export default function Navbar(props) {
         <h3 className={styles.projectName}>Noject</h3>
       </div>
       <div>
+        {props.showBtnDashboard && (
+          <Link style={{ marginRight: "0.5em" }} href='/dashboard'>
+            Go to dashboard
+          </Link>
+        )}
         <ProjectSettingsPopover />
         <AccountPopover />
       </div>
