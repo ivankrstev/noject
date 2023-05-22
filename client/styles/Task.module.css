@@ -1,0 +1,25 @@
+.task {
+  padding: 0.1em 0;
+  margin: 0.3em 0;
+  display: flex;
+  align-items: center;
+}
+.taskPercentages {
+  font-size: 0.7em;
+}
+.taskCheckbox {
+  min-width: 1.4em;
+  min-height: 1.4em;
+  margin-right: 0.5em;
+  margin-left: 0.15em;
+}
+.taskCheckbox:checked ~ div {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.5);
+}
+.taskText {
+  padding-right: 1em;
+}
+.taskText:focus {
+  outline: none;
+}
