@@ -22,6 +22,7 @@ export default function Dasboard() {
   useEffect(() => {
     if (showSidebar !== undefined) {
       localStorage.setItem("sidebarShow", showSidebar);
+      document.querySelector("#navbar").style.width = showSidebar ? "calc(100% - 250px)" : "100%";
     }
   }, [showSidebar]);
   const sidebarShowHide = () => setShowSidebar(!showSidebar);

@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function Navbar(props) {
   return (
-    <div className={styles.navbar}>
+    <div id='navbar' className={styles.navbar}>
       <div>
         {!props.showSidebar && (
           <button
