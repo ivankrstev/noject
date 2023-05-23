@@ -12,6 +12,7 @@ export default function account() {
   const [tfaPage, setTfaPage] = useState(1);
   const [openModal, setOpenModal] = useState(false);
   const [toggleTwoFactorAuth, setToggleTwoFactorAuth] = useState(true);
+  const [verifiedEmail, setVerifiedEmail] = useState(false);
 
   return (
     <Fragment>
@@ -41,26 +42,62 @@ export default function account() {
           <p>ivankrstev246@gmail.com</p>
           <p>Created at: </p>
         </div>
-        <div className={styles.changeEmailForm}>
+        <form className={styles.changeEmailForm}>
+          <p>Your email is {verifiedEmail ? "verified." : "not verified."}</p>
+          {!verifiedEmail && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+              }}>
+              Send confirmation link
+            </button>
+          )}
           <label htmlFor='changeEmail'>Change email address:</label>
           <input id='changeEmail' type='email' placeholder='Enter your new email address' />
-          <button>Send email link</button>
-        </div>
-        <div className={styles.changePasswordForm}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+            }}>
+            Send email link
+          </button>
+        </form>
+        <form className={styles.changePasswordForm}>
           <h4>Change your password</h4>
-          <label htmlFor=''>Current password:</label>
-          <input id='' type='password' placeholder='Enter your old password' />
-          <label htmlFor=''>New password:</label>
-          <input id='' type='password' placeholder='Enter your new password' />
-          <label htmlFor=''>Repeat new password:</label>
-          <input id='' type='password' placeholder='Reenter your new password' />
-          <button>Change password</button>
-        </div>
+          <label htmlFor='current-password'>Current password:</label>
+          <input
+            id='current-password'
+            required
+            type='password'
+            placeholder='Enter your old password'
+          />
+          <label htmlFor='new-password'>New password:</label>
+          <input
+            required
+            minLength={8}
+            id='new-password'
+            type='password'
+            placeholder='Enter your new password'
+          />
+          <label htmlFor='confirm-password'>Confirm password:</label>
+          <input
+            minLength={8}
+            required
+            id='confirm-password'
+            type='password'
+            placeholder='Reenter your new password'
+          />
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+            }}>
+            Change password
+          </button>
+        </form>
         <div className={styles.twoFactorAuth}>
           <p>
-            Two Factor Authentication is {toggleTwoFactorAuth ? "Enabled" : "Disabled"}
+            Two Factor Authentication is {toggleTwoFactorAuth ? "enabled" : "disabled"}
             {". "}
-            <button className={styles.toggleTwoFactorAuthBtn}>
+            <button className={styles.toggleTwoFactorAuthBtn} onClick={() => setOpenModal(true)}>
               {toggleTwoFactorAuth ? "Disable" : "Enable"}
             </button>
           </p>

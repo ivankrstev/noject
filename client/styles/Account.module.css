@@ -85,6 +85,12 @@
   margin-right: auto;
   margin-left: auto;
 }
+.account input {
+  letter-spacing: 0.2em;
+}
+.account input::placeholder {
+  letter-spacing: normal;
+}
 .account input:focus {
   box-shadow: inset 0 0 0 1px rgb(0 128 255 / 30%), 0 0 0 3px rgb(0 128 255 / 30%);
 }
