@@ -3,13 +3,13 @@ import styles from "@/styles/Dashboard.module.css";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 import Project from "@/components/Project";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { motion } from "framer-motion";
 
 const variants = {
   hidden: { opacity: 0, x: -200, y: 0 },
   enter: { opacity: 1, x: 0, y: 0 },
-  exit: { opacity: 0, x: 0, y: -100 },
+  exit: { opacity: 0, x: 0 },
 };
 
 export default function Dasboard() {
@@ -27,32 +27,35 @@ export default function Dasboard() {
   const sidebarShowHide = () => setShowSidebar(!showSidebar);
 
   return (
-    <motion.main
-      initial='hidden'
-      animate='enter'
-      exit='exit'
-      variants={variants}
-      transition={{ type: "linear" }}>
+    <Fragment>
       <Head>
         <title>Dashboard - Noject</title>
       </Head>
-      <div className={styles.dashboard}>
-        <div>
-          <Sidebar
-            sidebarShowHide={sidebarShowHide}
-            showSidebar={showSidebar}
-            setSelectProject={setSelectProject}
-          />
+      <motion.main
+        key='dashboard'
+        initial='hidden'
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        exit={{ opacity: 0, x: 0, y: -100, display: "none" }}
+        variants={variants}
+        transition={{ type: "linear" }}>
+        <div className={styles.dashboard}>
+          <div>
+            <Sidebar
+              sidebarShowHide={sidebarShowHide}
+              showSidebar={showSidebar}
+              setSelectProject={setSelectProject}
+            />
+          </div>
+          <div className={styles.dashMain}>
+            <Navbar
+              showSidebar={showSidebar}
+              sidebarShowHide={sidebarShowHide}
+              selectProject={selectProject}
+            />
+            <Project selectProject={selectProject} />
+          </div>
         </div>
-        <div className={styles.dashMain}>
-          <Navbar
-            showSidebar={showSidebar}
-            sidebarShowHide={sidebarShowHide}
-            selectProject={selectProject}
-          />
-          <Project selectProject={selectProject} />
-        </div>
-      </div>
-    </motion.main>
+      </motion.main>
+    </Fragment>
   );
 }
