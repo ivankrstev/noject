@@ -125,7 +125,9 @@ export const enableTFA = async (req, res) => {
     if (!verified) return res.status(400).json({ error: "Invalid code entered" });
     await db.execute("UPDATE users SET tfa_activated = 1 WHERE u_id = ?", [user]);
     return res.status(200).json({ message: "Two Factor Authenitication enabled" });
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
 };
 
 export const disableTFA = async (req, res) => {
