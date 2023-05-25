@@ -23,14 +23,15 @@ export const registerUser = async (req, res) => {
       return res
         .status(400)
         .json({ error: capitalizeFirstLetter(error.details[0].message.replaceAll(`"`, ``)) });
-    console.log("Error:", error);
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
 };
 
 export const loginUser = async (req, res) => {
   try {
-    const { email = "", password = "" } = req.body;
+    const { email, password } = req.body;
+    if (!password || password === "" || !email || email === "")
+      return res.status(401).json({ error: "Invalid email or password" });
     const [rows] = await db.execute("SELECT * FROM users WHERE u_id = ?", [email]);
     const user = rows[0];
     if (!user) return res.status(401).json({ error: "Invalid email or password" });
