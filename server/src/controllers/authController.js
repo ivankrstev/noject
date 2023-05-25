@@ -4,6 +4,7 @@ import Joi from "joi";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import speakeasy from "speakeasy";
+const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
 export const registerUser = async (req, res) => {
   try {
@@ -19,7 +20,9 @@ export const registerUser = async (req, res) => {
     res.status(201).json({ message: "User created" });
   } catch (error) {
     if (error instanceof Joi.ValidationError)
-      return res.status(400).json({ error: error.details[0].message.replaceAll(`"`, ``) });
+      return res
+        .status(400)
+        .json({ error: capitalizeFirstLetter(error.details[0].message.replaceAll(`"`, ``)) });
     console.log("Error:", error);
     return res.status(500).json({ error: "A server error occured" });
   }
