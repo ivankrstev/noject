@@ -5,7 +5,7 @@ const newUserSchema = Joi.object({
     .max(62)
     .message("Email must be less than 63 characters")
     .email()
-    .message("Email be a valid one")
+    .message("Email must be a valid one")
     .required(),
   firstName: Joi.string().max(50).message("First name must be less than 51 characters").required(),
   lastName: Joi.string().max(50).message("Last name must be less than 51 characters").required(),
