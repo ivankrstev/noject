@@ -38,7 +38,7 @@ export const loginUser = async (req, res) => {
     if (!passwordMatches) return res.status(401).json({ error: "Invalid email or password" });
     const tfaToken = jwt.sign(data, process.env.TFA_JWT_SECRET, { expiresIn: "2m" });
     if (user.tfa_activated)
-      return res.status(400).json({ error: "TwoFactorAuth needed", tfaToken });
+      return res.status(400).json({ error: "Two-Factor Authentication needed", tfaToken });
     const data = { userId: user.u_id };
     const refreshToken = jwt.sign(data, process.env.REFRESH_JWT_SECRET, {
       expiresIn: "14d",
@@ -102,7 +102,7 @@ export const verifyTFA = async (req, res) => {
       .json({ accessToken: accessToken });
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError)
-      return res.status(401).json({ error: "Invalid token" });
+      return res.status(401).json({ error: "Please log in again" });
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
 };
@@ -124,7 +124,7 @@ export const enableTFA = async (req, res) => {
     });
     if (!verified) return res.status(400).json({ error: "Invalid code entered" });
     await db.execute("UPDATE users SET tfa_activated = 1 WHERE u_id = ?", [user]);
-    return res.status(200).json({ message: "Two Factor Authenitication enabled" });
+    return res.status(200).json({ message: "Two Factor Authenitication is enabled" });
   } catch (error) {
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
@@ -147,7 +147,7 @@ export const disableTFA = async (req, res) => {
     });
     if (!verified) return res.status(400).json({ error: "Invalid code entered" });
     await db.execute("UPDATE users SET tfa_activated = 0, tfa_code = NULL WHERE u_id = ?", [user]);
-    return res.status(200).json({ message: "Two Factor Authenitication disabled" });
+    return res.status(200).json({ message: "Two Factor Authenitication is disabled" });
   } catch (error) {
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
