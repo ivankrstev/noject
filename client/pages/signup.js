@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
 import styles from "@/styles/SignUpLogIn.module.css";
 import visibilityOnIcon from "public/icons/visibility-on.svg";
@@ -7,9 +8,52 @@ import visibilityOffIcon from "public/icons/visibility-off.svg";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+const handleRegister = async (data) => {
+  try {
+    let body = {
+      firstName: data[0].value,
+      lastName: data[1].value,
+      email: data[2].value,
+      password: data[3].value,
+    };
+    // Just a short delay for showing the pending message for a moment if the request is quick
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    const response = await axios.post("http://localhost:5000/register/", body);
+    return response.data;
+  } catch (error) {
+    if (error.response) throw error.response.data;
+    throw error;
+  }
+};
+
+const postRegister = async (data, router) => {
+  try {
+    await toast.promise(handleRegister(data, router), {
+      pending: "User Registration in Progress",
+      success: {
+        render({ data }) {
+          return data.message;
+        },
+      },
+      error: {
+        render({ data }) {
+          return data.message || data.error;
+        },
+      },
+    });
+    setTimeout(() => router.push("/login"), 1000);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
   return (
     <Fragment>
       <Head>
@@ -21,7 +65,12 @@ export default function Signup() {
         exit={{ opacity: 0, x: 0, y: -100 }}
         transition={{ type: "linear" }}>
         <div className={[styles.vh100, "center"].join(" ")}>
-          <form className={styles.form}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              postRegister(e.target.elements, router);
+            }}
+            className={styles.form}>
             <Logo />
             <h2 className={styles.textLeft}>Sign Up</h2>
             <div className={styles.nameSepar}>
