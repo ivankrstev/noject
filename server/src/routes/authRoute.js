@@ -7,6 +7,7 @@ import {
   enableTFA,
   disableTFA,
   signOut,
+  generateTfaSecret,
 } from "../controllers/authController.js";
 import authenticateUser from "../middlewares/authenticateUser.js";
 
