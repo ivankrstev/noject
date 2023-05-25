@@ -16,7 +16,9 @@ const handleLogin = async (body, setTfaToken, setShow2FA) => {
   try {
     // Just a short delay for showing the pending message for a moment if the request is quick
     await new Promise((resolve) => setTimeout(resolve, 400));
-    const response = await axios.post("http://localhost:5000/login/", body);
+    const response = await axios.post("http://localhost:5000/login/", body, {
+      withCredentials: true,
+    });
     setAccessToken(response.data.accessToken);
     return;
   } catch (error) {
@@ -35,7 +37,9 @@ const handleTFAVerify = async (body, setShow2FA) => {
   try {
     // Just a short delay for showing the pending message for a moment if the request is quick
     await new Promise((resolve) => setTimeout(resolve, 400));
-    const response = await axios.post("http://localhost:5000/tfa/verify/", body);
+    const response = await axios.post("http://localhost:5000/tfa/verify/", body, {
+      withCredentials: true,
+    });
     setAccessToken(response.data.accessToken);
     return;
   } catch (error) {
