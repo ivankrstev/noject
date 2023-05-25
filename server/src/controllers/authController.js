@@ -36,10 +36,10 @@ export const loginUser = async (req, res) => {
     if (!user) return res.status(401).json({ error: "Invalid email or password" });
     const passwordMatches = await bcrypt.compare(password, user.password);
     if (!passwordMatches) return res.status(401).json({ error: "Invalid email or password" });
+    const data = { userId: user.u_id };
     const tfaToken = jwt.sign(data, process.env.TFA_JWT_SECRET, { expiresIn: "2m" });
     if (user.tfa_activated)
       return res.status(400).json({ error: "Two-Factor Authentication needed", tfaToken });
-    const data = { userId: user.u_id };
     const refreshToken = jwt.sign(data, process.env.REFRESH_JWT_SECRET, {
       expiresIn: "14d",
     });
