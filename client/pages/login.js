@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 import styles from "@/styles/SignUpLogIn.module.css";
 import visibilityOnIcon from "@/public/icons/visibility-on.svg";
@@ -7,11 +8,92 @@ import visibilityOffIcon from "@/public/icons/visibility-off.svg";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { AnimatePresence, motion } from "framer-motion";
+import { setAccessToken } from "@/utils/api";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+const handleLogin = async (body, setTfaToken, setShow2FA) => {
+  try {
+    // Just a short delay for showing the pending message for a moment if the request is quick
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    const response = await axios.post("http://localhost:5000/login/", body);
+    setAccessToken(response.data.accessToken);
+    return;
+  } catch (error) {
+    if (error.response) {
+      if (error.response.data.tfaToken) {
+        setTfaToken(error.response.data.tfaToken);
+        setShow2FA(true);
+      }
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
+const handleTFAVerify = async (body, setShow2FA) => {
+  try {
+    // Just a short delay for showing the pending message for a moment if the request is quick
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    const response = await axios.post("http://localhost:5000/tfa/verify/", body);
+    setAccessToken(response.data.accessToken);
+    return;
+  } catch (error) {
+    if (error.response) {
+      if (error.response.data.error === "Please log in again") setShow2FA(false);
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
 
 export default function Login() {
   const [totpInputs, setTotpInputs] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
-  const [show2FA, setShow2FA] = useState(true);
+  const [show2FA, setShow2FA] = useState(false);
+  const [tfaToken, setTfaToken] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!show2FA) setPassword(null);
+  }, [show2FA]);
+
+  const postLogin = async () => {
+    try {
+      await toast.promise(handleLogin({ email, password }, setTfaToken, setShow2FA), {
+        pending: "Logging in",
+        success: "Logged in successfully",
+        error: {
+          render({ data, toastProps }) {
+            if (data.error === "Two-Factor Authentication needed") toastProps.type = "warning";
+            return data.message || data.error;
+          },
+        },
+      });
+      setTimeout(() => router.push("/dashboard"), 1000);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const postTFAVerify = async (userToken) => {
+    try {
+      await toast.promise(handleTFAVerify({ userToken, tfaToken }, setShow2FA), {
+        pending: "Logging in",
+        success: "Logged in successfully",
+        error: {
+          render({ data }) {
+            return data.message || data.error;
+          },
+        },
+      });
+      setTimeout(() => router.push("/dashboard"), 1000);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Fragment>
@@ -37,15 +119,22 @@ export default function Login() {
                 <Logo />
                 <h2>Log In</h2>
                 <div className={styles.inputLabelWrapper}>
-                  <label htmlFor='email-signup'>Email</label>
-                  <input type='email' id='email-signup' placeholder='Enter your email' />
+                  <label htmlFor='email-login'>Email</label>
+                  <input
+                    type='email'
+                    id='email-login'
+                    placeholder='Enter your email'
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email ? email : ""}
+                  />
                 </div>
                 <div className={styles.inputLabelWrapper}>
-                  <label htmlFor='password-signup'>Password</label>
+                  <label htmlFor='password-login'>Password</label>
                   <input
                     type={showPassword ? "text" : "password"}
-                    id='password-signup'
+                    id='password-login'
                     placeholder='Enter your password'
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <button
                     className={styles.btnShowPass}
@@ -61,7 +150,7 @@ export default function Login() {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    setShow2FA(true);
+                    postLogin();
                   }}
                   className={[styles.btnSubmit].join(" ")}>
                   Log In
@@ -154,8 +243,9 @@ export default function Login() {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      let totpCode = "";
-                      totpInputs.forEach((e) => (totpCode += e.value));
+                      let userToken = "";
+                      totpInputs.forEach((e) => (userToken += e.value));
+                      postTFAVerify(userToken);
                     }}
                     className={styles.btnSubmit}>
                     Verify
