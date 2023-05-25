@@ -13,7 +13,7 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(value.password, 10);
     const tfa_code = speakeasy.generateSecret().base32;
     const [result] = await db.execute(
-      "INSERT INTO USERS (u_id, first_name, last_name, password, tfa_code) VALUES (?,?,?,?)",
+      "INSERT INTO USERS (u_id, first_name, last_name, password, tfa_code) VALUES (?,?,?,?,?)",
       [value.email, value.firstName, value.lastName, hashedPassword, tfa_code]
     );
     res.status(201).json({ message: "User created" });
