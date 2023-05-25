@@ -1,7 +1,7 @@
 import styles from "@/styles/Task.module.css";
-import handleTaskInput from "@/public/utils/taskKeyEventsHandler";
+import handleTaskInput from "@/utils/taskKeyEventsHandler";
 import { useRef, useEffect, useState } from "react";
-import tasksProgressHandler, { getAllSubTasks } from "@/public/utils/tasksProgressHandler";
+import tasksProgressHandler, { getAllSubTasks } from "@/utils/tasksProgressHandler";
 
 const updateTask = (text) => console.log("Updating task with: ", text);
 

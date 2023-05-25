@@ -1,7 +1,7 @@
 import styles from "@/styles/Project.module.css";
 import Task from "./Task";
 import { useEffect } from "react";
-import tasksProgressHandler from "@/public/utils/tasksProgressHandler";
+import tasksProgressHandler from "@/utils/tasksProgressHandler";
 
 export default function Project({ selectProject }) {
   useEffect(() => {
