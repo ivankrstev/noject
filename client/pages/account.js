@@ -189,14 +189,6 @@ export default function account() {
                     Send confirmation link
                   </button>
                 )}
-                <label htmlFor='changeEmail'>Change email address:</label>
-                <input id='changeEmail' type='email' placeholder='Enter your new email address' />
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}>
-                  Send email link
-                </button>
               </form>
               <form
                 onSubmit={(e) => {
