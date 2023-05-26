@@ -15,7 +15,7 @@
 }
 .taskCheckbox:checked ~ div {
   text-decoration: line-through;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--task-checked);
 }
 .taskText {
   padding-right: 1em;
