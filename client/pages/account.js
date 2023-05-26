@@ -63,6 +63,24 @@ export default function account() {
     }
   };
 
+  const changePassword = async (formData) => {
+    try {
+      const data = {
+        currentPassword: formData[0].value,
+        newPassword: formData[1].value,
+        confirmNewPassword: formData[2].value,
+      };
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      const response = await api.put("/account/password/change", data);
+      toast.success(response.data.message);
+      document.querySelector("#change-password-form").reset();
+    } catch (error) {
+      console.error(error);
+      if (error.response) toast.error(error.response.data.error);
+      else toast.error("Oops! Something went wrong");
+    }
+  };
+
   useEffect(() => {
     getDetails();
   }, []);
@@ -180,7 +198,13 @@ export default function account() {
                   Send email link
                 </button>
               </form>
-              <form className={styles.changePasswordForm}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  changePassword(e.target.elements);
+                }}
+                id='change-password-form'
+                className={styles.changePasswordForm}>
                 <h4>Change your password</h4>
                 <label htmlFor='current-password'>Current password:</label>
                 <input
@@ -192,30 +216,24 @@ export default function account() {
                 <label htmlFor='new-password'>New password:</label>
                 <input
                   required
-                  minLength={8}
+                  minLength={10}
                   id='new-password'
                   type='password'
                   placeholder='Enter your new password'
                 />
                 <label htmlFor='confirm-password'>Confirm password:</label>
                 <input
-                  minLength={8}
+                  minLength={10}
                   required
                   id='confirm-password'
                   type='password'
                   placeholder='Reenter your new password'
                 />
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}>
-                  Change password
-                </button>
+                <button>Change password</button>
               </form>
               <div className={styles.twoFactorAuth}>
                 <p>
-                  Two Factor Authentication is {tfaActivated ? "enabled" : "disabled"}
-                  {". "}
+                  Two Factor Authentication is {tfaActivated ? "enabled. " : "disabled. "}
                   <button
                     className={styles.toggleTwoFactorAuthBtn}
                     onClick={() => setOpenModal(true)}>
