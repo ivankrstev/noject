@@ -197,7 +197,7 @@ export const refreshToken = async (req, res) => {
     return res.status(201).json({ accessToken: accessToken });
   } catch (error) {
     console.error(error);
-    if (error instanceof jwt.TokenExpiredError)
+    if (error instanceof jwt.TokenExpiredError || error instanceof jwt.JsonWebTokenError)
       return res.status(401).json({ error: "Token is invalid or expired" });
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
