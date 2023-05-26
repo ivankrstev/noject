@@ -7,7 +7,6 @@ const updateTask = (text) => console.log("Updating task with: ", text);
 
 export default function Task({ text, levelProp, completed }) {
   const taskRef = useRef(null);
-  const [level, setLevel] = useState(levelProp);
   const [taskText, setTaskText] = useState(text);
 
   const increaseLevel = () => {
@@ -24,16 +23,14 @@ export default function Task({ text, levelProp, completed }) {
   const decreaseLevel = () => {
     const taskElement = taskRef.current;
     const currentLevel = parseInt(taskElement.getAttribute("level"));
-    const startLevel = parseInt(taskElement.nextSibling?.getAttribute("level"));
-    if (startLevel > level + 1) {
-      let temp = taskElement.nextSibling;
-      while (temp && parseInt(temp.getAttribute("level")) >= startLevel) {
-        const tempLevel = parseInt(temp.getAttribute("level"));
-        temp.setAttribute("level", tempLevel - 1);
-        temp.style.marginLeft = ((tempLevel - 1) * 1.1).toFixed(1) + "em";
-        temp.childNodes[0].innerText = temp.childNodes[1].checked ? "100%" : "0%";
-        temp = temp.nextSibling;
-      }
+    let temp = taskElement.nextSibling;
+    while (temp && parseInt(temp.getAttribute("level")) > currentLevel) {
+      console.log("temp:", temp);
+      const tempLevel = parseInt(temp.getAttribute("level"));
+      temp.setAttribute("level", tempLevel - 1);
+      temp.style.marginLeft = ((tempLevel - 1) * 1.1).toFixed(1) + "em";
+      temp.childNodes[0].innerText = temp.childNodes[1].checked ? "100%" : "0%";
+      temp = temp.nextSibling;
     }
     taskElement.setAttribute("level", currentLevel - 1);
     taskElement.style.marginLeft = ((currentLevel - 1) * 1.1).toFixed(1) + "em";
