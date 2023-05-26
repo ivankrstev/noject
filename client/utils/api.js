@@ -12,7 +12,6 @@ let accessToken = "";
 
 api.interceptors.request.use(
   (config) => {
-    console.log(config);
     if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },
@@ -27,10 +26,8 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
-    if (error.config.url.startsWith("/verify-email")) {
-      return Promise.reject(error);
-    }
     const originalRequest = error.config;
+    if (!error.response) return Promise.reject(error);
     if (error.response.status === 401 && !originalRequest._retry) {
       console.log("Check error.response:", error.response);
       originalRequest._retry = true;
