@@ -10,15 +10,22 @@ export default function Task({ text, levelProp, completed }) {
   const [level, setLevel] = useState(levelProp);
   const [taskText, setTaskText] = useState(text);
 
-  useEffect(() => {
-    taskRef.current.childNodes[0].innerText = completed ? "100%" : "0%";
-  }, []);
-
-  useEffect(() => {
+  const increaseLevel = () => {
     const taskElement = taskRef.current;
+    const currentLevel = parseInt(taskElement.getAttribute("level"));
+    const prevLevel = parseInt(taskElement.previousSibling?.getAttribute("level"));
+    if (currentLevel <= prevLevel) {
+      taskElement.setAttribute("level", currentLevel + 1);
+      taskElement.style.marginLeft = ((currentLevel + 1) * 1.1).toFixed(1) + "em";
+    }
+    tasksProgressHandler();
+  };
+
+  const decreaseLevel = () => {
+    const taskElement = taskRef.current;
+    const currentLevel = parseInt(taskElement.getAttribute("level"));
     const startLevel = parseInt(taskElement.nextSibling?.getAttribute("level"));
-    // Handle decreasing of multiple tasks
-    if (startLevel > level + 1 && parseInt(taskElement.getAttribute("level")) > level) {
+    if (startLevel > level + 1) {
       let temp = taskElement.nextSibling;
       while (temp && parseInt(temp.getAttribute("level")) >= startLevel) {
         const tempLevel = parseInt(temp.getAttribute("level"));
@@ -28,9 +35,10 @@ export default function Task({ text, levelProp, completed }) {
         temp = temp.nextSibling;
       }
     }
-    taskElement.setAttribute("level", level);
+    taskElement.setAttribute("level", currentLevel - 1);
+    taskElement.style.marginLeft = ((currentLevel - 1) * 1.1).toFixed(1) + "em";
     tasksProgressHandler();
-  }, [level]);
+  };
 
   useEffect(() => {
     if (taskText !== "" && taskText !== text) {
@@ -45,7 +53,8 @@ export default function Task({ text, levelProp, completed }) {
   return (
     <div
       ref={taskRef}
-      style={{ marginLeft: (level * 1.2).toFixed(1) + "em" }}
+      level={levelProp}
+      style={{ marginLeft: (levelProp * 1.1).toFixed(1) + "em" }}
       className={styles.task}>
       <span className={styles.taskPercentages} title='Task progress'>
         {completed ? "100%" : "0%"}
@@ -71,7 +80,7 @@ export default function Task({ text, levelProp, completed }) {
       <div
         title='Task text'
         className={styles.taskText}
-        onKeyDown={(e) => handleTaskInput(e, setLevel, setTaskText)}
+        onKeyDown={(e) => handleTaskInput(e, increaseLevel, decreaseLevel, setTaskText)}
         type='text'
         suppressContentEditableWarning={true}
         contentEditable={true}>

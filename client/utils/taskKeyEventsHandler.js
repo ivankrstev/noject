@@ -1,14 +1,11 @@
-export default function handleTaskInput(e, setLevel, setTaskText) {
+export default function handleTaskInput(e, increaseLevel, decreaseLevel, setTaskText) {
   console.log("======================================================");
-  const level = parseInt(e.target.parentNode.getAttribute("level"));
   if (e.shiftKey && e.key === "Tab") {
     e.preventDefault();
-    if (e.target.parentNode.getAttribute("level") !== "0") setLevel(level - 1);
-    console.log("Decreasing one level");
+    if (e.target.parentNode.getAttribute("level") !== "0") decreaseLevel();
   } else if (e.key === "Tab") {
     e.preventDefault();
-    const prevLevel = parseInt(e.target.parentNode.previousSibling?.getAttribute("level"));
-    if (level <= prevLevel) setLevel(level + 1);
+    increaseLevel();
   } else if (e.key === "Enter") {
     e.preventDefault();
     console.log("Enter new task!");
