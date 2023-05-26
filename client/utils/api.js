@@ -29,7 +29,6 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     if (!error.response) return Promise.reject(error);
     if (error.response.status === 401 && !originalRequest._retry) {
-      console.log("Check error.response:", error.response);
       originalRequest._retry = true;
       try {
         const response = await axios.post(
@@ -43,8 +42,8 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (e) {
-        console.error("Error: ", e);
-        return Promise.reject(error);
+        console.error("Api Error: ", e);
+        return Promise.reject(e);
       }
     }
     return Promise.reject(error);
