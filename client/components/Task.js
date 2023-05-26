@@ -5,37 +5,21 @@ import tasksProgressHandler, { getAllSubTasks } from "@/utils/tasksProgressHandl
 
 const updateTask = (text) => console.log("Updating task with: ", text);
 
+const handleCheckBoxChange = (event) => {
+  // Set the percentages for this task if the checkbox is changed
+  event.target.previousSibling.innerText = event.target.checked ? "100%" : "0%";
+  // Handle in/completion of all subtasks (children, grandchildren, great grandchildren, ...)
+  const allSubTasks = getAllSubTasks(event.target.parentNode);
+  allSubTasks.forEach((el) => {
+    el.childNodes[0].innerText = event.target.checked ? "100%" : "0%";
+    el.childNodes[1].checked = event.target.checked;
+  });
+  tasksProgressHandler();
+};
+
 export default function Task({ text, levelProp, completed }) {
   const taskRef = useRef(null);
   const [taskText, setTaskText] = useState(text);
-
-  const increaseLevel = () => {
-    const taskElement = taskRef.current;
-    const currentLevel = parseInt(taskElement.getAttribute("level"));
-    const prevLevel = parseInt(taskElement.previousSibling?.getAttribute("level"));
-    if (currentLevel <= prevLevel) {
-      taskElement.setAttribute("level", currentLevel + 1);
-      taskElement.style.marginLeft = ((currentLevel + 1) * 1.1).toFixed(1) + "em";
-    }
-    tasksProgressHandler();
-  };
-
-  const decreaseLevel = () => {
-    const taskElement = taskRef.current;
-    const currentLevel = parseInt(taskElement.getAttribute("level"));
-    let temp = taskElement.nextSibling;
-    while (temp && parseInt(temp.getAttribute("level")) > currentLevel) {
-      console.log("temp:", temp);
-      const tempLevel = parseInt(temp.getAttribute("level"));
-      temp.setAttribute("level", tempLevel - 1);
-      temp.style.marginLeft = ((tempLevel - 1) * 1.1).toFixed(1) + "em";
-      temp.childNodes[0].innerText = temp.childNodes[1].checked ? "100%" : "0%";
-      temp = temp.nextSibling;
-    }
-    taskElement.setAttribute("level", currentLevel - 1);
-    taskElement.style.marginLeft = ((currentLevel - 1) * 1.1).toFixed(1) + "em";
-    tasksProgressHandler();
-  };
 
   useEffect(() => {
     if (taskText !== "" && taskText !== text) {
@@ -57,17 +41,7 @@ export default function Task({ text, levelProp, completed }) {
         {completed ? "100%" : "0%"}
       </span>
       <input
-        onChange={(e) => {
-          // Set the percentages for this task if the checkbox is changed
-          e.target.previousSibling.innerText = e.target.checked ? "100%" : "0%";
-          // Handle in/completion of all subtasks (children, grandchildren, great grandchildren, ...)
-          const allSubTasks = getAllSubTasks(e.target.parentNode);
-          allSubTasks.forEach((el) => {
-            el.childNodes[0].innerText = e.target.checked ? "100%" : "0%";
-            el.childNodes[1].checked = e.target.checked;
-          });
-          tasksProgressHandler();
-        }}
+        onChange={(e) => handleCheckBoxChange(e)}
         defaultChecked={completed}
         title='Complete task'
         type='checkbox'
@@ -77,7 +51,7 @@ export default function Task({ text, levelProp, completed }) {
       <div
         title='Task text'
         className={styles.taskText}
-        onKeyDown={(e) => handleTaskInput(e, increaseLevel, decreaseLevel, setTaskText)}
+        onKeyDown={(e) => handleTaskInput(e, taskRef, setTaskText)}
         type='text'
         suppressContentEditableWarning={true}
         contentEditable={true}>
