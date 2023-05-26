@@ -11,6 +11,7 @@ import api from "@/utils/api";
 import { toast } from "react-toastify";
 import GridLoader from "react-spinners/BeatLoader";
 import { motion } from "framer-motion";
+import { useRouter } from "next/router";
 
 export default function account() {
   const [tfaPage, setTfaPage] = useState(2);
@@ -20,6 +21,7 @@ export default function account() {
   const [data, setData] = useState();
   const [qrSecret, setQrSecret] = useState("");
   const [image, setImage] = useState("");
+  const router = useRouter();
 
   const enableDisableTFA = async () => {
     try {
@@ -58,8 +60,12 @@ export default function account() {
       const responsePic = await api.get("/account/picture/get", { responseType: "blob" });
       convertImageToBase64(responsePic);
     } catch (error) {
-      console.error(error);
-      toast.error("Oops! Something went wrong");
+      console.error("error;", error);
+      if (error.code === "ERR_NETWORK") toast.error("Network Error");
+      else if (error.response.status === 401) {
+        router.push("/login/");
+        toast.error("Please log in");
+      } else toast.error("Oops! Something went wrong");
     }
   };
 
