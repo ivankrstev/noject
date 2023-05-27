@@ -5,6 +5,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import speakeasy from "speakeasy";
 const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+import { v4 } from "uuid";
+import sendResetPwEmail from "../../utils/sendVerifyEmail.js";
+
 
 export const registerUser = async (req, res) => {
   try {
@@ -13,10 +16,16 @@ export const registerUser = async (req, res) => {
     if (rows.length !== 0) return res.status(409).json({ error: "Email already in use" });
     const hashedPassword = await bcrypt.hash(value.password, 10);
     const tfa_code = speakeasy.generateSecret().base32;
+    const verification_token = v4();
     await db.execute(
-      "INSERT INTO USERS (u_id, first_name, last_name, password, tfa_code) VALUES (?,?,?,?,?)",
-      [value.email, value.firstName, value.lastName, hashedPassword, tfa_code]
+      "INSERT INTO USERS (u_id, first_name, last_name, password, tfa_code, verification_token) VALUES (?,?,?,?,?,?)",
+      [value.email, value.firstName, value.lastName, hashedPassword, tfa_code, verification_token]
     );
+    const [results] = await db.execute(
+      "SELECT first_name,last_name,u_id,verification_token FROM users WHERE u_id = ?",
+      [value.email]
+    );
+    sendResetPwEmail(results[0]);
     res.status(201).json({ message: "Registration successful" });
   } catch (error) {
     console.error(error);
