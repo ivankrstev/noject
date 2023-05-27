@@ -8,11 +8,15 @@ import {
   disableTFA,
   signOut,
   generateTfaSecret,
+  sendVerifyEmailLink,
+  verifyEmail,
 } from "../controllers/authController.js";
 import authenticateUser from "../middlewares/authenticateUser.js";
 
 const router = Router();
 
+router.post("/send-verify", authenticateUser, sendVerifyEmailLink);
+router.get("/verify-email", verifyEmail);
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/tfa/verify", verifyTFA);

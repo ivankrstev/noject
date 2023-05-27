@@ -6,8 +6,7 @@ import jwt from "jsonwebtoken";
 import speakeasy from "speakeasy";
 const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 import { v4 } from "uuid";
-import sendResetPwEmail from "../../utils/sendVerifyEmail.js";
-
+import sendVerifyEmail from "../../utils/sendVerifyEmail.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -25,7 +24,7 @@ export const registerUser = async (req, res) => {
       "SELECT first_name,last_name,u_id,verification_token FROM users WHERE u_id = ?",
       [value.email]
     );
-    sendResetPwEmail(results[0]);
+    sendVerifyEmail(results[0]);
     res.status(201).json({ message: "Registration successful" });
   } catch (error) {
     console.error(error);
@@ -222,6 +221,51 @@ export const signOut = async (req, res) => {
       refreshToken,
     ]);
     return res.clearCookie("refreshToken").redirect("/login");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token, email } = req.query;
+    if (!token || token === "") return res.status(400).json({ error: "Token is missing" });
+    if (!email || email === "") return res.status(400).json({ error: "Email is missing" });
+    const [rows] = await db.execute(
+      "SELECT verified_email FROM users WHERE u_id = ? AND verification_token = ?",
+      [email, token]
+    );
+    if (rows.length === 0) return res.status(500).json({ error: "Oops! Something went wrong" });
+    if (rows[0].verified_email === 1)
+      return res.status(400).json({ error: "Email is already verified" });
+    const results = await db.execute(
+      "UPDATE users SET verified_email = 1 WHERE u_id = ? AND verification_token = ?",
+      [email, token]
+    );
+    if (results[0].affectedRows === 0)
+      return res.status(500).json({ error: "Oops! Something went wrong" });
+    res.status(200).send({ message: "Email is verified" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
+
+export const sendVerifyEmailLink = async (req, res) => {
+  try {
+    const user = req.user;
+    const [rows] = await db.execute("SELECT verified_email FROM users WHERE u_id = ?", [user]);
+    if (rows.length === 0) return res.status(500).json({ error: "Oops! Something went wrong" });
+    if (rows[0].verified_email === 1)
+      return res.status(400).json({ error: "Email is already verified" });
+    const [results] = await db.execute(
+      "SELECT u_id,first_name,last_name,verification_token FROM users WHERE u_id = ?",
+      [user]
+    );
+    if (results.length === 0) return res.status(500).json({ error: "Oops! Something went wrong" });
+    sendVerifyEmail(results[0]);
+    return res.status(200).json({ message: "Confirmation email sent" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Oops! Something went wrong" });
