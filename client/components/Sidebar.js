@@ -16,14 +16,6 @@ export default function Sidebar(props) {
       </div>
       <div className={styles.myProjHeader}>
         <h5>My projects</h5>
-        <div className={styles.orderMyProj}>
-          <h6>Order by:</h6>
-          <select onChange={(e) => console.log(e.target.value)}>
-            <option value='Alphabetically'>Alphabetically</option>
-            <option value='Creation Date'>Creation Date</option>
-            <option value='Modification Date'>Modification Date</option>
-          </select>
-        </div>
       </div>
       <div id='p1' className={styles.sidebarProjectItem} title='Weather Report for the cast'>
         <div className={styles.sidebarProjectSquare}>W</div>
