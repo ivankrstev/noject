@@ -4,7 +4,7 @@ const transporter = createTransport({
   service: "outlook",
   auth: {
     user: "noject@outlook.com",
-    pass: "process.env.EMAIL_PASSWORD",
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 
