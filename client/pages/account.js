@@ -13,6 +13,16 @@ import GridLoader from "react-spinners/BeatLoader";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 
+const catchError = (error, router) => {
+  console.error("error;", error);
+  if (error.code === "ERR_NETWORK") toast.error("Network Error");
+  else if (error.logInAgain) {
+    toast.error("Please log in");
+    router?.push("/login");
+  } else if (error.response) toast.error(error.response.data.error);
+  else toast.error("Oops! Something went wrong");
+};
+
 export default function account() {
   const [tfaPage, setTfaPage] = useState(2);
   const [openModal, setOpenModal] = useState(false);
@@ -33,9 +43,7 @@ export default function account() {
       setOpenModal(false);
       toast.success(response.data.message);
     } catch (error) {
-      if (error.response) toast.error(error.response.data.error);
-      else toast.error("Oops! Something went wrong");
-      console.error(error);
+      catchError(error, router);
     }
   };
 
@@ -60,12 +68,7 @@ export default function account() {
       const responsePic = await api.get("/account/picture/get", { responseType: "blob" });
       convertImageToBase64(responsePic);
     } catch (error) {
-      console.error("error;", error);
-      if (error.code === "ERR_NETWORK") toast.error("Network Error");
-      else if (error.response.status === 401) {
-        router.push("/login/");
-        toast.error("Please log in");
-      } else toast.error("Oops! Something went wrong");
+      catchError(error, router);
     }
   };
 
@@ -81,9 +84,7 @@ export default function account() {
       toast.success(response.data.message);
       document.querySelector("#change-password-form").reset();
     } catch (error) {
-      console.error(error);
-      if (error.response) toast.error(error.response.data.error);
-      else toast.error("Oops! Something went wrong");
+      catchError(error, router);
     }
   };
 
