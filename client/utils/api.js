@@ -10,8 +10,12 @@ const api = axios.create({
 
 let accessToken = "";
 
+const excludedRoutes = ["/verify-email", "/login", "/signup", "/tfa/verify", "/refresh-token"];
+
 api.interceptors.request.use(
   (config) => {
+    const isExcluded = excludedRoutes.some((route) => config.url.startsWith(route));
+    if (isExcluded) return config;
     if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },
@@ -26,6 +30,10 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
+    // Added excluding for specific routes(in order to use only the api function for requests)
+    const isExcluded = excludedRoutes.some((route) => error.config.url.startsWith(route));
+    if (isExcluded) return Promise.reject(error);
+    console.log("after isExcluded");
     const originalRequest = error.config;
     if (!error.response) return Promise.reject(error);
     if (error.response.status === 401 && !originalRequest._retry) {
