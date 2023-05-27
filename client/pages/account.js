@@ -190,8 +190,14 @@ export default function account() {
                 <p>Your email is {verifiedEmail ? "verified." : "not verified."}</p>
                 {!verifiedEmail && (
                   <button
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.preventDefault();
+                      try {
+                        const response = await api.post("/send-verify");
+                        toast.success(response.data.message);
+                      } catch (error) {
+                        catchError(error);
+                      }
                     }}>
                     Send confirmation link
                   </button>
