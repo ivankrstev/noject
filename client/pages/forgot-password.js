@@ -10,7 +10,7 @@ export default function ResetPassword() {
   return (
     <Fragment>
       <Head>
-        <title>Noject - Reset password</title>
+        <title>Noject - Forgot password</title>
       </Head>
       <motion.main
         initial={{ opacity: 0, x: -200, y: 0 }}
