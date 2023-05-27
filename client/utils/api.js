@@ -43,6 +43,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (e) {
         console.error("Api Error: ", e);
+        if (e.response.status === 401) e.logInAgain = true;
         return Promise.reject(e);
       }
     }
