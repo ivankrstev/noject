@@ -1,6 +1,19 @@
 .vh100 {
   height: 100vh;
 }
+.flipLoginForm {
+  position: relative;
+  transition: all 0.1s ease;
+  display: flex;
+  justify-content: center !important;
+  width: 100vw;
+}
+.flipLoginFront,
+.flipLoginBack {
+  position: absolute;
+  backface-visibility: hidden;
+  transition: all 0.1s ease;
+}
 .form {
   display: flex;
   flex-direction: column;
