@@ -60,10 +60,11 @@ export default function Signup() {
         <title>Noject - Sign Up</title>
       </Head>
       <motion.main
+        key='main-signup'
         initial={{ opacity: 0, x: -200, y: 0 }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0, x: 0, y: -100 }}
-        transition={{ type: "linear" }}>
+        transition={{ ease: "linear" }}>
         <div className={[styles.vh100, "center"].join(" ")}>
           <form
             onSubmit={(e) => {
