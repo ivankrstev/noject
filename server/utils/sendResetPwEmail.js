@@ -1,6 +1,4 @@
 import { createTransport } from "nodemailer";
-import { config } from "dotenv";
-config();
 
 const transporter = createTransport({
   service: "outlook",
