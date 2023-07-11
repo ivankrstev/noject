@@ -9,26 +9,14 @@ const transporter = createTransport({
 });
 
 const sendVerifyEmail = (data) => {
-  const verificationLink = `http://localhost:3000/verify-email?email=${data.u_id}&token=${data.verification_token}`;
+  const { first_name, last_name, u_id, verification_token } = data;
+  const verificationLink = `http://localhost:3000/verify-email?email=${u_id}&token=${verification_token}`;
   const mailOptions = {
     from: "Noject App noject@outlook.com",
-    to: `${data.first_name} ${data.last_name} ${data.u_id}`,
+    to: `${first_name} ${last_name} ${u_id}`,
     subject: "Email Verification",
-    text: `Hello ${data.first_name},\n Please click on the following link to verify your email: ${verificationLink}`,
-    html: `<p>Hello ${data.first_name},</p><p>Please click on the following link to verify your email:</p> <a href="${verificationLink}">${verificationLink}</a>`,
-    amp: `<!doctype html>
-    <html ⚡4email>
-      <head>
-        <meta charset="utf-8">
-        <style amp4email-boilerplate>body{visibility:hidden}</style>
-        <script async src="https://cdn.ampproject.org/v0.js"></script>
-      </head>
-      <body>
-        <p>Hello ${data.first_name},</p>
-        <p>Please click on the following link to verify your email:</p>
-        <a href="${verificationLink}">${verificationLink}</a>
-      </body>
-    </html>`,
+    text: `Dear ${first_name},\n Please click on the following link to verify your email: ${verificationLink}`,
+    html: `<p style="font-size:16px;color:#333;margin-bottom:10px;">Dear ${first_name},</p> <p style="font-size:14px;color:#555;margin-bottom:20px;">Please click on the following link to verify your email: </p> <a style="display:inline-block;padding:10px 20px;background-color:#337ab7;color:#fff;text-decoration:none;border-radius:4px;font-size:14px;" href="${verificationLink}">Verify Email</a>`,
     priority: "normal",
   };
   transporter.sendMail(mailOptions, (error, info) => {
