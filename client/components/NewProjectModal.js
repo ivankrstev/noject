@@ -5,9 +5,14 @@ import { motion } from "framer-motion";
 export default function NewProjectModal({ closeModal }) {
   const [name, setName] = useState("");
 
+  const handleCloseOnKey = (e) => e.code === "Escape" && closeModal();
   useEffect(() => {
     document.documentElement.style.overflowY = "hidden";
-    return () => (document.documentElement.style.overflowY = "auto");
+    document.addEventListener("keydown", handleCloseOnKey);
+    return () => {
+      document.documentElement.style.overflowY = "auto";
+      document.removeEventListener("keydown", handleCloseOnKey);
+    };
   }, []);
 
   const handleChange = (event) => setName(event.target.value);
