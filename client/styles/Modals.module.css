@@ -16,9 +16,11 @@
   border-radius: 5px;
 }
 .modalHeading {
+  color: var(--font-color);
   margin-bottom: 0.6em;
 }
 .textLabel {
+  color: var(--font-color);
   font-size: 0.9em;
 }
 .textInput {
@@ -50,7 +52,7 @@
   cursor: pointer;
 }
 .confirmButton {
-  background-color: #4caf50;
+  background-color: #66bb6a;
   color: #fff;
 }
 .cancelButton {
