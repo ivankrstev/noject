@@ -1,6 +1,8 @@
 .projectMain {
   margin-top: 0.5em;
   margin-left: 1.25em;
+  padding-right: 0.75em;
+  transition: width 0.3s;
 }
 .projectHeaderDiv {
   width: 100%;

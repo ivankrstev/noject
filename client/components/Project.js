@@ -9,7 +9,7 @@ export default function Project({ selectProject }) {
   }, []);
 
   return (
-    <div className={styles.projectMain}>
+    <div id='projectMainDiv' className={styles.projectMain}>
       <div className={styles.projectHeaderDiv}>
         <h2>{selectProject}</h2>
         <span id='projectProgressSpan' title='Project progress'></span>

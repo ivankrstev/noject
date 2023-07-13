@@ -15,22 +15,27 @@ const variants = {
 export default function Dasboard() {
   const [showSidebar, setShowSidebar] = useState();
   const [selectProject, setSelectProject] = useState("Noject");
+  const sidebarShowHide = () => setShowSidebar(!showSidebar);
+
   useEffect(() => {
     const show = localStorage.getItem("sidebarShow");
     show === "undefined" || show === "false" ? setShowSidebar(false) : setShowSidebar(true);
   }, []);
+
   useEffect(() => {
     if (showSidebar !== undefined) {
       localStorage.setItem("sidebarShow", showSidebar);
-      document.querySelector("#navbar").style.width = showSidebar ? "calc(100% - 250px)" : "100%";
+      document.querySelector("#navbar").style.width = showSidebar ? "calc(100% - 265px)" : "100%";
+      document.querySelector("#projectMainDiv").style.width = showSidebar
+        ? "calc(100% - 265px)"
+        : "100%";
     }
   }, [showSidebar]);
-  const sidebarShowHide = () => setShowSidebar(!showSidebar);
 
   return (
     <Fragment>
       <Head>
-        <title>Dashboard - Noject</title>
+        <title>Noject - Dashboard</title>
       </Head>
       <motion.main
         key='dashboard'
@@ -38,7 +43,7 @@ export default function Dasboard() {
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0, x: 0, y: -100, display: "none" }}
         variants={variants}
-        transition={{ type: "linear" }}>
+        transition={{ ease: "easeInOut" }}>
         <div className={styles.dashboard}>
           <div>
             <Sidebar
