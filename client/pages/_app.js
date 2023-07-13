@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
-import { Space_Mono } from "@next/font/google";
+import { Space_Mono } from "next/font/google";
 import { AnimatePresence } from "framer-motion";
 import { ToastContainer } from "react-toastify";
 
