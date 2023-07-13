@@ -37,7 +37,7 @@ export default function Task({ text, levelProp, completed }) {
       level={levelProp}
       style={{ marginLeft: (levelProp * 1.1).toFixed(1) + "em" }}
       className={styles.task}>
-      <span className={styles.taskPercentages} title='Task progress'>
+      <span className={[styles.taskPercentages, "no-select"].join(" ")} title='Task progress'>
         {completed ? "100%" : "0%"}
       </span>
       <input

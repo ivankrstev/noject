@@ -32,12 +32,20 @@ a {
 .colorGrey {
   color: #838383;
 }
-button,
-button * {
+.no-select {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
   -webkit-user-drag: none;
+}
+button,
+button *,
+img {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* font-family: var(--font-mono); */
 }
 html {
   font-family: var(--font-mono);
