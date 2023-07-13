@@ -5,10 +5,12 @@ import SettingsIcon from "@/public/icons/settings.svg";
 import Image from "next/image";
 import { useState } from "react";
 import NewProjectModal from "@/components/NewProjectModal";
+import ModifyProjectModal from "./ModifyProjectModal";
 import { AnimatePresence } from "framer-motion";
 
 export default function Sidebar(props) {
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+  const [showModifyProjectModal, setShowModifyProjectModal] = useState(false);
 
   return (
     <div className={[styles.sidebar, !props.showSidebar && styles.sidebarHide].join(" ")}>
@@ -39,6 +41,7 @@ export default function Sidebar(props) {
         <button
           onClick={(e) => {
             e.stopPropagation();
+            setShowModifyProjectModal(true);
             console.log("btn clicked");
           }}
           className={styles.projectModifyBtn}>
@@ -66,6 +69,11 @@ export default function Sidebar(props) {
       <AnimatePresence>
         {showNewProjectModal && (
           <NewProjectModal closeModal={() => setShowNewProjectModal(false)} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showModifyProjectModal && (
+          <ModifyProjectModal closeModal={() => setShowModifyProjectModal(false)} />
         )}
       </AnimatePresence>
     </div>
