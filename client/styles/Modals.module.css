@@ -44,7 +44,8 @@
   justify-content: flex-end;
 }
 .confirmButton,
-.cancelButton {
+.cancelButton,
+.deleteButton {
   font-size: 1em;
   padding: 0.625em 1.25em;
   margin-left: 10px;
@@ -53,6 +54,10 @@
 }
 .confirmButton {
   background-color: #66bb6a;
+  color: #fff;
+}
+.deleteButton {
+  background-color: #e63946;
   color: #fff;
 }
 .cancelButton {
