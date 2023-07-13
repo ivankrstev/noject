@@ -1,5 +1,6 @@
 import styles from "@/styles/Modals.module.css";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export default function NewProjectModal({ closeModal }) {
   const [name, setName] = useState("");
@@ -13,7 +14,12 @@ export default function NewProjectModal({ closeModal }) {
 
   return (
     <div className={styles.fullscreenModal}>
-      <div className={styles.modalContent}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.7 }}
+        transition={{ ease: "easeInOut", duration: 0.3 }}
+        className={styles.modalContent}>
         <h3 className={styles.modalHeading}>Create a new project</h3>
         <label htmlFor='textInput' className={styles.textLabel}>
           Project Name:
@@ -32,7 +38,7 @@ export default function NewProjectModal({ closeModal }) {
             Cancel
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

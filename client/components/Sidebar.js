@@ -4,6 +4,7 @@ import addIcon from "@/public/icons/add_plus.svg";
 import Image from "next/image";
 import { useState } from "react";
 import NewProjectModal from "@/components/NewProjectModal";
+import { AnimatePresence } from "framer-motion";
 
 export default function Sidebar(props) {
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
@@ -35,7 +36,11 @@ export default function Sidebar(props) {
         <p>Task Manager</p>
       </div>
       <h5>Shared projects</h5>
-      {showNewProjectModal && <NewProjectModal closeModal={() => setShowNewProjectModal(false)} />}
+      <AnimatePresence>
+        {showNewProjectModal && (
+          <NewProjectModal closeModal={() => setShowNewProjectModal(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
