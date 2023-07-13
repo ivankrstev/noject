@@ -3,7 +3,8 @@
   transition: width 0.3s;
   display: flex;
   align-items: center;
-  background-color: blue;
+  background-color: #0b2447;
+  border-bottom: 1px solid #000;
   height: fit-content;
   padding: 0.65em 0.3em;
   padding-right: 0.9em;
@@ -22,6 +23,7 @@
   outline: none;
   border: 0;
   background-color: transparent;
+  filter: invert(98%) sepia(0%) saturate(0%) hue-rotate(264deg) brightness(114%) contrast(100%);
 }
 
 .profileBtn {
