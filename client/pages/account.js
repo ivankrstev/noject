@@ -120,14 +120,18 @@ export default function account() {
   return (
     <Fragment>
       <Head>
-        <title>My account - Noject</title>
+        <title>Noject - My account</title>
+        <meta
+          name='description'
+          content='Manage your account settings, profile picture, email verification, and two-factor authentication on Noject.'
+        />
       </Head>
       <Navbar showSidebar={true} showBtnDashboard={true} />
       <motion.main
         initial={{ opacity: 0, x: -200, y: 0 }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0, x: 0, y: -100 }}
-        transition={{ type: "linear" }}>
+        transition={{ ease: "easeInOut" }}>
         <div className={styles.account}>
           <GridLoader
             loading={!data}
