@@ -11,12 +11,13 @@ export default function ResetPassword() {
     <Fragment>
       <Head>
         <title>Noject - Forgot password</title>
+        <meta name='description' content='Recover your password by providing your email' />
       </Head>
       <motion.main
         initial={{ opacity: 0, x: -200, y: 0 }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0, x: 0, y: -100 }}
-        transition={{ type: "linear" }}>
+        transition={{ ease: "easeInOut" }}>
         <div className={[styles.vh100, "center"].join(" ")}>
           <form className={styles.form}>
             <Logo />

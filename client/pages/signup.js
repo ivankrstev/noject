@@ -58,13 +58,14 @@ export default function Signup() {
     <Fragment>
       <Head>
         <title>Noject - Sign Up</title>
+        <meta name='description' content='Sign up to create an account' />
       </Head>
       <motion.main
         key='main-signup'
         initial={{ opacity: 0, x: -200, y: 0 }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0, x: 0, y: -100 }}
-        transition={{ ease: "linear" }}>
+        transition={{ ease: "easeInOut" }}>
         <div className={[styles.vh100, "center"].join(" ")}>
           <form
             onSubmit={(e) => {
