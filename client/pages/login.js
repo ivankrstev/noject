@@ -103,14 +103,15 @@ export default function Login() {
     <Fragment>
       <Head>
         <title>Noject - Log In</title>
+        <meta name='description' content='Log in to your account' />
       </Head>
       <motion.main
         key='main-login'
-        initial={{ opacity: 0, x: -200, y: 0 }}
+        className={styles.flipLoginForm}
+        initial={{ opacity: 0, x: -200 }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0, x: 0, y: -100 }}
-        transition={{ ease: "linear" }}
-        className={styles.flipLoginForm}>
+        transition={{ ease: "easeInOut" }}>
         <motion.div
           key='login'
           className={[styles.vh100, styles.flipLoginFront, "center"].join(" ")}
@@ -190,6 +191,7 @@ export default function Login() {
                     onFocus={() =>
                       setTotpInputs(document.querySelectorAll("#totpInputsWrapper input"))
                     }
+                    aria-labelledby='First TOTP digit'
                     onChange={(e) => e.target.value.length > 0 && totpInputs[1].focus()}
                     className={styles.totpCode}
                     required
@@ -198,6 +200,7 @@ export default function Login() {
                     type='text'
                   />
                   <input
+                    aria-labelledby='Second TOTP digit'
                     onChange={(e) => e.target.value.length > 0 && totpInputs[2].focus()}
                     className={styles.totpCode}
                     required
@@ -206,6 +209,7 @@ export default function Login() {
                     type='text'
                   />
                   <input
+                    aria-labelledby='Third TOTP digit'
                     onChange={(e) => e.target.value.length > 0 && totpInputs[3].focus()}
                     className={styles.totpCode}
                     required
@@ -214,6 +218,7 @@ export default function Login() {
                     type='text'
                   />
                   <input
+                    aria-labelledby='Fourth TOTP digit'
                     onChange={(e) => e.target.value.length > 0 && totpInputs[4].focus()}
                     className={styles.totpCode}
                     required
@@ -222,6 +227,7 @@ export default function Login() {
                     type='text'
                   />
                   <input
+                    aria-labelledby='Fifth TOTP digit'
                     onChange={(e) => e.target.value.length > 0 && totpInputs[5].focus()}
                     className={styles.totpCode}
                     required
@@ -230,6 +236,7 @@ export default function Login() {
                     type='text'
                   />
                   <input
+                    aria-labelledby='Sixth TOTP digit'
                     className={styles.totpCode}
                     required
                     maxLength='1'
