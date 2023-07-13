@@ -19,7 +19,6 @@
   background-color: #0572ec;
   padding: 0.3em;
   border-radius: 5px;
-  cursor: pointer;
   border: 0;
 }
 .changeEmailForm {
@@ -48,7 +47,6 @@
   min-width: 10%;
   font-size: 1em;
   padding: 0.6em 0.7em;
-  cursor: pointer;
   border-radius: 24px;
   color: #fff;
   background-color: #0572ec;
@@ -123,7 +121,6 @@
   display: flex;
   text-align: center;
   border: 0;
-  cursor: pointer;
   padding: 0.05em;
   filter: var(--toggle-password);
 }

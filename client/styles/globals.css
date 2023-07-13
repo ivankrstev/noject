@@ -47,6 +47,10 @@ img {
   -webkit-user-drag: none;
   /* font-family: var(--font-mono); */
 }
+button,
+button * {
+  cursor: pointer;
+}
 html {
   font-family: var(--font-mono);
 }

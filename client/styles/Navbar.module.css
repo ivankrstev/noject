@@ -22,13 +22,11 @@
   outline: none;
   border: 0;
   background-color: transparent;
-  cursor: pointer;
 }
 
 .profileBtn {
   margin-left: auto;
   background-color: transparent;
-  cursor: pointer;
   border: 0;
   position: relative;
   width: 2.4em;
@@ -71,7 +69,6 @@
   background-color: transparent;
   border: 0;
   font-size: 1em;
-  cursor: pointer;
   color: #fff;
 }
 
@@ -80,7 +77,6 @@
   background-color: transparent;
   outline: none;
   border: 0;
-  cursor: pointer;
 }
 .projectSettingsPopover {
   -webkit-user-select: none;
