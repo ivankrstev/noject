@@ -3,7 +3,7 @@ import logo from "@/public/logo.svg";
 
 export default function LogoWrapper() {
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+    <div className='center'>
       <Image
         priority
         width={90}
