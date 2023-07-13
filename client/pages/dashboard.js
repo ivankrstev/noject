@@ -6,12 +6,6 @@ import Project from "@/components/Project";
 import { useState, useEffect, Fragment } from "react";
 import { motion } from "framer-motion";
 
-const variants = {
-  hidden: { opacity: 0, x: -200, y: 0 },
-  enter: { opacity: 1, x: 0, y: 0 },
-  exit: { opacity: 0, x: 0 },
-};
-
 export default function Dasboard() {
   const [showSidebar, setShowSidebar] = useState();
   const [selectProject, setSelectProject] = useState("Noject");
@@ -36,13 +30,13 @@ export default function Dasboard() {
     <Fragment>
       <Head>
         <title>Noject - Dashboard</title>
+        <meta name='description' content='Manage projects and tasks with the Noject dashboard.' />
       </Head>
       <motion.main
         key='dashboard'
-        initial='hidden'
+        initial={{ opacity: 0, x: -200, y: 0 }}
         animate={{ opacity: 1, x: 0, y: 0 }}
-        exit={{ opacity: 0, x: 0, y: -100, display: "none" }}
-        variants={variants}
+        exit={{ opacity: 0, x: 0, y: -100 }}
         transition={{ ease: "easeInOut" }}>
         <div className={styles.dashboard}>
           <div>
