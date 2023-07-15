@@ -25,10 +25,14 @@ export default function Sidebar(props) {
       </div>
       <div className={styles.myProjHeader}>
         <h5>My projects</h5>
-        <button className={styles.newProjectBtn} onClick={() => setShowNewProjectModal(true)}>
-          <Image width={20} src={addIcon} alt='New icon' />
-          Create Project
-        </button>
+        <div className={styles.orderMyProj}>
+          <h6>Order by:</h6>
+          <select title='Order my projects' onChange={(e) => console.log(e.target.value)}>
+            <option value='name'>Name</option>
+            <option value='creation-date'>Creation Date</option>
+            <option value='modified-date'>Modification Date</option>
+          </select>
+        </div>
       </div>
 
       <div
@@ -65,6 +69,10 @@ export default function Sidebar(props) {
           <Image src={SettingsIcon} width={21} alt='Project Settings' />
         </button>
       </div>
+      <button className={styles.newProjectBtn} onClick={() => setShowNewProjectModal(true)}>
+        <Image width={20} src={addIcon} alt='New icon' />
+        Create Project
+      </button>
       <h5>Shared projects</h5>
       <AnimatePresence>
         {showNewProjectModal && (

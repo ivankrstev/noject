@@ -31,13 +31,46 @@
   justify-content: space-between;
   align-items: center;
 }
+.orderMyProj {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.orderMyProj h6 {
+  font-size: 0.75em;
+}
+.orderMyProj select {
+  color: #fff;
+  border: 0;
+  margin-top: -0.25em;
+  text-align: right;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  appearance: none;
+  background: transparent;
+  background-image: url("../public/icons/order-by.png");
+  background-repeat: no-repeat;
+  background-position-x: 99%;
+  background-position-y: 2.5px;
+  background-size: 20%;
+  padding: 0.5em 2em 0.5em 0;
+}
+.orderMyProj option {
+  background-color: #203040;
+}
+.orderMyProj select:focus {
+  border: 0;
+  outline: 0;
+}
 .newProjectBtn {
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-around;
+  margin: 0.5em auto;
   background-color: #0570eb;
-  padding: 0.25em 0.45em 0.25em 0.2em;
+  padding: 0.35em 0.45em 0.35em 0.2em;
   border: 0;
   border-radius: 5px;
   transition: background-color 0.1s linear;
