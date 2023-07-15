@@ -3,7 +3,8 @@ import closeMenuIcon from "@/public/icons/close-menu.svg";
 import addIcon from "@/public/icons/add_plus.svg";
 import SettingsIcon from "@/public/icons/settings.svg";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "@/utils/api";
 import NewProjectModal from "@/components/NewProjectModal";
 import ModifyProjectModal from "./ModifyProjectModal";
 import { AnimatePresence } from "framer-motion";
@@ -11,6 +12,22 @@ import { AnimatePresence } from "framer-motion";
 export default function Sidebar(props) {
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showModifyProjectModal, setShowModifyProjectModal] = useState(false);
+  const [modifyProjectId, setModifyProjectId] = useState(null);
+  const [projects, setProjects] = useState([]);
+
+  const getProjects = async (orderByType) => {
+    try {
+      const response = await api.get("/project/all");
+      console.log(response.data);
+      setProjects(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getProjects();
+  }, []);
 
   return (
     <div className={[styles.sidebar, !props.showSidebar && styles.sidebarHide].join(" ")}>
@@ -29,46 +46,42 @@ export default function Sidebar(props) {
           <h6>Order by:</h6>
           <select title='Order my projects' onChange={(e) => console.log(e.target.value)}>
             <option value='name'>Name</option>
-            <option value='creation-date'>Creation Date</option>
+            <option value='creation_date'>Creation Date</option>
             <option value='modified-date'>Modification Date</option>
           </select>
         </div>
       </div>
 
-      <div
-        id='p1'
-        className={styles.sidebarProjectItem}
-        onClick={() => console.log("Project clicked")}
-        title='Weather Report for the cast'>
-        <span className={styles.sidebarProjectSquare}>W</span>
-        <p>Weather Report for the cast</p>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowModifyProjectModal(true);
-            console.log("btn clicked");
-          }}
-          className={styles.projectModifyBtn}>
-          <Image src={SettingsIcon} width={21} alt='Project Settings' />
-        </button>
-      </div>
+      {projects.length === 0 ? (
+        <h4>No Projects Created</h4>
+      ) : (
+        projects.map((project) => (
+          <div
+            key={project.p_id}
+            id={project.p_id}
+            className={styles.sidebarProjectItem}
+            title={project.name}
+            onClick={() => console.log("Project clicked")}>
+            <span
+              style={{ color: project.color, backgroundColor: project.background_color }}
+              className={styles.sidebarProjectSquare}>
+              {Array.from(project.name)[0].toUpperCase()}
+            </span>
+            <p>{project.name}</p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setModifyProjectId(e.currentTarget.parentElement.id);
+                setShowModifyProjectModal(true);
+                console.log("btn clicked");
+              }}
+              className={styles.projectModifyBtn}>
+              <Image src={SettingsIcon} width={21} alt='Project Settings' />
+            </button>
+          </div>
+        ))
+      )}
 
-      <div
-        id='p2'
-        className={styles.sidebarProjectItem}
-        onClick={() => console.log("Project clicked")}
-        title='Task Manager'>
-        <span className={styles.sidebarProjectSquare}>T</span>
-        <p>Task Manager</p>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log("btn clicked");
-          }}
-          className={styles.projectModifyBtn}>
-          <Image src={SettingsIcon} width={21} alt='Project Settings' />
-        </button>
-      </div>
       <button className={styles.newProjectBtn} onClick={() => setShowNewProjectModal(true)}>
         <Image width={20} src={addIcon} alt='New icon' />
         Create Project
