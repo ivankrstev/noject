@@ -15,9 +15,9 @@ export default function Sidebar(props) {
   const [modifyProjectId, setModifyProjectId] = useState(null);
   const [projects, setProjects] = useState([]);
 
-  const getProjects = async (orderByType) => {
+  const getProjects = async (order_by_type) => {
     try {
-      const response = await api.get("/project/all");
+      const response = await api.get("/project/all?order_by_type=" + order_by_type);
       console.log(response.data);
       setProjects(response.data);
     } catch (error) {
@@ -26,8 +26,32 @@ export default function Sidebar(props) {
   };
 
   useEffect(() => {
-    getProjects();
+    const orderProjectsSelect = document.getElementById("orderProjectsSelect");
+    if (!localStorage.getItem("OrderProjects")) localStorage.setItem("OrderProjects", "name_a-z");
+    const orderProjectsSavedType = localStorage.getItem("OrderProjects");
+    if (orderProjectsSelect) {
+      if (orderProjectsSavedType === "creation_date_asc")
+        orderProjectsSelect.childNodes[2].selected = true;
+      else if (orderProjectsSavedType === "creation_date_desc")
+        orderProjectsSelect.childNodes[3].selected = true;
+      else if (orderProjectsSavedType === "name_z-a")
+        orderProjectsSelect.childNodes[1].selected = true;
+      else orderProjectsSelect.firstChild.selected = true;
+    }
+    getProjects(orderProjectsSavedType);
   }, []);
+
+  const orderProjects = (type) => {
+    if (type === "name_a-z") {
+      projects.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (type === "name_z-a") projects.sort((b, a) => a.name.localeCompare(b.name));
+    else if (type === "creation_date_asc")
+      projects.sort((a, b) => new Date(a.creation_date) - new Date(b.creation_date));
+    else if (type === "creation_date_desc")
+      projects.sort((b, a) => new Date(a.creation_date) - new Date(b.creation_date));
+    console.log(projects);
+    setProjects([...projects]);
+  };
 
   return (
     <div className={[styles.sidebar, !props.showSidebar && styles.sidebarHide].join(" ")}>
@@ -44,10 +68,17 @@ export default function Sidebar(props) {
         <h5>My projects</h5>
         <div className={styles.orderMyProj}>
           <h6>Order by:</h6>
-          <select title='Order my projects' onChange={(e) => console.log(e.target.value)}>
-            <option value='name'>Name</option>
-            <option value='creation_date'>Creation Date</option>
-            <option value='modified-date'>Modification Date</option>
+          <select
+            id='orderProjectsSelect'
+            title='Order my projects'
+            onChange={(e) => {
+              localStorage.setItem("OrderProjects", e.target.value);
+              orderProjects(e.target.value);
+            }}>
+            <option value='name_a-z'>Name A-Z</option>
+            <option value='name_z-a'>Name Z-A</option>
+            <option value='creation_date_asc'>Creation Date &#8593;</option>
+            <option value='creation_date_desc'>Creation Date &#8595;</option>
           </select>
         </div>
       </div>
