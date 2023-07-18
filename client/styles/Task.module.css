@@ -5,13 +5,27 @@
   align-items: center;
 }
 .taskPercentages {
+  min-width: 41.14px;
+  text-align: right;
   font-size: 0.7em;
 }
 .taskCheckbox {
+  position: relative;
   min-width: 1.4em;
   min-height: 1.4em;
   margin-right: 0.5em;
-  margin-left: 0.15em;
+  margin-left: 1em;
+}
+.taskCheckbox::after {
+  content: "";
+  position: absolute;
+  left: -8.8px;
+  width: 1px;
+  height: 105%;
+  background-color: var(--font-color);
+}
+.task[level="0"] > .taskCheckbox::after {
+  width: 0;
 }
 .taskText {
   position: relative;
@@ -30,6 +44,7 @@
   outline: none;
 }
 .taskCheckbox:checked ~ .taskText {
+  cursor: default;
   color: var(--task-checked);
 }
 .taskCheckbox:checked ~ .taskText::after {
