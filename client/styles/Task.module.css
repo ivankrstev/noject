@@ -13,13 +13,25 @@
   margin-right: 0.5em;
   margin-left: 0.15em;
 }
-.taskCheckbox:checked ~ div {
-  text-decoration: line-through;
-  color: var(--task-checked);
-}
 .taskText {
-  padding-right: 1em;
+  position: relative;
+}
+.taskText::after {
+  content: "";
+  width: 0px;
+  height: 1px;
+  display: block;
+  position: absolute;
+  top: 50%;
+  background-color: var(--task-checked);
+  transition: 500ms;
 }
 .taskText:focus {
   outline: none;
+}
+.taskCheckbox:checked ~ .taskText {
+  color: var(--task-checked);
+}
+.taskCheckbox:checked ~ .taskText::after {
+  width: 100%;
 }
