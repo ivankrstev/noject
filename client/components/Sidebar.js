@@ -29,27 +29,17 @@ export default function Sidebar(props) {
     const orderProjectsSelect = document.getElementById("orderProjectsSelect");
     if (!localStorage.getItem("OrderProjects")) localStorage.setItem("OrderProjects", "name_a-z");
     const orderProjectsSavedType = localStorage.getItem("OrderProjects");
-    if (orderProjectsSelect) {
-      if (orderProjectsSavedType === "creation_date_asc")
-        orderProjectsSelect.childNodes[2].selected = true;
-      else if (orderProjectsSavedType === "creation_date_desc")
-        orderProjectsSelect.childNodes[3].selected = true;
-      else if (orderProjectsSavedType === "name_z-a")
-        orderProjectsSelect.childNodes[1].selected = true;
-      else orderProjectsSelect.firstChild.selected = true;
-    }
+    orderProjectsSelect.value = orderProjectsSavedType;
     getProjects(orderProjectsSavedType);
   }, []);
 
   const orderProjects = (type) => {
-    if (type === "name_a-z") {
-      projects.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (type === "name_z-a") projects.sort((b, a) => a.name.localeCompare(b.name));
+    if (type === "name_a-z") projects.sort((a, b) => a.name.localeCompare(b.name));
+    else if (type === "name_z-a") projects.sort((b, a) => a.name.localeCompare(b.name));
     else if (type === "creation_date_asc")
       projects.sort((a, b) => new Date(a.creation_date) - new Date(b.creation_date));
     else if (type === "creation_date_desc")
       projects.sort((b, a) => new Date(a.creation_date) - new Date(b.creation_date));
-    console.log(projects);
     setProjects([...projects]);
   };
 
@@ -120,7 +110,11 @@ export default function Sidebar(props) {
       <h5>Shared projects</h5>
       <AnimatePresence>
         {showNewProjectModal && (
-          <NewProjectModal closeModal={() => setShowNewProjectModal(false)} />
+          <NewProjectModal
+            projects={projects}
+            setProjects={setProjects}
+            closeModal={() => setShowNewProjectModal(false)}
+          />
         )}
       </AnimatePresence>
       <AnimatePresence>

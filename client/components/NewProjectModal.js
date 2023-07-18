@@ -1,8 +1,10 @@
 import styles from "@/styles/Modals.module.css";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import api from "@/utils/api";
+import { toast } from "react-toastify";
 
-export default function NewProjectModal({ closeModal }) {
+export default function NewProjectModal({ closeModal, projects, setProjects }) {
   const [name, setName] = useState("");
 
   const handleCloseOnKey = (e) => e.code === "Escape" && closeModal();
@@ -15,7 +17,42 @@ export default function NewProjectModal({ closeModal }) {
     };
   }, []);
 
-  const handleChange = (event) => setName(event.target.value);
+  const postProject = async () => {
+    try {
+      const response = await api.post("/project/create", { name });
+      const orderProjectsSavedType = localStorage.getItem("OrderProjects");
+      if (orderProjectsSavedType === "creation_date_asc") setProjects([...projects, response.data]);
+      else if (orderProjectsSavedType === "creation_date_desc")
+        setProjects([response.data, ...projects]);
+      else {
+        if (orderProjectsSavedType === "name_a-z")
+          projects.sort((a, b) => a.name.localeCompare(b.name));
+        else if (orderProjectsSavedType === "name_z-a")
+          projects.sort((b, a) => a.name.localeCompare(b.name));
+        setProjects(projects);
+      }
+      closeModal();
+    } catch (error) {
+      if (error?.response?.data) throw error.response.data;
+      throw error;
+    }
+  };
+
+  const handleCreatingProject = async () => {
+    try {
+      await toast.promise(postProject(), {
+        pending: "Creating project",
+        success: "Project created",
+        error: {
+          render({ data }) {
+            return data?.message || data?.error || "Error creating project";
+          },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className={styles.fullscreenModal}>
@@ -38,7 +75,9 @@ export default function NewProjectModal({ closeModal }) {
           className={styles.textInput}
         />
         <div className={styles.buttonGroup}>
-          <button className={styles.confirmButton}>Create</button>
+          <button className={styles.confirmButton} onClick={() => handleCreatingProject()}>
+            Create
+          </button>
           <button className={styles.cancelButton} onClick={() => closeModal()}>
             Cancel
           </button>
