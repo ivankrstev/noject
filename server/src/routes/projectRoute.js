@@ -5,6 +5,7 @@ import {
   deleteProject,
   getProjects,
   getOneProject,
+  updateProject,
 } from "../controllers/projectController.js";
 import verifyProjectOwnership from "../middlewares/verifyProjectOwnership.js";
 
@@ -13,6 +14,7 @@ const router = Router();
 router.get("/all", authenticateUser, getProjects);
 router.get("/:p_id", authenticateUser, getOneProject);
 router.post("/create", authenticateUser, createProject);
-router.delete("/delete/:p_id", authenticateUser, verifyProjectOwnership, deleteProject);
+router.put("/:p_id", authenticateUser, verifyProjectOwnership, updateProject);
+router.delete("/:p_id", authenticateUser, verifyProjectOwnership, deleteProject);
 
 export default router;
