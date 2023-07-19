@@ -49,6 +49,21 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const response = await api.delete("/project/" + modifyProjectId);
+      console.log(response);
+      toast.success("Project deleted");
+      const indexToDelete = projects.findIndex((item) => item.p_id === parseInt(modifyProjectId));
+      projects.splice(indexToDelete, 1);
+      setProjects([...projects]);
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data || error.message);
+    }
+  };
+
   return (
     <div className={styles.fullscreenModal}>
       <motion.div
@@ -72,7 +87,9 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
           <button className={styles.confirmButton} onClick={() => handleUpdate()}>
             Update
           </button>
-          <button className={styles.deleteButton}>Delete</button>
+          <button className={styles.deleteButton} onClick={() => handleDelete()}>
+            Delete
+          </button>
           <button className={styles.cancelButton} onClick={() => closeModal()}>
             Close
           </button>
