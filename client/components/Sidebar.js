@@ -119,7 +119,12 @@ export default function Sidebar(props) {
       </AnimatePresence>
       <AnimatePresence>
         {showModifyProjectModal && (
-          <ModifyProjectModal closeModal={() => setShowModifyProjectModal(false)} />
+          <ModifyProjectModal
+            modifyProjectId={modifyProjectId}
+            projects={projects}
+            setProjects={setProjects}
+            closeModal={() => setShowModifyProjectModal(false)}
+          />
         )}
       </AnimatePresence>
     </div>
