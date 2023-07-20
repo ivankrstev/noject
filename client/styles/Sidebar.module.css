@@ -63,6 +63,10 @@
   border: 0;
   outline: 0;
 }
+.projectLoaderWrapper {
+  display: flex;
+  justify-content: space-between;
+}
 .newProjectBtn {
   color: #fff;
   display: flex;
@@ -92,7 +96,6 @@
 }
 .sidebarProjectItem:hover {
   background-color: rgba(30, 30, 30, 0.7);
-  /* background-color: #18426e; */
 }
 .sidebarProjectItem p {
   font-size: 1em;

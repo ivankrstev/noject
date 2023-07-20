@@ -8,19 +8,23 @@ import api from "@/utils/api";
 import NewProjectModal from "@/components/NewProjectModal";
 import ModifyProjectModal from "./ModifyProjectModal";
 import { AnimatePresence } from "framer-motion";
+import Skeleton from "react-loading-skeleton";
+import { toast } from "react-toastify";
 
 export default function Sidebar(props) {
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showModifyProjectModal, setShowModifyProjectModal] = useState(false);
   const [modifyProjectId, setModifyProjectId] = useState(null);
   const [projects, setProjects] = useState([]);
+  const [showLoader, setShowLoader] = useState();
 
   const getProjects = async (order_by_type) => {
     try {
       const response = await api.get("/project/all?order_by_type=" + order_by_type);
-      console.log(response.data);
+      setShowLoader(true);
       setProjects(response.data);
     } catch (error) {
+      toast.error(error.response?.data?.error || error.message || "Error fetching projects");
       console.error(error);
     }
   };
@@ -73,8 +77,29 @@ export default function Sidebar(props) {
         </div>
       </div>
 
-      {projects.length === 0 ? (
-        <h4>No Projects Created</h4>
+      {!showLoader ? (
+        <div className={styles.projectLoaderWrapper}>
+          <Skeleton
+            count={5}
+            rectangle
+            width='23px'
+            height='29.5px'
+            baseColor='#B6B6B4'
+            borderRadius='5px'
+            style={{ margin: "0.25em 0" }}
+          />
+          <Skeleton
+            count={5}
+            rectangle
+            width='213px'
+            height='29.5px'
+            baseColor='#B6B6B4'
+            borderRadius='5px'
+            style={{ margin: "0.25em 0" }}
+          />
+        </div>
+      ) : projects.length === 0 ? (
+        <h5 style={{ margin: "0.5em 0 0.8em 0" }}>No Projects Created</h5>
       ) : (
         projects.map((project) => (
           <div
@@ -94,7 +119,6 @@ export default function Sidebar(props) {
                 e.stopPropagation();
                 setModifyProjectId(e.currentTarget.parentElement.id);
                 setShowModifyProjectModal(true);
-                console.log("btn clicked");
               }}
               className={styles.projectModifyBtn}>
               <Image src={SettingsIcon} width={21} alt='Project Settings' />
