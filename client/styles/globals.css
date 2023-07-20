@@ -63,3 +63,10 @@ html {
     opacity: 1;
   }
 }
+@media only screen and (max-width: 499px) {
+  .Toastify__toast-container {
+    max-width: 90vw !important;
+    margin-left: auto !important;
+    right: 0 !important;
+  }
+}
