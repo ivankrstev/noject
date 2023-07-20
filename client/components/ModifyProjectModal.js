@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/utils/api";
 import { toast } from "react-toastify";
+import moment from "moment/moment";
 
 export default function ModifyProjectModal({ closeModal, modifyProjectId, projects, setProjects }) {
   const [projectData, setProjectData] = useState();
@@ -72,7 +73,11 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
         exit={{ opacity: 0, scale: 0.7 }}
         transition={{ ease: "easeInOut", duration: 0.3 }}
         className={styles.modalContent}>
-        <h3 className={styles.modalHeading}>Change the project name</h3>
+        <h3 className={styles.modalHeading}>Project Details: Id {modifyProjectId}</h3>
+        <h5>
+          Creation date:{" "}
+          {projectData ? moment(projectData.creation_date).format("Do MMMM YYYY, HH:mm:ss") : ""}
+        </h5>
         <label htmlFor='textInput' className={styles.textLabel}>
           Current project name:
         </label>
