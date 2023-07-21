@@ -27,7 +27,6 @@
 .textInput {
   width: 100%;
   font-size: 0.9em;
-  padding: 10px;
   padding: 0.8em 0;
   padding-left: 0.8em;
   margin-top: 0.2em;
@@ -39,6 +38,21 @@
 }
 .textInput:focus {
   box-shadow: inset 0 0 0 1px rgb(0 128 255 / 30%), 0 0 0 3px rgb(0 128 255 / 30%);
+}
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 1em 0;
+}
+.searchInputWrapper input {
+  margin: 0;
+  padding-left: 2.6em;
+}
+.searchIcon {
+  position: absolute;
+  left: 0.75em;
+  filter: var(--toggle-button);
 }
 .buttonGroup {
   display: flex;
