@@ -70,7 +70,7 @@
   bottom: 3px;
   background: none;
   border: 0;
-  filter: var(--toggle-password);
+  filter: var(--toggle-button);
 }
 .btnSubmit {
   min-width: 30%;

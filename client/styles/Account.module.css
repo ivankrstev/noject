@@ -122,7 +122,7 @@
   text-align: center;
   border: 0;
   padding: 0.05em;
-  filter: var(--toggle-password);
+  filter: var(--toggle-button);
 }
 .qrCodeImg {
   margin-top: 0.7em;
