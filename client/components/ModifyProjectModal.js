@@ -7,19 +7,20 @@ import moment from "moment/moment";
 
 export default function ModifyProjectModal({ closeModal, modifyProjectId, projects, setProjects }) {
   const [projectData, setProjectData] = useState();
-  const handleCloseOnKey = (e) => e.code === "Escape" && closeModal();
+  const [newProjectName, setNewProjectName] = useState();
 
   const getProjectData = async (projectId) => {
     try {
       const response = await api.get("/project/" + projectId);
       setProjectData(response.data);
     } catch (error) {
-      toast.error("Error getting project");
       console.error(error);
+      toast.error("Error getting project");
     }
   };
 
   useEffect(() => {
+    const handleCloseOnKey = (e) => e.code === "Escape" && closeModal();
     getProjectData(modifyProjectId);
     document.documentElement.style.overflowY = "hidden";
     document.addEventListener("keydown", handleCloseOnKey);
@@ -29,9 +30,18 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
     };
   }, []);
 
+  useEffect(() => {
+    const updateTimeout = setTimeout(() => {
+      if (newProjectName || newProjectName !== projectData?.name) {
+        handleUpdate();
+        projectData.name = newProjectName;
+      }
+    }, 1000);
+    return () => clearTimeout(updateTimeout);
+  }, [newProjectName]);
+
   const handleUpdate = async () => {
     try {
-      const newProjectName = document.getElementById("changeProjectNameInput").value;
       if (newProjectName === projectData?.name) return;
       const response = await api.put("/project/" + modifyProjectId, { name: newProjectName });
       const indexToUpdate = projects.findIndex((item) => item.p_id === parseInt(modifyProjectId));
@@ -42,18 +52,16 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
       else if (orderProjectsSavedType === "name_z-a")
         projects.sort((b, a) => a.name.localeCompare(b.name));
       setProjects([...projects]);
-      toast.success("Project updated");
-      closeModal();
+      toast.success("Project name updated");
     } catch (error) {
-      toast.error(error?.response?.data || error.message);
       console.error(error);
+      toast.error(error?.response?.data.error || error.message);
     }
   };
 
   const handleDelete = async () => {
     try {
-      const response = await api.delete("/project/" + modifyProjectId);
-      console.log(response);
+      await api.delete("/project/" + modifyProjectId);
       toast.success("Project deleted");
       const indexToDelete = projects.findIndex((item) => item.p_id === parseInt(modifyProjectId));
       projects.splice(indexToDelete, 1);
@@ -61,7 +69,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
       closeModal();
     } catch (error) {
       console.error(error);
-      toast.error(error?.response?.data || error.message);
+      toast.error(error?.response?.data.error || error.message);
     }
   };
 
@@ -79,23 +87,24 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
           {projectData ? moment(projectData.creation_date).format("Do MMMM YYYY, HH:mm:ss") : ""}
         </h5>
         <label htmlFor='textInput' className={styles.textLabel}>
-          Current project name:
+          Change project name:
         </label>
         <input
-          id='changeProjectNameInput'
           type='text'
           defaultValue={projectData ? projectData.name : ""}
           placeholder='Enter the project name'
           className={styles.textInput}
+          onChange={(e) => setNewProjectName(e.target.value)}
+          title='The project name is automatically updated'
         />
         <div className={styles.buttonGroup}>
-          <button className={styles.confirmButton} onClick={() => handleUpdate()}>
-            Update
-          </button>
-          <button className={styles.deleteButton} onClick={() => handleDelete()}>
+          <button
+            className={styles.deleteButton}
+            onClick={() => handleDelete()}
+            title='Delete project'>
             Delete
           </button>
-          <button className={styles.cancelButton} onClick={() => closeModal()}>
+          <button className={styles.cancelButton} onClick={() => closeModal()} title='Close modal'>
             Close
           </button>
         </div>
