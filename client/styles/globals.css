@@ -51,6 +51,11 @@ button,
 button * {
   cursor: pointer;
 }
+input[type="search"]::-webkit-search-cancel-button {
+  position: relative;
+  left: -3px;
+  cursor: pointer;
+}
 html {
   font-family: var(--font-mono);
 }
