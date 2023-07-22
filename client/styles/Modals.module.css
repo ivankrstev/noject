@@ -20,6 +20,9 @@
   color: var(--font-color);
   margin-bottom: 0.6em;
 }
+.modalHeading + h5 {
+  color: var(--font-color);
+}
 .textLabel {
   color: var(--font-color);
   font-size: 0.9em;
@@ -60,7 +63,8 @@
 }
 .confirmButton,
 .cancelButton,
-.deleteButton {
+.deleteButton,
+.collaboratorModalBtn {
   font-size: 1em;
   padding: 0.625em 1.25em;
   margin-left: 10px;
@@ -79,9 +83,27 @@
   border: 1px solid;
   background-color: transparent;
 }
+.collaboratorModalBtn {
+  width: fit-content;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  background-color: #0570eb;
+  padding: 0.4em 0.6em;
+}
+.collaboratorModalBtn img {
+  margin-left: 0.5em;
+}
+.deleteButton img,
+.collaboratorModalBtn img {
+  filter: invert(100%) sepia(93%) saturate(0%) hue-rotate(356deg) brightness(106%) contrast(101%);
+}
 @media only screen and (max-width: 350px) {
   .modalHeading {
-    font-size: 1em;
+    font-size: 1em !important;
+  }
+  .modalHeading + h5 {
+    font-size: 0.8em;
   }
 }
 @media only screen and (max-width: 499px) {
@@ -99,5 +121,17 @@
   .cancelButton,
   .deleteButton {
     padding: 0.51em 0.9em;
+  }
+  .collaboratorModalBtn {
+    font-size: 0.8em;
+  }
+  .collaboratorModalBtn img {
+    display: none;
+  }
+}
+@media only screen and (max-width: 310px) {
+  .modalContent {
+    width: 95%;
+    padding: 20px 10px;
   }
 }

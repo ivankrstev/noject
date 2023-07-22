@@ -1,13 +1,18 @@
 import styles from "@/styles/Modals.module.css";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 import api from "@/utils/api";
 import { toast } from "react-toastify";
 import moment from "moment/moment";
+import ChangeCollaboratorsModal from "./ChangeCollaboratorsModal";
+import CollaboratorsIcon from "@/public/icons/group_users.svg";
+import DeleteIcon from "@/public/icons/delete.svg";
 
 export default function ModifyProjectModal({ closeModal, modifyProjectId, projects, setProjects }) {
   const [projectData, setProjectData] = useState();
   const [newProjectName, setNewProjectName] = useState();
+  const [showCollaboratorsModal, setCollaboratorsModal] = useState(false);
 
   const getProjectData = async (projectId) => {
     try {
@@ -32,7 +37,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
 
   useEffect(() => {
     const updateTimeout = setTimeout(() => {
-      if (newProjectName || newProjectName !== projectData?.name) {
+      if (newProjectName !== projectData?.name) {
         handleUpdate();
         projectData.name = newProjectName;
       }
@@ -42,7 +47,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
 
   const handleUpdate = async () => {
     try {
-      if (newProjectName === projectData?.name) return;
+      if (!newProjectName || newProjectName === "" || newProjectName === projectData?.name) return;
       const response = await api.put("/project/" + modifyProjectId, { name: newProjectName });
       const indexToUpdate = projects.findIndex((item) => item.p_id === parseInt(modifyProjectId));
       if (indexToUpdate !== -1) projects[indexToUpdate].name = response.data.name;
@@ -99,16 +104,32 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
         />
         <div className={styles.buttonGroup}>
           <button
+            className={styles.collaboratorModalBtn}
+            onClick={() => setCollaboratorsModal(true)}
+            title='Modify project collaborators'>
+            Project <br />
+            collaborators
+            <Image src={CollaboratorsIcon} alt='Group users' width={30} />
+          </button>
+          <button
             className={styles.deleteButton}
             onClick={() => handleDelete()}
             title='Delete project'>
-            Delete
+            <Image src={DeleteIcon} alt='Delete' width={25} />
           </button>
           <button className={styles.cancelButton} onClick={() => closeModal()} title='Close modal'>
             Close
           </button>
         </div>
       </motion.div>
+      <AnimatePresence>
+        {showCollaboratorsModal && (
+          <ChangeCollaboratorsModal
+            modifyProjectId={modifyProjectId}
+            closeCollaboratorModal={() => setCollaboratorsModal(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
