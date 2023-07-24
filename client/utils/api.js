@@ -19,21 +19,15 @@ api.interceptors.request.use(
     if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },
-  (error) => {
-    console.log(error);
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
     // Added excluding for specific routes(in order to use only the api function for requests)
     const isExcluded = excludedRoutes.some((route) => error.config.url.startsWith(route));
     if (isExcluded) return Promise.reject(error);
-    console.log("after isExcluded");
     const originalRequest = error.config;
     if (!error.response) return Promise.reject(error);
     if (error.response.status === 401 && !originalRequest._retry) {
@@ -50,7 +44,6 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (e) {
-        console.error("Api Error: ", e);
         if (e.response.status === 401) e.logInAgain = true;
         return Promise.reject(e);
       }
