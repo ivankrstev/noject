@@ -46,7 +46,7 @@ app.use(
 
 app.use(authRouter);
 app.use("/account", accountRouter);
-// app.use("/project", projectRouter);
+app.use("/project", projectRouter);
 
 /* Error handler middleware */
 app.use((err, req, res, next) => {
