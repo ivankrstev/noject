@@ -1,6 +1,6 @@
 import styles from "@/styles/Modals.module.css";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SearchIcon from "@/public/icons/search.svg";
 import AddCollaboratorIcon from "@/public/icons/person_add_FILL1.svg";
@@ -19,12 +19,25 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
         userToAdd: u_id,
         p_id: modifyProjectId,
       });
-      setCollaborators([...collaborators, response.data.addedUser]);
+      setCollaborators([...collaborators, response.data]);
       toast.success("Collaborator added");
     } catch (error) {
       toast.error(error?.response?.data.error || error.message);
     }
   };
+
+  const getCollaborators = async () => {
+    try {
+      const response = await api.get("/project-collaborators/" + modifyProjectId);
+      if (response.data.length !== 0) setCollaborators(response.data);
+    } catch (error) {
+      toast.error(error?.response?.data.error || error.message);
+    }
+  };
+
+  useEffect(() => {
+    getCollaborators();
+  }, []);
 
   useEffect(() => {
     let searchTimeout;
@@ -73,16 +86,22 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
             ))}
           </div>
         </div>
-        <div>
-          <h5>Current collaborators:</h5>
-          <div className={styles.collaboratorsList}>
-            <div className={styles.collaboratorsItem}>
-              <p>ivankrstev246hehehehehehehehe@gmail.com</p>
-              <button title='Remove collaborator'>
-                <Image src={RemoveCollaboratorIcon} alt='Remove User' width={22} />
-              </button>
-            </div>
-          </div>
+        <div className={styles.collaboratorsList}>
+          {collaborators.length === 0 ? (
+            <h5>No collaborators.</h5>
+          ) : (
+            <Fragment>
+              <h5>Current collaborators:</h5>
+              {collaborators.map((e) => (
+                <div key={e.u_id} className={styles.collaboratorsItem}>
+                  <p>{e.u_id}</p>
+                  <button id={e.u_id} title='Remove collaborator'>
+                    <Image src={RemoveCollaboratorIcon} alt='Remove User' width={22} />
+                  </button>
+                </div>
+              ))}
+            </Fragment>
+          )}
         </div>
         <div className={styles.buttonGroup}>
           <button
