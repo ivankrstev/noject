@@ -6,11 +6,25 @@ import SearchIcon from "@/public/icons/search.svg";
 import AddCollaboratorIcon from "@/public/icons/person_add_FILL1.svg";
 import RemoveCollaboratorIcon from "@/public/icons/person_remove_fill1.svg";
 import api from "@/utils/api";
+import { toast } from "react-toastify";
 
 export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modifyProjectId }) {
-  const [collaborators, setCollaborators] = useState();
+  const [collaborators, setCollaborators] = useState([]);
   const [searchData, setSearchData] = useState([]);
   const [search, setSearch] = useState(null);
+
+  const addCollaborator = async (u_id) => {
+    try {
+      const response = await api.post("/project-collaborators/add", {
+        userToAdd: u_id,
+        p_id: modifyProjectId,
+      });
+      setCollaborators([...collaborators, response.data.addedUser]);
+      toast.success("Collaborator added");
+    } catch (error) {
+      toast.error(error?.response?.data.error || error.message);
+    }
+  };
 
   useEffect(() => {
     let searchTimeout;
@@ -48,7 +62,10 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
           <div className={styles.searchList}>
             {searchData.map((e) => (
               <div key={e.u_id} className={styles.searchListItem} title='Searched user'>
-                <button title='Add collaborator'>
+                <button
+                  id={e.u_id}
+                  onClick={(e) => addCollaborator(e.currentTarget.id)}
+                  title='Add collaborator'>
                   <Image src={AddCollaboratorIcon} alt='Add user' width={22} />
                 </button>
                 <p>{e.u_id}</p>
