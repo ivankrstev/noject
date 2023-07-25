@@ -12,8 +12,10 @@
 }
 .modalContent {
   width: 400px;
+  max-width: 90%;
   padding: 20px;
   background-color: var(--form-background);
+  color: var(--font-color);
   border-radius: 5px;
 }
 .modalHeading {
@@ -46,7 +48,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  margin: 1em 0;
+  margin: 1em 0 0.7em 0;
+  z-index: 1000;
 }
 .searchInputWrapper input {
   margin: 0;
@@ -56,6 +59,100 @@
   position: absolute;
   left: 0.75em;
   filter: var(--toggle-button);
+}
+.searchInputWrapper input:hover .searchInputWrapper input::-webkit-search-cancel-button {
+  display: block;
+}
+/* Only show search results if search input is focused */
+/* .searchInputWrapper input:focus + .searchList {
+  display: block;
+} */
+.searchList {
+  display: block;
+  width: 100%;
+  position: absolute;
+  top: 42px;
+  background-color: var(--background);
+  max-height: 190px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 5px;
+}
+.searchListItem {
+  display: flex;
+  align-items: center;
+  padding: 0.25em 0.3em;
+  cursor: pointer;
+  border-bottom: 1px solid var(--font-color);
+  min-width: 100%;
+  width: max-content;
+}
+.searchListItem:last-child {
+  border-bottom: 0;
+}
+.searchListItem p {
+  font-size: 0.9em;
+  transition: all 0.2s ease;
+}
+.searchListItem button {
+  background-color: #66bb6a;
+  margin-right: 0 0.2em;
+  padding: 0 0.25em;
+  border: 0;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+.collaboratorsList {
+  max-height: 155px;
+  overflow: auto;
+  margin: 0.2em 0 0.75em 0;
+  scrollbar-width: thin;
+  scrollbar-color: #0570eb #dfe9eb;
+}
+.collaboratorsItem {
+  display: flex;
+  margin-bottom: 0.3em;
+  font-size: 0.95em;
+}
+.collaboratorsItem button {
+  background-color: #e63946;
+  margin-left: 0.4em;
+  padding: 0 0.3em;
+  border: 0;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+.searchListItem button:hover,
+.collaboratorsItem button:hover {
+  transform: scale(0.9);
+}
+.searchListItem img,
+.collaboratorsItem img {
+  z-index: 1;
+  filter: invert(100%) sepia(93%) saturate(0%) hue-rotate(356deg) brightness(106%) contrast(101%);
+}
+.searchList::-webkit-scrollbar,
+.collaboratorsList::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.searchList::-webkit-scrollbar-track,
+.collaboratorsList::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background-color: #d2d2d2;
+}
+.searchList::-webkit-scrollbar-thumb,
+.collaboratorsList::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #0570eb;
+}
+.searchList::-webkit-scrollbar-track:hover,
+.collaboratorsList::-webkit-scrollbar-track:hover {
+  background-color: #a0a0a0;
+}
+.searchList::-webkit-scrollbar-thumb:hover,
+.collaboratorsList::-webkit-scrollbar-thumb:hover {
+  background-color: #1553df;
 }
 .buttonGroup {
   display: flex;
