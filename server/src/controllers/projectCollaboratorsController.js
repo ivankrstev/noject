@@ -18,7 +18,7 @@ export const addCollaborator = async (req, res) => {
       p_id,
       userToAdd,
     ]);
-    return res.status(201).send({ p_id, addedUser: userToAdd });
+    return res.status(201).send({ u_id: userToAdd });
   } catch (error) {
     if (error.code === "ER_NO_REFERENCED_ROW_2")
       return res.status(404).json({ error: "Collaborator not found" });
