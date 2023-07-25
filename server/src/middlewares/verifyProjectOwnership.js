@@ -2,8 +2,8 @@ import db from "../../db/index.js";
 
 export default async function verifyProjectOwnership(req, res, next) {
   try {
-    const { p_id } = req.params;
-    console.log(p_id);
+    let { p_id } = req.params;
+    if (!p_id) p_id = req.body.p_id;
     if (!p_id || p_id + "" === "")
       return res.status(400).json({ error: "Project id(p_id) missing" });
     const user = req.user;
