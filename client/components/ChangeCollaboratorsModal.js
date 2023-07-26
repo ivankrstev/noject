@@ -59,10 +59,12 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
     else if (search)
       searchTimeout = setTimeout(async () => {
         try {
-          const response = await api.get("/project-collaborators/search?q=" + search);
+          const response = await api.get(
+            "/project-collaborators/search/" + modifyProjectId + "?q=" + search
+          );
           setSearchData(response.data);
         } catch (error) {
-          console.error(error);
+          toast.error(error?.response?.data.error || error.message);
         }
       }, 1000);
     return () => searchTimeout && clearTimeout(searchTimeout);
