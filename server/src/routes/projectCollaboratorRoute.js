@@ -10,7 +10,7 @@ import verifyProjectOwnership from "../middlewares/verifyProjectOwnership.js";
 
 const router = Router();
 
-router.get("/search", authenticateUser, searchUsers);
+router.get("/search/:p_id", authenticateUser, verifyProjectOwnership, searchUsers);
 router.post("/add", authenticateUser, verifyProjectOwnership, addCollaborator);
 router.get("/:p_id", authenticateUser, verifyProjectOwnership, getCollaborators);
 router.delete("/:p_id", authenticateUser, verifyProjectOwnership, removeCollaborator);

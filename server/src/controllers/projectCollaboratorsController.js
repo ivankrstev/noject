@@ -2,9 +2,13 @@ import db from "../../db/index.js";
 
 export const searchUsers = async (req, res) => {
   try {
+    const { p_id } = req.params;
     const { q } = req.query;
     if (!q || q === "") return res.status(400).json({ error: "Query(q) is missing" });
-    const [rows] = await db.execute(`SELECT u_id FROM users WHERE u_id LIKE CONCAT(? , "%")`, [q]);
+    const [rows] = await db.execute(
+      "SELECT U.u_id FROM users U LEFT JOIN project_collaborators PC ON U.u_id = PC.u_id AND PC.p_id = ? WHERE PC.u_id IS NULL AND U.u_id LIKE CONCAT(?, '%')",
+      [p_id, q]
+    );
     return res.status(200).json(rows);
   } catch (error) {
     return res.status(500).json({ error: "Oops! Something went wrong" });
