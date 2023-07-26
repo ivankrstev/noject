@@ -26,6 +26,20 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
     }
   };
 
+  const removeCollaborator = async (u_id) => {
+    try {
+      const response = await api.delete(
+        "/project-collaborators/" + modifyProjectId + "?u_id=" + u_id
+      );
+      toast.success("Collaborator removed");
+      const indexToDelete = collaborators.findIndex((item) => item.u_id === response.data.u_id);
+      collaborators.splice(indexToDelete, 1);
+      setCollaborators([...collaborators]);
+    } catch (error) {
+      toast.error(error?.response?.data.error || error.message);
+    }
+  };
+
   const getCollaborators = async () => {
     try {
       const response = await api.get("/project-collaborators/" + modifyProjectId);
@@ -95,7 +109,10 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
               {collaborators.map((e) => (
                 <div key={e.u_id} className={styles.collaboratorsItem}>
                   <p>{e.u_id}</p>
-                  <button id={e.u_id} title='Remove collaborator'>
+                  <button
+                    id={e.u_id}
+                    onClick={(e) => removeCollaborator(e.currentTarget.id)}
+                    title='Remove collaborator'>
                     <Image src={RemoveCollaboratorIcon} alt='Remove User' width={22} />
                   </button>
                 </div>
