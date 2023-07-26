@@ -39,3 +39,20 @@ export const getCollaborators = async (req, res) => {
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
 };
+
+export const removeCollaborator = async (req, res) => {
+  try {
+    const { p_id } = req.params;
+    const { u_id } = req.query;
+    if (!u_id || u_id === "") return;
+    const rows = await db.execute("DELETE FROM project_collaborators WHERE p_id = ? AND u_id = ?", [
+      p_id,
+      u_id,
+    ]);
+    if (rows[0].affectedRows === 0)
+      return res.status(404).json({ error: "Collaborator not found" });
+    return res.status(200).json({ u_id });
+  } catch (error) {
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
