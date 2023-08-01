@@ -16,6 +16,7 @@ export default function Sidebar(props) {
   const [showModifyProjectModal, setShowModifyProjectModal] = useState(false);
   const [modifyProjectId, setModifyProjectId] = useState(null);
   const [projects, setProjects] = useState([]);
+  const [sharedProjects, setSharedProjects] = useState([]);
   const [showLoader, setShowLoader] = useState();
 
   const getProjects = async (order_by_type) => {
@@ -29,12 +30,22 @@ export default function Sidebar(props) {
     }
   };
 
+  const getSharedProjects = async () => {
+    try {
+      const response = await api.get("/project/shared");
+      setSharedProjects([...response.data]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     const orderProjectsSelect = document.getElementById("orderProjectsSelect");
     if (!localStorage.getItem("OrderProjects")) localStorage.setItem("OrderProjects", "name_a-z");
     const orderProjectsSavedType = localStorage.getItem("OrderProjects");
     orderProjectsSelect.value = orderProjectsSavedType;
     getProjects(orderProjectsSavedType);
+    getSharedProjects();
   }, []);
 
   const orderProjects = (type) => {
@@ -132,6 +143,21 @@ export default function Sidebar(props) {
         Create Project
       </button>
       <h5>Shared projects</h5>
+      {sharedProjects.map((project) => (
+        <div
+          key={project.p_id}
+          id={project.p_id}
+          className={styles.sidebarProjectItem}
+          title={project.name}
+          onClick={() => console.log("Project clicked")}>
+          <span
+            style={{ color: project.color, backgroundColor: project.background_color }}
+            className={styles.sidebarProjectSquare}>
+            {Array.from(project.name)[0].toUpperCase()}
+          </span>
+          <p>{project.name}</p>
+        </div>
+      ))}
       <AnimatePresence>
         {showNewProjectModal && (
           <NewProjectModal
