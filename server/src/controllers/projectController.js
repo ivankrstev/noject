@@ -88,3 +88,16 @@ export const deleteProject = async (req, res) => {
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
 };
+
+export const getSharedProjects = async (req, res) => {
+  try {
+    const user = req.user;
+    const [rows] = await db.execute(
+      "SELECT P.p_id, P.name, P.color, P.background_color FROM projects P INNER JOIN project_collaborators PC ON PC.p_id = P.p_id AND PC.u_id = ?",
+      [user]
+    );
+    res.status(200).json(rows);
+  } catch (error) {
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
