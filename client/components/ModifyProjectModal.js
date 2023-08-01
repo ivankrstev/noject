@@ -89,7 +89,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
         <h3 className={styles.modalHeading}>Project Details: Id {modifyProjectId}</h3>
         <h5>
           Creation date:{" "}
-          {projectData ? moment(projectData.creation_date).format("Do MMMM YYYY, HH:mm:ss") : ""}
+          {projectData ? moment(projectData.creation_date).format("Do MMMM YYYY, HH:mm") : ""}
         </h5>
         <label htmlFor='textInput' className={styles.textLabel}>
           Change project name:
@@ -102,6 +102,12 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
           onChange={(e) => setNewProjectName(e.target.value)}
           title='The project name is automatically updated'
         />
+        <div className={styles.shareProjectWrapper}>
+          <label className={styles.shareLinkSwitch}>
+            <input type='checkbox' />
+            <span className={styles.switchSlider}></span>
+          </label>
+        </div>
         <div className={styles.buttonGroup}>
           <button
             className={styles.collaboratorModalBtn}
