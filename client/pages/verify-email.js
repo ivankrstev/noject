@@ -3,7 +3,6 @@ import { Fragment, useEffect } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { toast } from "react-toastify";
-import api from "@/utils/api";
 
 export default function VerifyEmail() {
   const router = useRouter();
@@ -11,7 +10,9 @@ export default function VerifyEmail() {
 
   const verifyToken = async () => {
     try {
-      const response = await api.get(`/verify-email?token=${token}&email=${email}`);
+      const response = await axios.get(
+        process.env.NEXT_PUBLIC_SERVER_URL + `/verify-email?token=${token}&email=${email}`
+      );
       console.log(response);
       toast.success(response.data.message);
       router.push("/account");

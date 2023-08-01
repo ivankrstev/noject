@@ -21,7 +21,7 @@ const handleRegister = async (data) => {
     };
     // Just a short delay for showing the pending message for a moment if the request is quick
     await new Promise((resolve) => setTimeout(resolve, 400));
-    const response = await axios.post("http://localhost:5000/register/", body);
+    const response = await axios.post(process.env.NEXT_PUBLIC_SERVER_URL + "/register/", body);
     return response.data;
   } catch (error) {
     if (error.response) throw error.response.data;

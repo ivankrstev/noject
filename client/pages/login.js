@@ -18,7 +18,7 @@ const handleLogin = async (body, setTfaToken, setShow2FA) => {
     await new Promise((resolve) => setTimeout(resolve, 400));
     if (!body.email) body.email = document.querySelector("#email-login").value;
     if (!body.password) body.password = document.querySelector("#password-login").value;
-    const response = await axios.post("http://localhost:5000/login/", body, {
+    const response = await axios.post(process.env.NEXT_PUBLIC_SERVER_URL + "/login/", body, {
       withCredentials: true,
     });
     setAccessToken(response.data.accessToken);
@@ -39,7 +39,7 @@ const handleTFAVerify = async (body, setShow2FA) => {
   try {
     // Just a short delay for showing the pending message for a moment if the request is quick
     await new Promise((resolve) => setTimeout(resolve, 400));
-    const response = await axios.post("http://localhost:5000/tfa/verify/", body, {
+    const response = await axios.post(process.env.NEXT_PUBLIC_SERVER_URL + "/tfa/verify/", body, {
       withCredentials: true,
     });
     setAccessToken(response.data.accessToken);
