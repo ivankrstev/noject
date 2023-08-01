@@ -60,13 +60,18 @@
   left: 0.75em;
   filter: var(--toggle-button);
 }
-.searchInputWrapper input:hover .searchInputWrapper input::-webkit-search-cancel-button {
-  display: block;
+.searchInputWrapper input::-webkit-search-cancel-button {
+  display: none;
 }
-/* Only show search results if search input is focused */
-/* .searchInputWrapper input:focus + .searchList {
-  display: block;
-} */
+.cancelSearchBtn {
+  background-color: transparent;
+  border: 0;
+  position: absolute;
+  display: flex;
+  right: 0.75em;
+  cursor: pointer;
+  filter: var(--toggle-button);
+}
 .searchList {
   display: block;
   width: 100%;

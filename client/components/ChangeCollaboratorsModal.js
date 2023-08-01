@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Fragment, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SearchIcon from "@/public/icons/search.svg";
+import CloseIcon from "@/public/icons/close.svg";
 import AddCollaboratorIcon from "@/public/icons/person_add_FILL1.svg";
 import RemoveCollaboratorIcon from "@/public/icons/person_remove_fill1.svg";
 import api from "@/utils/api";
@@ -83,11 +84,22 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
         <div className={styles.searchInputWrapper}>
           <Image className={styles.searchIcon} src={SearchIcon} alt='Search' width={20} />
           <input
+            id='search-input-collaborators'
             className={styles.textInput}
             placeholder='Search users'
             type='search'
             onChange={(e) => setSearch(e.target.value)}
           />
+          {searchData.length !== 0 && (
+            <button
+              className={styles.cancelSearchBtn}
+              onClick={() => {
+                setSearchData([]);
+                document.querySelector("#search-input-collaborators").value = "";
+              }}>
+              <Image src={CloseIcon} alt='Search' width={20} />
+            </button>
+          )}
           <div className={styles.searchList}>
             {searchData.map((e) => (
               <div key={e.u_id} className={styles.searchListItem} title='Searched user'>
