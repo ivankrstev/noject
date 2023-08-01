@@ -1,16 +1,10 @@
-import { setSocketId } from "./connectedUsers.js";
+import socketStore from "./connectedUsers.js";
 
 const handleSocketIO = (io) => {
   io.on("connection", (socket) => {
-    setSocketId(socket.user, socket.id);
-    console.log(socket.id);
-    // Event listeners
-    // socket.on("event", (data) => {
-    //   // Handle the event
-    // });
-
-    // Emit events
-    // socket.emit("event", data);
+    socket.on("disconnect", () => {
+      socketStore.removeSocketByEmail(socket.user, socket.id);
+    });
   });
 };
 
