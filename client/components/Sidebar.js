@@ -10,6 +10,7 @@ import ModifyProjectModal from "./ModifyProjectModal";
 import { AnimatePresence } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
+import SocketClient from "@/utils/socket";
 
 export default function Sidebar(props) {
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
@@ -46,6 +47,9 @@ export default function Sidebar(props) {
     orderProjectsSelect.value = orderProjectsSavedType;
     getProjects(orderProjectsSavedType);
     getSharedProjects();
+    SocketClient.getSocket().on("sharedproject:add", (data) => {
+      setSharedProjects([...sharedProjects, data]);
+    });
   }, []);
 
   const orderProjects = (type) => {
