@@ -7,7 +7,7 @@ import visibilityOnIcon from "@/public/icons/visibility-on.svg";
 import visibilityOffIcon from "@/public/icons/visibility-off.svg";
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { setAccessToken } from "@/utils/api";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -16,6 +16,8 @@ const handleLogin = async (body, setTfaToken, setShow2FA) => {
   try {
     // Just a short delay for showing the pending message for a moment if the request is quick
     await new Promise((resolve) => setTimeout(resolve, 400));
+    if (!body.email) body.email = document.querySelector("#email-login").value;
+    if (!body.password) body.password = document.querySelector("#password-login").value;
     const response = await axios.post("http://localhost:5000/login/", body, {
       withCredentials: true,
     });
@@ -60,9 +62,7 @@ export default function Login() {
   const [password, setPassword] = useState();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!show2FA) setPassword(null);
-  }, [show2FA]);
+  useEffect(() => !show2FA && setPassword(null), [show2FA]);
 
   const postLogin = async () => {
     try {
