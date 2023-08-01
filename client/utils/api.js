@@ -4,18 +4,15 @@ export const setAccessToken = (token) => {
   accessToken = token;
 };
 
+// Create api interceptor only for authenticated routes
 const api = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000",
 });
 
 let accessToken = "";
 
-const excludedRoutes = ["/verify-email", "/login", "/signup", "/tfa/verify", "/refresh-token"];
-
 api.interceptors.request.use(
   (config) => {
-    const isExcluded = excludedRoutes.some((route) => config.url.startsWith(route));
-    if (isExcluded) return config;
     if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },
@@ -25,9 +22,6 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // Added excluding for specific routes(in order to use only the api function for requests)
-    const isExcluded = excludedRoutes.some((route) => error.config.url.startsWith(route));
-    if (isExcluded) return Promise.reject(error);
     const originalRequest = error.config;
     if (!error.response) return Promise.reject(error);
     if (error.response.status === 401 && !originalRequest._retry) {
@@ -44,7 +38,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (e) {
-        if (e.response.status === 401) e.logInAgain = true;
+        if (e.response?.status === 401) e.logInAgain = true;
         return Promise.reject(e);
       }
     }
