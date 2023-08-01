@@ -1,4 +1,5 @@
 import db from "../../db/index.js";
+import socketStore from "../sockets/connectedUsers.js";
 
 export const searchUsers = async (req, res) => {
   try {
@@ -25,6 +26,11 @@ export const addCollaborator = async (req, res) => {
       p_id,
       userToAdd,
     ]);
+    const [rows] = await db.execute(
+      "SELECT p_id, name, color, background_color FROM projects WHERE p_id = ?",
+      [p_id]
+    );
+    req.app.get("io").to(socketStore.getSocketIds(userToAdd)).emit("sharedproject:add", rows[0]);
     return res.status(201).send({ u_id: userToAdd });
   } catch (error) {
     if (error.code === "ER_NO_REFERENCED_ROW_2")
