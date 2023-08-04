@@ -1,8 +1,10 @@
 import Image from "next/image";
 import styles from "@/styles/Navbar.module.css";
 import ExpandMoreIcon from "@/public/icons/expand_circle_down.svg";
-import Pic from "@/public/icons/photo.jpg";
+import BlankProfilePic from "@/public/icons/account_circle.svg";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import api from "@/utils/api";
 
 const closeProfilePopover = (event) => {
   if (
@@ -16,6 +18,26 @@ const closeProfilePopover = (event) => {
 };
 
 export default function AccountPopover() {
+  const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    loadProfilePicture();
+  }, []);
+
+  const loadProfilePicture = async () => {
+    try {
+      const response = await api.get("/account/picture/get", { responseType: "blob" });
+      if (response.data.size !== 0) {
+        const blob = new Blob([response.data], { type: "image/jpg" });
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => setImage(reader.result);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
       <button
@@ -31,8 +53,19 @@ export default function AccountPopover() {
         }}
         id='profilePopoverBtn'
         className={styles.profileBtn}>
-        <img src={Pic.src} className={styles.profileImg} alt='Profile Picture' />
-        <Image className={styles.expandProfile} alt='Show more' src={ExpandMoreIcon} width={15} />
+        <Image
+          src={image ? image : BlankProfilePic}
+          width={20}
+          height={20}
+          className={styles.profileImg}
+          alt='Profile Picture'
+          style={{
+            filter: image
+              ? ""
+              : "invert(98%) sepia(0%) saturate(0%) hue-rotate(264deg) brightness(114%) contrast(100%)",
+          }}
+        />
+        <Image className={styles.expandProfile} alt='Show more' src={ExpandMoreIcon} width={16} />
       </button>
       <div id='profilePopover' className={styles.profilePopover}>
         <Link href='/account'>My account</Link>
