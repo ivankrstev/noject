@@ -2,12 +2,15 @@ import "@/styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Space_Mono } from "next/font/google";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ToastContainer } from "react-toastify";
+import useFoucFix from "@/utils/use-fouc-fix";
 
 const inter = Space_Mono({ subsets: ["latin"], weight: "400" });
 
 export default function App({ Component, pageProps, router }) {
+  useFoucFix();
+
   return (
     <div className={inter.className}>
       <ToastContainer
