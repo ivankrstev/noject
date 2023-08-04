@@ -39,7 +39,7 @@ const postRegister = async (data, router) => {
       },
       error: {
         render({ data }) {
-          return data.message || data.error;
+          return data.message || data.error || "Error signing up";
         },
       },
     });

@@ -72,7 +72,7 @@ export default function Login() {
         error: {
           render({ data, toastProps }) {
             if (data.error === "Two-Factor Authentication needed") toastProps.type = "warning";
-            return data.message || data.error;
+            return data.message || data.error || "Error logging in";
           },
         },
       });
@@ -89,7 +89,7 @@ export default function Login() {
         success: "Logged in successfully",
         error: {
           render({ data }) {
-            return data.message || data.error;
+            return data.message || data.error || "Error logging in";
           },
         },
       });
