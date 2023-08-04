@@ -1,6 +1,7 @@
 import db from "../../db/index.js";
 import checkBgContrast from "../../utils/checkBgContrast.js";
 import generateColor from "../../utils/generateColor.js";
+import { v4 } from "uuid";
 
 export const createProject = async (req, res) => {
   try {
@@ -97,6 +98,27 @@ export const getSharedProjects = async (req, res) => {
       [user]
     );
     res.status(200).json(rows);
+  } catch (error) {
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
+
+export const turnOnProjectSharing = async (req, res) => {
+  try {
+    const { p_id } = req.params;
+    const public_link = v4();
+    await db.execute("UPDATE projects SET public_link = ? WHERE p_id = ?", [public_link, p_id]);
+    return res.status(200).json({ public_link });
+  } catch (error) {
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
+
+export const turnOffProjectSharing = async (req, res) => {
+  try {
+    const { p_id } = req.params;
+    await db.execute("UPDATE projects SET public_link = null WHERE p_id = ?", [p_id]);
+    return res.status(200).json({ message: "Sharing is off" });
   } catch (error) {
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }

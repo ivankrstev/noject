@@ -7,6 +7,8 @@ import {
   getOneProject,
   updateProject,
   getSharedProjects,
+  turnOnProjectSharing,
+  turnOffProjectSharing,
 } from "../controllers/projectController.js";
 import verifyProjectOwnership from "../middlewares/verifyProjectOwnership.js";
 
@@ -14,6 +16,8 @@ const router = Router();
 
 router.get("/all", authenticateUser, getProjects);
 router.get("/shared", authenticateUser, getSharedProjects);
+router.post("/share/:p_id", authenticateUser, verifyProjectOwnership, turnOnProjectSharing);
+router.delete("/share/:p_id", authenticateUser, verifyProjectOwnership, turnOffProjectSharing);
 router.get("/:p_id", authenticateUser, getOneProject);
 router.post("/create", authenticateUser, createProject);
 router.put("/:p_id", authenticateUser, verifyProjectOwnership, updateProject);
