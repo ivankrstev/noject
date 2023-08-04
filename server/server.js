@@ -17,22 +17,21 @@ import parseSocketCookies from "./src/middlewares/parseSocketCookies.js";
 const app = express();
 config();
 
+app.use(cors({ origin: process.env.ORIGINS?.split(","), credentials: true }));
 app.use(cookieParser());
 const httpServer = createServer(app);
-const io = new Server(httpServer, { cors: { origin: "http://localhost:3000", credentials: true } });
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.ORIGINS?.split(","),
+    credentials: true,
+  },
+});
 
 io.use(parseSocketCookies);
 io.use(authenticateUserSocket);
 handleSocketIO(io);
 
 app.set("io", io);
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    // origin: "http://192.168.8.122:3000",
-    credentials: true,
-  })
-);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
