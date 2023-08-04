@@ -13,6 +13,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
   const [projectData, setProjectData] = useState();
   const [newProjectName, setNewProjectName] = useState();
   const [showCollaboratorsModal, setCollaboratorsModal] = useState(false);
+  const [shareLinkProject, setShareLinkProject] = useState();
 
   const getProjectData = async (projectId) => {
     try {
@@ -78,6 +79,24 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
     }
   };
 
+  useEffect(() => {
+    if (projectData?.public_link) setShareLinkProject(projectData.public_link);
+  }, [projectData]);
+
+  const handleProjectSharing = async (status) => {
+    try {
+      if (status) {
+        const response = await api.post("/project/share/" + modifyProjectId);
+        setShareLinkProject(response.data.public_link);
+      } else {
+        await api.delete("/project/share/" + modifyProjectId);
+        setShareLinkProject(null);
+      }
+    } catch (error) {
+      toast.error(error?.response?.data.error || error.message);
+    }
+  };
+
   return (
     <div className={styles.fullscreenModal}>
       <motion.div
@@ -103,10 +122,33 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
           title='The project name is automatically updated'
         />
         <div className={styles.shareProjectWrapper}>
-          <label className={styles.shareLinkSwitch}>
-            <input type='checkbox' />
-            <span className={styles.switchSlider}></span>
-          </label>
+          <div>
+            <h4>Project sharing</h4>
+            <label className={styles.shareProjectSwitch}>
+              <input
+                defaultChecked={projectData?.public_link}
+                onInput={(e) => handleProjectSharing(e.target.checked)}
+                type='checkbox'
+              />
+              <span className={styles.switchSlider}></span>
+            </label>
+          </div>
+          {shareLinkProject && (
+            <div className={styles.shareLink}>
+              <p>
+                <span className='no-select'>Link: </span>
+                {"/share/" + shareLinkProject}
+              </p>
+              <button
+                onClick={(e) => {
+                  navigator.clipboard.writeText(
+                    window.location.origin + e.currentTarget.previousSibling.lastChild.textContent
+                  );
+                }}>
+                Copy
+              </button>
+            </div>
+          )}
         </div>
         <div className={styles.buttonGroup}>
           <button

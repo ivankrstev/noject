@@ -159,6 +159,77 @@
 .collaboratorsList::-webkit-scrollbar-thumb:hover {
   background-color: #1553df;
 }
+.shareProjectWrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75em;
+}
+.shareProjectWrapper > div {
+  display: flex;
+}
+.shareProjectSwitch {
+  position: relative;
+  width: 50px;
+  height: 1.4em;
+  margin-left: 0.5em;
+}
+.shareProjectSwitch input {
+  width: 0;
+  height: 0;
+}
+.shareProjectSwitch span {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  transition: 0.4s;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+}
+.shareProjectSwitch span:before {
+  position: absolute;
+  content: "";
+  width: 1.15em;
+  height: 1.15em;
+  border-radius: 16px;
+  left: 1.2px;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  background-color: white;
+  box-shadow: 0 2px 5px #999999;
+  transition: all 0.4s ease-in-out;
+}
+.shareProjectSwitch input:checked + span {
+  background-color: #5fdd54;
+  border-color: transparent;
+}
+.shareProjectSwitch input:checked + span::before {
+  transform: translateX(1.75em);
+}
+.shareLink {
+  margin-top: 0.25em;
+  align-items: center;
+}
+.shareLink p {
+  font-size: 0.7em;
+  overflow: hidden;
+  white-space: nowrap;
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+.shareLink button {
+  color: #fff;
+  background-color: #0570eb;
+  padding: 0.2em 0.3em;
+  margin-left: 0.3em;
+  border: 0;
+  border-radius: 5px;
+}
 .buttonGroup {
   display: flex;
   justify-content: flex-end;
