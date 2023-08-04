@@ -10,7 +10,6 @@ import CloseIcon from "@/public/icons/close.svg";
 import api from "@/utils/api";
 import { toast } from "react-toastify";
 import GridLoader from "react-spinners/BeatLoader";
-import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 
 const catchError = (error, router) => {
@@ -127,188 +126,182 @@ export default function account() {
         />
       </Head>
       <Navbar showSidebar={true} showBtnDashboard={true} />
-      <motion.main
-        initial={{ opacity: 0, x: -200, y: 0 }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        exit={{ opacity: 0, x: 0, y: -100 }}
-        transition={{ ease: "easeInOut" }}>
-        <div className={styles.account}>
-          <GridLoader
-            loading={!data}
-            color='#36d7b7'
-            size={20}
-            aria-label='Loading Spinner'
-            data-testid='loader'
-          />
-          {data && (
-            <Fragment>
-              <div className={styles.profileInfo}>
-                <img
-                  src={image ? image : Pic.src}
-                  style={{
-                    filter: image
-                      ? ""
-                      : "invert(27%) sepia(100%) saturate(2132%) hue-rotate(201deg) brightness(96%)contrast(96%)",
-                  }}
-                  alt='Profile Picture'
-                />
-                <form>
-                  <input
-                    type='file'
-                    hidden
-                    accept='image/*'
-                    multiple={false}
-                    name='profile_picture'
-                    onChange={async (e) => {
-                      try {
-                        const formData = new FormData(e.target.parentNode);
-                        const responsePic = await api.post("/account/picture/upload", formData, {
-                          headers: {
-                            "Content-Type": "multipart/form-data",
-                          },
-                          responseType: "blob",
-                        });
-                        convertImageToBase64(responsePic);
-                        toast.success("Updated profile picture");
-                      } catch (error) {
-                        toast.error("Oops! Something went wrong");
-                        console.error(error);
-                      }
-                    }}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.target.previousSibling.click();
-                    }}>
-                    Change Picture
-                  </button>
-                </form>
-                <h3>
-                  {data.first_name} {data.last_name}
-                </h3>
-                <p>{data.u_id}</p>
-                <p>Created on: </p>
-              </div>
-              <form className={styles.changeEmailForm}>
-                <p>Your email is {verifiedEmail ? "verified." : "not verified."}</p>
-                {!verifiedEmail && (
-                  <button
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      try {
-                        const response = await api.post("/send-verify");
-                        toast.success(response.data.message);
-                      } catch (error) {
-                        catchError(error);
-                      }
-                    }}>
-                    Send confirmation link
-                  </button>
-                )}
-              </form>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  changePassword(e.target.elements);
+      <div className={styles.account}>
+        <GridLoader
+          loading={!data}
+          color='#36d7b7'
+          size={20}
+          aria-label='Loading Spinner'
+          data-testid='loader'
+        />
+        {data && (
+          <Fragment>
+            <div className={styles.profileInfo}>
+              <img
+                src={image ? image : Pic.src}
+                style={{
+                  filter: image
+                    ? ""
+                    : "invert(27%) sepia(100%) saturate(2132%) hue-rotate(201deg) brightness(96%)contrast(96%)",
                 }}
-                id='change-password-form'
-                className={styles.changePasswordForm}>
-                <h4>Change your password</h4>
-                <label htmlFor='current-password'>Current password:</label>
+                alt='Profile Picture'
+              />
+              <form>
                 <input
-                  id='current-password'
-                  required
-                  type='password'
-                  placeholder='Enter your old password'
+                  type='file'
+                  hidden
+                  accept='image/*'
+                  multiple={false}
+                  name='profile_picture'
+                  onChange={async (e) => {
+                    try {
+                      const formData = new FormData(e.target.parentNode);
+                      const responsePic = await api.post("/account/picture/upload", formData, {
+                        headers: {
+                          "Content-Type": "multipart/form-data",
+                        },
+                        responseType: "blob",
+                      });
+                      convertImageToBase64(responsePic);
+                      toast.success("Updated profile picture");
+                    } catch (error) {
+                      toast.error("Oops! Something went wrong");
+                      console.error(error);
+                    }
+                  }}
                 />
-                <label htmlFor='new-password'>New password:</label>
-                <input
-                  required
-                  minLength={10}
-                  id='new-password'
-                  type='password'
-                  placeholder='Enter your new password'
-                />
-                <label htmlFor='confirm-password'>Confirm password:</label>
-                <input
-                  minLength={10}
-                  required
-                  id='confirm-password'
-                  type='password'
-                  placeholder='Reenter your new password'
-                />
-                <button>Change password</button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.target.previousSibling.click();
+                  }}>
+                  Change Picture
+                </button>
               </form>
-              <div className={styles.twoFactorAuth}>
-                <p>
-                  Two Factor Authentication is {tfaActivated ? "enabled. " : "disabled. "}
-                  <button
-                    className={styles.toggleTwoFactorAuthBtn}
-                    onClick={() => setOpenModal(true)}>
-                    {tfaActivated ? "Disable" : "Enable"}
-                  </button>
-                </p>
-                <Modal className={styles.twoFactorModal} isOpen={openModal} ariaHideApp={false}>
-                  <div className={styles.scanQrCode}>
-                    <div className={styles.scanQrCodeHeader}>
-                      <h3>
-                        {!tfaActivated
-                          ? "Enable two-factor authentication"
-                          : "Disable two-factor authentication"}
-                      </h3>
-                      <button onClick={() => setOpenModal(false)}>
-                        <Image src={CloseIcon} alt='Close Modal' width={30} />
-                      </button>
-                    </div>
-                    {tfaPage === 1 && (
-                      <Fragment>
-                        <div className={styles.qrCodeImg}>
-                          <QRCodeCanvas value={"otpauth://totp/Noject?secret=" + qrSecret} />
-                        </div>
-                        <p>
-                          Scan the QR code or manually enter the following code:{" "}
-                          <span>{qrSecret}</span>
-                        </p>
-                        <button className={styles.complete2FABtn} onClick={() => setTfaPage(2)}>
-                          Continue
-                        </button>
-                      </Fragment>
-                    )}
-                    {tfaPage === 2 && (
-                      <Fragment>
-                        <label>Enter the code generated by your authentication app.</label>
-                        <input type='text' id='userTokenTFA' />
-                        <div className={styles.twoFactorFormButtons}>
-                          {!tfaActivated && (
-                            <button
-                              style={{
-                                backgroundColor: "grey",
-                                borderColor: "grey",
-                                marginRight: "0.3em",
-                              }}
-                              className={styles.complete2FABtn}
-                              onClick={() => setTfaPage(1)}>
-                              Go Back
-                            </button>
-                          )}
-                          <button
-                            className={styles.complete2FABtn}
-                            onClick={() => {
-                              enableDisableTFA();
-                            }}>
-                            Verify
-                          </button>
-                        </div>
-                      </Fragment>
-                    )}
+              <h3>
+                {data.first_name} {data.last_name}
+              </h3>
+              <p>{data.u_id}</p>
+              <p>Created on: </p>
+            </div>
+            <form className={styles.changeEmailForm}>
+              <p>Your email is {verifiedEmail ? "verified." : "not verified."}</p>
+              {!verifiedEmail && (
+                <button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    try {
+                      const response = await api.post("/send-verify");
+                      toast.success(response.data.message);
+                    } catch (error) {
+                      catchError(error);
+                    }
+                  }}>
+                  Send confirmation link
+                </button>
+              )}
+            </form>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                changePassword(e.target.elements);
+              }}
+              id='change-password-form'
+              className={styles.changePasswordForm}>
+              <h4>Change your password</h4>
+              <label htmlFor='current-password'>Current password:</label>
+              <input
+                id='current-password'
+                required
+                type='password'
+                placeholder='Enter your old password'
+              />
+              <label htmlFor='new-password'>New password:</label>
+              <input
+                required
+                minLength={10}
+                id='new-password'
+                type='password'
+                placeholder='Enter your new password'
+              />
+              <label htmlFor='confirm-password'>Confirm password:</label>
+              <input
+                minLength={10}
+                required
+                id='confirm-password'
+                type='password'
+                placeholder='Reenter your new password'
+              />
+              <button>Change password</button>
+            </form>
+            <div className={styles.twoFactorAuth}>
+              <p>
+                Two Factor Authentication is {tfaActivated ? "enabled. " : "disabled. "}
+                <button
+                  className={styles.toggleTwoFactorAuthBtn}
+                  onClick={() => setOpenModal(true)}>
+                  {tfaActivated ? "Disable" : "Enable"}
+                </button>
+              </p>
+              <Modal className={styles.twoFactorModal} isOpen={openModal} ariaHideApp={false}>
+                <div className={styles.scanQrCode}>
+                  <div className={styles.scanQrCodeHeader}>
+                    <h3>
+                      {!tfaActivated
+                        ? "Enable two-factor authentication"
+                        : "Disable two-factor authentication"}
+                    </h3>
+                    <button onClick={() => setOpenModal(false)}>
+                      <Image src={CloseIcon} alt='Close Modal' width={30} />
+                    </button>
                   </div>
-                </Modal>
-              </div>
-            </Fragment>
-          )}
-        </div>
-      </motion.main>
+                  {tfaPage === 1 && (
+                    <Fragment>
+                      <div className={styles.qrCodeImg}>
+                        <QRCodeCanvas value={"otpauth://totp/Noject?secret=" + qrSecret} />
+                      </div>
+                      <p>
+                        Scan the QR code or manually enter the following code:{" "}
+                        <span>{qrSecret}</span>
+                      </p>
+                      <button className={styles.complete2FABtn} onClick={() => setTfaPage(2)}>
+                        Continue
+                      </button>
+                    </Fragment>
+                  )}
+                  {tfaPage === 2 && (
+                    <Fragment>
+                      <label>Enter the code generated by your authentication app.</label>
+                      <input type='text' id='userTokenTFA' />
+                      <div className={styles.twoFactorFormButtons}>
+                        {!tfaActivated && (
+                          <button
+                            style={{
+                              backgroundColor: "grey",
+                              borderColor: "grey",
+                              marginRight: "0.3em",
+                            }}
+                            className={styles.complete2FABtn}
+                            onClick={() => setTfaPage(1)}>
+                            Go Back
+                          </button>
+                        )}
+                        <button
+                          className={styles.complete2FABtn}
+                          onClick={() => {
+                            enableDisableTFA();
+                          }}>
+                          Verify
+                        </button>
+                      </div>
+                    </Fragment>
+                  )}
+                </div>
+              </Modal>
+            </div>
+          </Fragment>
+        )}
+      </div>
     </Fragment>
   );
 }
