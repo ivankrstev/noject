@@ -3,7 +3,7 @@
   transition: width 0.3s;
   display: flex;
   align-items: center;
-  background-color: #0b2447;
+  background-color: #19376d;
   border-bottom: 1px solid #000;
   height: fit-content;
   padding: 0.65em 0.3em;
@@ -16,7 +16,7 @@
 }
 .navbar h3 {
   margin-left: 0.4em;
-  text-align: left;
+  color: #fff;
 }
 .sidebarOpenBtn {
   margin-left: 0.3em;
@@ -75,10 +75,13 @@
 }
 
 .settingsBtn {
-  margin-right: 0.3em;
+  margin-right: 0.5em;
   background-color: transparent;
   outline: none;
   border: 0;
+}
+.settingsBtn img {
+  filter: invert(98%) sepia(0%) saturate(0%) hue-rotate(264deg) brightness(114%) contrast(100%);
 }
 .projectSettingsPopover {
   -webkit-user-select: none;
