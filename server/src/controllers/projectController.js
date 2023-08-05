@@ -1,6 +1,6 @@
 import db from "../../db/index.js";
-import checkBgContrast from "../../utils/checkBgContrast.js";
-import generateColor from "../../utils/generateColor.js";
+import checkBgContrast from "../utils/checkBgContrast.js";
+import generateColor from "../utils/generateColor.js";
 import { v4 } from "uuid";
 
 export const createProject = async (req, res) => {

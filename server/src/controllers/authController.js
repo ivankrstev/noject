@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import speakeasy from "speakeasy";
 const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 import { v4 } from "uuid";
-import sendVerifyEmail from "../../utils/sendVerifyEmail.js";
+import sendVerifyEmail from "../utils/sendVerifyEmail.js";
 
 export const registerUser = async (req, res) => {
   try {
