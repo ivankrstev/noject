@@ -6,6 +6,7 @@ import TaskViewProject from "@/components/TaskViewProject";
 import calculateProject from "@/utils/tasksProgressHandler";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { HashLoader } from "react-spinners";
 
 export default function ViewProject() {
   const router = useRouter();
@@ -40,29 +41,36 @@ export default function ViewProject() {
         <title>Noject - View Project</title>
         <meta name='description' content='View project and its tasks if it is shared.' />
       </Head>
-      <div id='projectMainDiv' className={styles.projectMain}>
-        <div className={styles.projectHeaderDiv}>
-          <h2>{projectData?.name}</h2>
-          <span id='projectProgressSpan' title='Project progress'></span>
+      {projectData && tasks && (
+        <div id='projectMainDiv' className={styles.projectMain}>
+          <div className={styles.projectHeaderDiv}>
+            <h2>{projectData?.name}</h2>
+            <span id='projectProgressSpan' title='Project progress'></span>
+          </div>
+          <div
+            id='projectTasksWrapperDiv'
+            className={[styles.projectTasksWrapper, styles.noWrapLines].join(" ")}>
+            {tasks &&
+              (tasks.length === 0 ? (
+                <h5>No tasks created</h5>
+              ) : (
+                tasks.map((e) => (
+                  <TaskViewProject
+                    key={e.t_id}
+                    level={e.level}
+                    value={e.value}
+                    completed={e.completed}
+                  />
+                ))
+              ))}
+          </div>
         </div>
-        <div
-          id='projectTasksWrapperDiv'
-          className={[styles.projectTasksWrapper, styles.noWrapLines].join(" ")}>
-          {tasks &&
-            (tasks.length === 0 ? (
-              <h5>No tasks created</h5>
-            ) : (
-              tasks.map((e) => (
-                <TaskViewProject
-                  key={e.t_id}
-                  level={e.level}
-                  value={e.value}
-                  completed={e.completed}
-                />
-              ))
-            ))}
+      )}
+      {!projectData && !tasks && (
+        <div className='center' style={{ width: "100vw", height: "100vh" }}>
+          <HashLoader size={120} color='#0570eb' />
         </div>
-      </div>
+      )}
     </Fragment>
   );
 }
