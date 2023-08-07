@@ -2,6 +2,7 @@ import db from "../../db/index.js";
 import checkBgContrast from "../utils/checkBgContrast.js";
 import generateColor from "../utils/generateColor.js";
 import { v4 } from "uuid";
+import orderTasks from "../utils/orderTasks.js";
 
 export const createProject = async (req, res) => {
   try {
@@ -120,6 +121,29 @@ export const turnOffProjectSharing = async (req, res) => {
     await db.execute("UPDATE projects SET public_link = null WHERE p_id = ?", [p_id]);
     return res.status(200).json({ message: "Sharing is off" });
   } catch (error) {
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
+
+export const getViewSharedProject = async (req, res) => {
+  // Get project name, creator and its tasks
+  try {
+    const { public_link } = req.params;
+    if (!public_link || public_link === "")
+      return res.status(400).json({ error: "public_link is missing" });
+    const [projectRows] = await db.execute(
+      "SELECT p_id, name, created_by FROM projects WHERE public_link = ?",
+      [public_link]
+    );
+    if (projectRows.length === 0) return res.status(404).json({ error: "Project not found" });
+    const [tasksRows] = await db.execute(
+      "SELECT t_id, prev, next, value, level, completed FROM tasks WHERE p_id = ?",
+      [projectRows[0].p_id]
+    );
+    const tasks = orderTasks(tasksRows);
+    res.status(200).json({ project: projectRows[0], tasks });
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
 };
