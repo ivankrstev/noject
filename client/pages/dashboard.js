@@ -5,9 +5,9 @@ import Navbar from "@/components/Navbar";
 import Project from "@/components/Project";
 import { useState, useEffect, Fragment } from "react";
 
-export default function Dasboard() {
+export default function Dashboard() {
   const [showSidebar, setShowSidebar] = useState();
-  const [selectProject, setSelectProject] = useState("Noject");
+  const [selectedProject, setSelectedProject] = useState();
   const sidebarShowHide = () => setShowSidebar(!showSidebar);
 
   useEffect(() => {
@@ -36,16 +36,12 @@ export default function Dasboard() {
           <Sidebar
             sidebarShowHide={sidebarShowHide}
             showSidebar={showSidebar}
-            setSelectProject={setSelectProject}
+            setSelectedProject={setSelectedProject}
           />
         </div>
         <div className={styles.dashMain}>
-          <Navbar
-            showSidebar={showSidebar}
-            sidebarShowHide={sidebarShowHide}
-            selectProject={selectProject}
-          />
-          <Project selectProject={selectProject} />
+          <Navbar showSidebar={showSidebar} sidebarShowHide={sidebarShowHide} />
+          <Project selectedProject={selectedProject} />
         </div>
       </div>
     </Fragment>

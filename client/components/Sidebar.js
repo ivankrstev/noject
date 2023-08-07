@@ -12,7 +12,7 @@ import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
 import SocketClient from "@/utils/socket";
 
-export default function Sidebar(props) {
+export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProject }) {
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showModifyProjectModal, setShowModifyProjectModal] = useState(false);
   const [modifyProjectId, setModifyProjectId] = useState(null);
@@ -63,13 +63,13 @@ export default function Sidebar(props) {
   };
 
   return (
-    <div className={[styles.sidebar, !props.showSidebar && styles.sidebarHide].join(" ")}>
+    <div className={[styles.sidebar, !showSidebar && styles.sidebarHide].join(" ")}>
       <div className={styles.headerWrapper}>
         <h3>Workspaces</h3>
         <button
           title='Close Sidebar'
           className={styles.sidebarCloseBtn}
-          onClick={() => props.sidebarShowHide(!props.showSidebar)}>
+          onClick={() => sidebarShowHide(!showSidebar)}>
           <Image width={25} src={closeMenuIcon} alt='Close Sidebar Icon' />
         </button>
       </div>
@@ -122,7 +122,12 @@ export default function Sidebar(props) {
             id={project.p_id}
             className={styles.sidebarProjectItem}
             title={project.name}
-            onClick={() => console.log("Project clicked")}>
+            onClick={(e) =>
+              setSelectedProject({
+                id: e.currentTarget.id,
+                name: e.currentTarget.childNodes[1].textContent,
+              })
+            }>
             <span
               style={{ color: project.color, backgroundColor: project.background_color }}
               className={styles.sidebarProjectSquare}>
@@ -153,7 +158,12 @@ export default function Sidebar(props) {
           id={project.p_id}
           className={styles.sidebarProjectItem}
           title={project.name}
-          onClick={() => console.log("Project clicked")}>
+          onClick={(e) =>
+            setSelectedProject({
+              id: e.currentTarget.id,
+              name: e.currentTarget.lastChild.textContent,
+            })
+          }>
           <span
             style={{ color: project.color, backgroundColor: project.background_color }}
             className={styles.sidebarProjectSquare}>
