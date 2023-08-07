@@ -6,6 +6,7 @@ import authRouter from "./src/routes/authRoute.js";
 import accountRouter from "./src/routes/accountRoute.js";
 import projectRouter from "./src/routes/projectRoute.js";
 import projectCollaboratorRouter from "./src/routes/projectCollaboratorRoute.js";
+import tasksRouter from "./src/routes/tasksRoute.js";
 import morgan from "morgan";
 import fileUpload from "express-fileupload";
 import { createServer } from "http";
@@ -36,11 +37,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 
-// Tester for slow response
-// app.use(function (req, res, next) {
-//   setTimeout(next, 1000);
-// });
-
 app.use(
   morgan(":date :method :url :status :remote-addr | : res[content - length] - : response - time ms")
 );
@@ -49,6 +45,7 @@ app.use(authRouter);
 app.use("/account", accountRouter);
 app.use("/project", projectRouter);
 app.use("/project-collaborators", projectCollaboratorRouter);
+app.use("/tasks", tasksRouter);
 
 /* Error handler middleware */
 app.use((err, req, res, next) => {
@@ -60,3 +57,8 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Tester for slow response
+// app.use(function (req, res, next) {
+//   setTimeout(next, 1000);
+// });
