@@ -27,12 +27,12 @@ export default function App({ Component, pageProps, router }) {
       />
       <AnimatePresence mode='wait' initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
         <motion.main
-          key={router.asPath}
+          key={router._key}
           initial={{ opacity: 0, x: -200, y: 0 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           exit={{ opacity: 0, x: 0, y: -100 }}
           transition={{ ease: "easeInOut" }}>
-          <Component key={router.asPath} {...pageProps} />
+          <Component {...pageProps} />
         </motion.main>
       </AnimatePresence>
     </div>
