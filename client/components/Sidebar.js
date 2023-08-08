@@ -91,32 +91,67 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
           </select>
         </div>
       </div>
-
-      {!showLoader ? (
-        <div className={styles.projectLoaderWrapper}>
-          <Skeleton
-            count={5}
-            rectangle
-            width='23px'
-            height='29.5px'
-            baseColor='#B6B6B4'
-            borderRadius='5px'
-            style={{ margin: "0.25em 0" }}
-          />
-          <Skeleton
-            count={5}
-            rectangle
-            width='213px'
-            height='29.5px'
-            baseColor='#B6B6B4'
-            borderRadius='5px'
-            style={{ margin: "0.25em 0" }}
-          />
-        </div>
-      ) : projects.length === 0 ? (
-        <h5 style={{ margin: "0.5em 0 0.8em 0" }}>No Projects Created</h5>
-      ) : (
-        projects.map((project) => (
+      <button className={styles.newProjectBtn} onClick={() => setShowNewProjectModal(true)}>
+        <Image width={20} src={addIcon} alt='New icon' />
+        Create Project
+      </button>
+      <div className={styles.projectItemsWrapper}>
+        {!showLoader ? (
+          <div className={styles.projectLoaderWrapper}>
+            <Skeleton
+              count={5}
+              rectangle
+              width='23px'
+              height='29.5px'
+              baseColor='#B6B6B4'
+              borderRadius='5px'
+              style={{ margin: "0.25em 0" }}
+            />
+            <Skeleton
+              count={5}
+              rectangle
+              width='213px'
+              height='29.5px'
+              baseColor='#B6B6B4'
+              borderRadius='5px'
+              style={{ margin: "0.25em 0" }}
+            />
+          </div>
+        ) : projects.length === 0 ? (
+          <h5 style={{ margin: "0.5em 0 0.8em 0" }}>No Projects Created</h5>
+        ) : (
+          projects.map((project) => (
+            <div
+              key={project.p_id}
+              id={project.p_id}
+              className={styles.sidebarProjectItem}
+              title={project.name}
+              onClick={(e) =>
+                setSelectedProject({
+                  id: e.currentTarget.id,
+                  name: e.currentTarget.childNodes[1].textContent,
+                })
+              }>
+              <span
+                style={{ color: project.color, backgroundColor: project.background_color }}
+                className={styles.sidebarProjectSquare}>
+                {Array.from(project.name)[0].toUpperCase()}
+              </span>
+              <p>{project.name}</p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setModifyProjectId(e.currentTarget.parentElement.id);
+                  setShowModifyProjectModal(true);
+                }}
+                className={styles.projectModifyBtn}>
+                <Image src={SettingsIcon} width={21} alt='Project Settings' />
+              </button>
+            </div>
+          ))
+        )}
+        <h5>Shared projects</h5>
+        {sharedProjects.map((project) => (
           <div
             key={project.p_id}
             id={project.p_id}
@@ -125,7 +160,7 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
             onClick={(e) =>
               setSelectedProject({
                 id: e.currentTarget.id,
-                name: e.currentTarget.childNodes[1].textContent,
+                name: e.currentTarget.lastChild.textContent,
               })
             }>
             <span
@@ -134,44 +169,9 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
               {Array.from(project.name)[0].toUpperCase()}
             </span>
             <p>{project.name}</p>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setModifyProjectId(e.currentTarget.parentElement.id);
-                setShowModifyProjectModal(true);
-              }}
-              className={styles.projectModifyBtn}>
-              <Image src={SettingsIcon} width={21} alt='Project Settings' />
-            </button>
           </div>
-        ))
-      )}
-
-      <button className={styles.newProjectBtn} onClick={() => setShowNewProjectModal(true)}>
-        <Image width={20} src={addIcon} alt='New icon' />
-        Create Project
-      </button>
-      <h5>Shared projects</h5>
-      {sharedProjects.map((project) => (
-        <div
-          key={project.p_id}
-          id={project.p_id}
-          className={styles.sidebarProjectItem}
-          title={project.name}
-          onClick={(e) =>
-            setSelectedProject({
-              id: e.currentTarget.id,
-              name: e.currentTarget.lastChild.textContent,
-            })
-          }>
-          <span
-            style={{ color: project.color, backgroundColor: project.background_color }}
-            className={styles.sidebarProjectSquare}>
-            {Array.from(project.name)[0].toUpperCase()}
-          </span>
-          <p>{project.name}</p>
-        </div>
-      ))}
+        ))}
+      </div>
       <AnimatePresence>
         {showNewProjectModal && (
           <NewProjectModal
