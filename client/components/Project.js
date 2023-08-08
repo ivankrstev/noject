@@ -5,6 +5,7 @@ import tasksProgressHandler from "@/utils/tasksProgressHandler";
 import api from "@/utils/api";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
+import SocketClient from "@/utils/socket";
 
 export default function Project({ selectedProject }) {
   const [tasks, setTasks] = useState();
@@ -27,6 +28,10 @@ export default function Project({ selectedProject }) {
   useEffect(() => {
     setTasks(null);
     getProjectTasks();
+    SocketClient.getSocket().emit("projectRoom:join", { p_id: selectedProject?.id });
+    return () => {
+      SocketClient.getSocket().emit("projectRoom:leave", { p_id: selectedProject?.id });
+    };
   }, [selectedProject]);
 
   return (
