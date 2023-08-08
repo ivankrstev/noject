@@ -3,7 +3,7 @@ import handleTaskInput from "@/utils/taskKeyEventsHandler";
 import { useRef, useEffect, useState } from "react";
 import tasksProgressHandler, { getAllSubTasks } from "@/utils/tasksProgressHandler";
 
-const updateTask = (text) => console.log("Updating task with: ", text);
+const updateTask = (value) => console.log("Updating task with: ", value);
 
 const handleCheckBoxChange = (event) => {
   // Set the percentages for this task if the checkbox is changed
@@ -17,12 +17,13 @@ const handleCheckBoxChange = (event) => {
   tasksProgressHandler();
 };
 
-export default function Task({ text, levelProp, completed }) {
+export default function Task({ value, levelProp, completed }) {
   const taskRef = useRef(null);
-  const [taskText, setTaskText] = useState(text);
+  const [taskText, setTaskText] = useState(value);
+  const [level, setLevel] = useState(levelProp);
 
   useEffect(() => {
-    if (taskText !== "" && taskText !== text) {
+    if (taskText !== "" && taskText !== value) {
       console.log("Changed taskText");
       const sendData = setTimeout(() => {
         updateTask(taskText);
@@ -34,8 +35,8 @@ export default function Task({ text, levelProp, completed }) {
   return (
     <div
       ref={taskRef}
-      level={levelProp}
-      style={{ marginLeft: (levelProp * 1.1).toFixed(1) + "em" }}
+      level={level}
+      style={{ marginLeft: (level * 1.1).toFixed(1) + "em" }}
       className={styles.task}>
       <span className={[styles.taskPercentages, "no-select"].join(" ")} title='Task progress'>
         {completed ? "100%" : "0%"}
@@ -51,11 +52,10 @@ export default function Task({ text, levelProp, completed }) {
       <div
         title='Task text'
         className={styles.taskText}
-        onKeyDown={(e) => handleTaskInput(e, taskRef, setTaskText)}
-        type='text'
+        onKeyDown={(e) => handleTaskInput(e, taskRef, setTaskText, setLevel)}
         suppressContentEditableWarning={true}
         contentEditable={true}>
-        {text}
+        {value}
       </div>
     </div>
   );
