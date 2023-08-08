@@ -112,7 +112,7 @@
   overflow: auto;
   margin: 0.2em 0 0.75em 0;
   scrollbar-width: thin;
-  scrollbar-color: #0570eb #dfe9eb;
+  scrollbar-color: #0570eb #d2d2d2;
 }
 .collaboratorsItem {
   display: flex;
@@ -143,12 +143,10 @@
 }
 .searchList::-webkit-scrollbar-track,
 .collaboratorsList::-webkit-scrollbar-track {
-  border-radius: 5px;
   background-color: #d2d2d2;
 }
 .searchList::-webkit-scrollbar-thumb,
 .collaboratorsList::-webkit-scrollbar-thumb {
-  border-radius: 5px;
   background-color: #0570eb;
 }
 .searchList::-webkit-scrollbar-track:hover,
