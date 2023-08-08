@@ -1,9 +1,9 @@
 .navbar {
-  max-width: 100%;
+  max-width: 100% !important;
   transition: width 0.3s;
   display: flex;
   align-items: center;
-  background-color: #19376d;
+  background-color: #013a63;
   border-bottom: 1px solid #000;
   height: fit-content;
   padding: 0.65em 0.3em;

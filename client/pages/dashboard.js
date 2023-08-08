@@ -18,10 +18,10 @@ export default function Dashboard() {
   useEffect(() => {
     if (showSidebar !== undefined) {
       localStorage.setItem("sidebarShow", showSidebar);
-      document.querySelector("#navbar").style.width = showSidebar ? "calc(100% - 265px)" : "100%";
+      document.querySelector("#navbar").style.width = showSidebar ? "calc(100vw - 265px)" : "100vw";
       document.querySelector("#projectMainDiv").style.width = showSidebar
-        ? "calc(100% - 265px)"
-        : "100%";
+        ? "calc(100vw - 265px)"
+        : "100vw";
     }
   }, [showSidebar]);
 
@@ -39,7 +39,7 @@ export default function Dashboard() {
             setSelectedProject={setSelectedProject}
           />
         </div>
-        <div className={styles.dashMain}>
+        <div id='dashMain' className={styles.dashMain}>
           <Navbar showSidebar={showSidebar} sidebarShowHide={sidebarShowHide} />
           <Project selectedProject={selectedProject} />
         </div>
