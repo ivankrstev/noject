@@ -1,18 +1,20 @@
 import { createTransport } from "nodemailer";
 
 const transporter = createTransport({
-  service: "outlook",
+  host: "smtp.eu.mailgun.org",
+  secure: true,
   auth: {
-    user: "noject@outlook.com",
+    user: "info@noject.live",
     pass: process.env.EMAIL_PASSWORD,
   },
+  requireTls: true,
 });
 
 const sendVerifyEmail = (data) => {
   const { first_name, last_name, u_id, verification_token } = data;
-  const verificationLink = `http://localhost:3000/verify-email?email=${u_id}&token=${verification_token}`;
+  const verificationLink = `${process.env.EMAIL_CLIENT_URL}/verify-email?email=${u_id}&token=${verification_token}`;
   const mailOptions = {
-    from: "Noject App noject@outlook.com",
+    from: "Noject App info@noject.live",
     to: `${first_name} ${last_name} ${u_id}`,
     subject: "Email Verification",
     text: `Dear ${first_name},\n Please click on the following link to verify your email: ${verificationLink}`,
