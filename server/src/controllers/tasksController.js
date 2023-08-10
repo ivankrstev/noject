@@ -1,4 +1,5 @@
 import db from "../../db/index.js";
+import socketStore from "../sockets/connectedUsers.js";
 
 export const getAllTasks = async (req, res) => {
   try {
@@ -20,7 +21,8 @@ export const updateTaskValue = async (req, res) => {
     req.app
       .get("io")
       .to("p-" + p_id)
-      .emit("tasks:textChanged", { t_id, value });
+      .except(socketStore.getSocketIds(req.user)) // Except all socket ids that belong to the user who updated the task
+      .emit("tasks:value-changed", { t_id, value });
     return res.status(200).json({ message: "Task value updated" });
   } catch (error) {
     console.error(error);
