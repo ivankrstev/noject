@@ -10,8 +10,22 @@ import SocketClient from "@/utils/socket";
 export default function Project({ selectedProject }) {
   const [tasks, setTasks] = useState();
 
+  const textChangedListener = (data) => {
+    const { t_id, value } = data;
+    const indexToUpdate = tasks.findIndex((item) => parseInt(item.t_id) === parseInt(t_id));
+    if (indexToUpdate !== undefined && indexToUpdate !== -1) {
+      tasks[indexToUpdate].value = value;
+      setTasks([...tasks]);
+    }
+  };
+
   useEffect(() => {
     if (tasks && tasks.length !== 0) tasksProgressHandler();
+    const socket = SocketClient.getSocket();
+    socket.on("tasks:value-changed", textChangedListener);
+    return () => {
+      socket.removeAllListeners("tasks:textChanged");
+    };
   }, [tasks]);
 
   const getProjectTasks = async () => {
@@ -27,8 +41,12 @@ export default function Project({ selectedProject }) {
   };
   useEffect(() => {
     setTasks(null);
-    getProjectTasks();
-    SocketClient.getSocket().emit("projectRoom:join", { p_id: selectedProject?.id });
+    if (selectedProject?.id) {
+      getProjectTasks();
+      SocketClient.getSocket().emit("projectRoom:join", { p_id: selectedProject.id }, (message) => {
+        if (message?.error) toast.error("Realtime updates unavailable");
+      });
+    }
     return () => {
       SocketClient.getSocket().emit("projectRoom:leave", { p_id: selectedProject?.id });
     };
@@ -51,9 +69,11 @@ export default function Project({ selectedProject }) {
                   tasks.map((e) => (
                     <Task
                       key={e.t_id}
+                      t_id={e.t_id}
                       levelProp={e.level}
                       completed={e.completed}
-                      value={e.value}
+                      valueProp={e.value}
+                      projectId={selectedProject.id}
                     />
                   ))
                 ) : (

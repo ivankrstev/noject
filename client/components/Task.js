@@ -2,8 +2,8 @@ import styles from "@/styles/Task.module.css";
 import handleTaskInput from "@/utils/taskKeyEventsHandler";
 import { useRef, useEffect, useState } from "react";
 import tasksProgressHandler, { getAllSubTasks } from "@/utils/tasksProgressHandler";
-
-const updateTask = (value) => console.log("Updating task with: ", value);
+import api from "@/utils/api";
+import { toast } from "react-toastify";
 
 const handleCheckBoxChange = (event) => {
   // Set the percentages for this task if the checkbox is changed
@@ -17,26 +17,33 @@ const handleCheckBoxChange = (event) => {
   tasksProgressHandler();
 };
 
-export default function Task({ value, levelProp, completed }) {
+export default function Task({ t_id, valueProp, levelProp, completed, projectId }) {
   const taskRef = useRef(null);
-  const [taskText, setTaskText] = useState(value);
-  const [level, setLevel] = useState(levelProp);
+  const [oldProps, setOldProps] = useState({ valueProp });
+  const [value, setValue] = useState(valueProp);
 
   useEffect(() => {
-    if (taskText !== "" && taskText !== value) {
-      console.log("Changed taskText");
-      const sendData = setTimeout(() => {
-        updateTask(taskText);
-      }, 1000);
-      return () => clearTimeout(sendData);
+    if (value && value !== oldProps.valueProp) {
+      const debounceTaskValue = setTimeout(() => updateTaskValue(), 1000);
+      return () => clearTimeout(debounceTaskValue);
     }
-  }, [taskText]);
+  }, [value]);
+
+  const updateTaskValue = async () => {
+    try {
+      const response = await api.put(`/tasks/${projectId}-${t_id}/value`, { value });
+      console.log(response);
+      setOldProps({ ...oldProps, valueProp: value });
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.message || "Error updating task");
+    }
+  };
 
   return (
     <div
       ref={taskRef}
-      level={level}
-      style={{ marginLeft: (level * 1.1).toFixed(1) + "em" }}
+      level={levelProp}
+      style={{ marginLeft: (levelProp * 1.1).toFixed(1) + "em" }}
       className={styles.task}>
       <span className={[styles.taskPercentages, "no-select"].join(" ")} title='Task progress'>
         {completed ? "100%" : "0%"}
@@ -52,10 +59,11 @@ export default function Task({ value, levelProp, completed }) {
       <div
         title='Task text'
         className={styles.taskText}
-        onKeyDown={(e) => handleTaskInput(e, taskRef, setTaskText, setLevel)}
+        onInput={(e) => setValue(e.target.innerText)}
+        onKeyDown={(e) => handleTaskInput(e, taskRef)}
         suppressContentEditableWarning={true}
         contentEditable={true}>
-        {value}
+        {valueProp}
       </div>
     </div>
   );
