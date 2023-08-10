@@ -1,7 +1,7 @@
 import styles from "@/styles/Project.module.css";
 import Task from "./Task";
 import { Fragment, useEffect, useState } from "react";
-import tasksProgressHandler from "@/utils/tasksProgressHandler";
+import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
 import api from "@/utils/api";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";

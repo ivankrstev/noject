@@ -9,7 +9,10 @@ class SocketConnector {
 
   initSocketConnection() {
     if (!this.#socket) {
-      this.#socket = io("http://localhost:5000", { secure: true, withCredentials: true });
+      this.#socket = io(process.env.NEXT_PUBLIC_SERVER_URL, {
+        secure: true,
+        withCredentials: true,
+      });
     }
   }
 

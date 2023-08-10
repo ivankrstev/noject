@@ -1,4 +1,4 @@
-import tasksProgressHandler from "@/utils/tasksProgressHandler";
+import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
 
 export default function decreaseLevel(taskRef) {
   const taskElement = taskRef.current;

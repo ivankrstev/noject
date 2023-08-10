@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 import styles from "@/styles/Project.module.css";
 import TaskViewProject from "@/components/TaskViewProject";
-import calculateProject from "@/utils/tasksProgressHandler";
+import calculateProject from "@/utils/tasks/tasksProgressHandler";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";

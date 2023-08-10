@@ -1,21 +1,9 @@
 import styles from "@/styles/Task.module.css";
-import handleTaskInput from "@/utils/taskKeyEventsHandler";
+import handleTaskInput from "@/utils/tasks/taskKeyEventsHandler";
+import handleCheckBoxChange from "@/utils/tasks/handleCheckBoxChange";
 import { useRef, useEffect, useState } from "react";
-import tasksProgressHandler, { getAllSubTasks } from "@/utils/tasksProgressHandler";
 import api from "@/utils/api";
 import { toast } from "react-toastify";
-
-const handleCheckBoxChange = (event) => {
-  // Set the percentages for this task if the checkbox is changed
-  event.target.previousSibling.innerText = event.target.checked ? "100%" : "0%";
-  // Handle in/completion of all subtasks (children, grandchildren, great grandchildren, ...)
-  const allSubTasks = getAllSubTasks(event.target.parentNode);
-  allSubTasks.forEach((el) => {
-    el.childNodes[0].innerText = event.target.checked ? "100%" : "0%";
-    el.childNodes[1].checked = event.target.checked;
-  });
-  tasksProgressHandler();
-};
 
 export default function Task({ t_id, valueProp, levelProp, completed, projectId }) {
   const taskRef = useRef(null);
