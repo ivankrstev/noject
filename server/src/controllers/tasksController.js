@@ -39,10 +39,52 @@ export const updateTaskValue = async (req, res) => {
   }
 };
 
-export const updateTasksLevels = async (req, res) => {
+export const createTask = async (req, res) => {
+  const dbConn = await db.getConnection();
   try {
+    const { p_id } = req.params;
+    const prev = parseInt(req.body.prev);
+    await dbConn.beginTransaction();
+    const [[{ first_task }]] = await dbConn.execute(
+      "SELECT first_task FROM projects WHERE p_id = ?",
+      [p_id]
+    );
+    if (!first_task) {
+      // If !first_task, it means that the project has no tasks
+      const [{ insertId }] = await dbConn.execute(
+        "INSERT INTO tasks (value, created_by, p_id) VALUES (?, ?, ?)",
+        ["", req.user, p_id]
+      );
+      await dbConn.execute("UPDATE projects SET first_task = ? WHERE p_id = ?", [insertId, p_id]);
+      await dbConn.commit();
+      const [rows] = await dbConn.execute("SELECT * FROM tasks WHERE t_id = ?", [insertId]);
+      if (rows.length === 0) return res.status(500).json({ error: "Oops! Something went wrong" });
+      return res.status(201).json(rows[0]);
+    }
+    if (!prev) return res.status(400).json({ error: "prev is missing or invalid" });
+    const [[{ valid_task }]] = await dbConn.execute(
+      "SELECT EXISTS(SELECT t_id FROM TASKS WHERE p_id = ? AND t_id = ?) as valid_task",
+      [p_id, prev]
+    ); // Check if the target previous task is in the same project as the provided p_id
+    if (!valid_task) return res.status(400).json({ error: "The provided value is invalid" });
+    const [[{ t_id_of_prev_task, next_of_prev_task, level_of_prev_task }]] = await dbConn.execute(
+      "SELECT t_id as t_id_of_prev_task, next as next_of_prev_task, level as level_of_prev_task FROM tasks WHERE t_id = ?",
+      [prev]
+    ); // Get the next pointer and level of the previous task
+    const [{ insertId }] = await dbConn.execute(
+      "INSERT INTO tasks (next, value, level, created_by, p_id) VALUES (?, ?, ?, ?, ?)",
+      [next_of_prev_task, "", level_of_prev_task, req.user, p_id]
+    ); // Create task with level same as the previous task
+    await dbConn.execute("UPDATE tasks SET next = ? WHERE t_id = ?", [insertId, t_id_of_prev_task]); // Update the task(next) that points to the created task
+    await dbConn.commit(); // Commit transaction
+    const [rows] = await dbConn.execute("SELECT * FROM tasks WHERE t_id = ?", [insertId]);
+    if (rows.length === 0) return res.status(500).json({ error: "Oops! Something went wrong" });
+    return res.status(201).json(rows[0]);
   } catch (error) {
     console.error(error);
+    await dbConn.rollback();
     return res.status(500).json({ error: "Oops! Something went wrong" });
+  } finally {
+    dbConn.release();
   }
 };
