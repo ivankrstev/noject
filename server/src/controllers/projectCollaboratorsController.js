@@ -64,6 +64,10 @@ export const removeCollaborator = async (req, res) => {
     ]);
     if (rows[0].affectedRows === 0)
       return res.status(404).json({ error: "Collaborator not found" });
+    req.app
+      .get("io")
+      .in(socketStore.getSocketIds(req.user))
+      .socketsLeave("p-" + p_id);
     return res.status(200).json({ u_id });
   } catch (error) {
     return res.status(500).json({ error: "Oops! Something went wrong" });
