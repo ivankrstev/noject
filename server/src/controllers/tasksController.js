@@ -88,3 +88,28 @@ export const createTask = async (req, res) => {
     dbConn.release();
   }
 };
+
+export const deleteTask = async (req, res) => {
+  const dbConn = await db.getConnection();
+  try {
+    const { t_id } = req.params;
+    await dbConn.beginTransaction();
+    await dbConn.execute(
+      "UPDATE projects SET first_task = (SELECT next FROM tasks WHERE t_id = ?) WHERE p_id = ? AND first_task = ?",
+      [t_id, req.p_id, t_id]
+    );
+    await dbConn.execute(
+      "UPDATE tasks AS t1 JOIN (SELECT next FROM tasks WHERE t_id = ?) AS t2 SET t1.next = t2.next WHERE t1.next = ?;",
+      [t_id, t_id]
+    );
+    await dbConn.execute("DELETE FROM tasks WHERE t_id = ?", [t_id]);
+    dbConn.commit();
+    res.status(200).json({ message: "Task was deleted" });
+  } catch (error) {
+    console.error(error);
+    await dbConn.rollback();
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  } finally {
+    dbConn.release();
+  }
+};
