@@ -23,13 +23,13 @@ export const getAllTasks = async (req, res) => {
 
 export const updateTaskValue = async (req, res) => {
   try {
-    const { p_id, t_id } = req.params;
+    const { t_id } = req.params;
     const { value } = req.body;
-    if (!p_id || p_id === "") return res.status(400).json({ error: "value is missing" });
-    await db.execute("UPDATE tasks SET value = ? WHERE p_id = ? AND t_id = ?", [value, p_id, t_id]);
+    if (!value || value === "") return res.status(400).json({ error: "value is missing" });
+    await db.execute("UPDATE tasks SET value = ? WHERE t_id = ?", [value, t_id]);
     req.app
       .get("io")
-      .to("p-" + p_id)
+      .to("p-" + req.p_id)
       .except(socketStore.getSocketIds(req.user)) // Except all socket ids that belong to the user who updated the task
       .emit("tasks:value-changed", { t_id, value });
     return res.status(200).json({ message: "Task value updated" });
