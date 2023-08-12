@@ -24,7 +24,7 @@ export default function Project({ selectedProject }) {
     const socket = SocketClient.getSocket();
     socket.on("tasks:value-changed", textChangedListener);
     return () => {
-      socket.removeAllListeners("tasks:textChanged");
+      socket.removeAllListeners("tasks:value-changed");
     };
   }, [tasks]);
 

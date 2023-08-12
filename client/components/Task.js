@@ -19,7 +19,7 @@ export default function Task({ t_id, valueProp, levelProp, completed, projectId 
 
   const updateTaskValue = async () => {
     try {
-      const response = await api.put(`/tasks/${projectId}-${t_id}/value`, { value });
+      const response = await api.put(`/tasks/${t_id}/value`, { value });
       console.log(response);
       setOldProps({ ...oldProps, valueProp: value });
     } catch (error) {
@@ -50,7 +50,8 @@ export default function Task({ t_id, valueProp, levelProp, completed, projectId 
         onInput={(e) => setValue(e.target.innerText)}
         onKeyDown={(e) => handleTaskInput(e, taskRef)}
         suppressContentEditableWarning={true}
-        contentEditable={true}>
+        contentEditable={true}
+        style={{ minWidth: valueProp === "" ? "20vw" : "unset" }}>
         {valueProp}
       </div>
     </div>
