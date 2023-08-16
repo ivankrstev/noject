@@ -7,6 +7,7 @@ import accountRouter from "./src/routes/accountRoute.js";
 import projectRouter from "./src/routes/projectRoute.js";
 import projectCollaboratorRouter from "./src/routes/projectCollaboratorRoute.js";
 import tasksRouter from "./src/routes/tasksRoute.js";
+import remindersRouter from "./src/routes/remindersRoute.js";
 import morgan from "morgan";
 import fileUpload from "express-fileupload";
 import { createServer } from "http";
@@ -46,6 +47,7 @@ app.use("/account", accountRouter);
 app.use("/project", projectRouter);
 app.use("/project-collaborators", projectCollaboratorRouter);
 app.use("/tasks", tasksRouter);
+app.use("/reminders", remindersRouter);
 
 /* Error handler middleware */
 app.use((err, req, res, next) => {
