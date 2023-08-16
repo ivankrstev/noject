@@ -14,11 +14,11 @@ export const registerUser = async (req, res) => {
     const [rows] = await db.execute("SELECT u_id FROM users WHERE u_id = ?", [value.email]);
     if (rows.length !== 0) return res.status(409).json({ error: "Email already in use" });
     const hashedPassword = await bcrypt.hash(value.password, 10);
-    const tfa_code = speakeasy.generateSecret().base32;
+    const tfa_token = speakeasy.generateSecret().base32;
     const verification_token = v4();
     await db.execute(
-      "INSERT INTO USERS (u_id, first_name, last_name, password, tfa_code, verification_token) VALUES (?,?,?,?,?,?)",
-      [value.email, value.firstName, value.lastName, hashedPassword, tfa_code, verification_token]
+      "INSERT INTO USERS (u_id, first_name, last_name, password, tfa_token, verification_token) VALUES (?,?,?,?,?,?)",
+      [value.email, value.firstName, value.lastName, hashedPassword, tfa_token, verification_token]
     );
     const [results] = await db.execute(
       "SELECT first_name,last_name,u_id,verification_token FROM users WHERE u_id = ?",
@@ -82,11 +82,11 @@ export const verifyTFA = async (req, res) => {
     if (!userToken) return res.status(400).json({ error: "userToken is missing" });
     const { userId } = jwt.verify(tfaToken, process.env.TFA_JWT_SECRET);
     const u_id = userId;
-    const [rows] = await db.execute("SELECT tfa_code FROM users WHERE u_id = ?", [u_id]);
-    const tfa_code = rows[0].tfa_code;
-    if (!tfa_code) return res.status(400).json({ error: "Oops! Something went wrong" });
+    const [rows] = await db.execute("SELECT tfa_token FROM users WHERE u_id = ?", [u_id]);
+    const tfa_token = rows[0].tfa_token;
+    if (!tfa_token) return res.status(400).json({ error: "Oops! Something went wrong" });
     const verified = speakeasy.totp.verify({
-      secret: tfa_code,
+      secret: tfa_token,
       encoding: "base32",
       token: userToken,
     });
@@ -124,16 +124,15 @@ export const enableTFA = async (req, res) => {
     const { userToken } = req.body;
     if (!userToken) return res.status(400).json({ error: "userToken is missing" });
     const user = req.user;
-    const [rows] = await db.execute("SELECT tfa_code, tfa_activated FROM users WHERE u_id = ?", [
+    const [rows] = await db.execute("SELECT tfa_token, tfa_activated FROM users WHERE u_id = ?", [
       user,
     ]);
     const tfaData = rows[0];
     if (!tfaData) return res.status(500).json({ error: "Oops! Something went wrong" });
     if (parseInt(tfaData.tfa_activated))
       return res.status(400).json({ error: "Two Factor Authentication is already enabled" });
-    console.log(tfaData.tfa_code);
     const verified = speakeasy.totp.verify({
-      secret: tfaData.tfa_code,
+      secret: tfaData.tfa_token,
       encoding: "base32",
       token: userToken,
     });
@@ -151,7 +150,7 @@ export const disableTFA = async (req, res) => {
     const { userToken } = req.body;
     if (!userToken) return res.status(400).json({ error: "userToken is missing" });
     const user = req.user;
-    const [rows] = await db.execute("SELECT tfa_code,tfa_activated FROM users WHERE u_id = ?", [
+    const [rows] = await db.execute("SELECT tfa_token,tfa_activated FROM users WHERE u_id = ?", [
       user,
     ]);
     const tfaData = rows[0];
@@ -159,12 +158,12 @@ export const disableTFA = async (req, res) => {
     if (!parseInt(tfaData.tfa_activated))
       return res.status(400).json({ error: "Two Factor Authentication is already disabled" });
     const verified = speakeasy.totp.verify({
-      secret: tfaData.tfa_code,
+      secret: tfaData.tfa_token,
       encoding: "base32",
       token: userToken,
     });
     if (!verified) return res.status(400).json({ error: "Invalid code entered" });
-    await db.execute("UPDATE users SET tfa_activated = 0, tfa_code = NULL WHERE u_id = ?", [user]);
+    await db.execute("UPDATE users SET tfa_activated = 0, tfa_token = NULL WHERE u_id = ?", [user]);
     return res.status(200).json({ message: "Two Factor Authenitication is disabled" });
   } catch (error) {
     console.error(error);
@@ -180,9 +179,9 @@ export const generateTfaSecret = async (req, res) => {
     if (!tfaData) return res.status(500).json({ error: "Oops! Something went wrong" });
     if (parseInt(tfaData.tfa_activated))
       return res.status(400).json({ error: "Two Factor Authentication is already enabled" });
-    const tfa_code = speakeasy.generateSecret().base32;
-    await db.execute("UPDATE users SET tfa_code = ? WHERE u_id = ?", [tfa_code, user]);
-    return res.status(201).json({ secret: tfa_code });
+    const tfa_token = speakeasy.generateSecret().base32;
+    await db.execute("UPDATE users SET tfa_token = ? WHERE u_id = ?", [tfa_token, user]);
+    return res.status(201).json({ secret: tfa_token });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Oops! Something went wrong" });
