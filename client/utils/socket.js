@@ -17,6 +17,7 @@ class SocketConnector {
   }
 
   getSocket() {
+    if (!this.#socket?.connected) this.#socket.connect();
     return this.#socket;
   }
 }

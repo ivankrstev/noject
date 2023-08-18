@@ -24,7 +24,7 @@ export default function Project({ selectedProject }) {
     const socket = SocketClient.getSocket();
     socket.on("tasks:value-changed", textChangedListener);
     return () => {
-      socket.removeAllListeners("tasks:value-changed");
+      socket.off("tasks:value-changed");
     };
   }, [tasks]);
 
@@ -41,16 +41,46 @@ export default function Project({ selectedProject }) {
   };
   useEffect(() => {
     setTasks(null);
+    const socket = SocketClient.getSocket();
+    const projectRoomJoinListener = () => {
+      socket.emit("projectRoom:join", { p_id: selectedProject.id }, (message) => {
+        if (message?.error) toast.error("Real-Time updates unavailable");
+      });
+    };
     if (selectedProject?.id) {
       getProjectTasks();
-      SocketClient.getSocket().emit("projectRoom:join", { p_id: selectedProject.id }, (message) => {
-        if (message?.error) toast.error("Realtime updates unavailable");
-      });
+      projectRoomJoinListener();
+      socket.io.on("reconnect", projectRoomJoinListener);
     }
     return () => {
-      SocketClient.getSocket().emit("projectRoom:leave", { p_id: selectedProject?.id });
+      socket.emit("projectRoom:leave", { p_id: selectedProject?.id });
+      socket.io.off("reconnect", projectRoomJoinListener);
     };
   }, [selectedProject]);
+
+  useEffect(() => {
+    const socket = SocketClient.getSocket();
+    socket.io.on("reconnect", () => {
+      toast.info("Real-Time Connection Restored", { toastId: "socket-notify" });
+      toast.update("socket-notify", {
+        render: "Real-Time Connection Restored",
+        type: toast.TYPE.INFO,
+        delay: 400,
+        isLoading: false,
+        autoClose: 2000,
+      });
+    });
+    socket.io.on("reconnect_attempt", (attemptNumber) => {
+      if (attemptNumber === 1)
+        toast.error("Real-Time Connection Failed. Retrying", {
+          toastId: "socket-notify",
+          isLoading: true,
+          closeButton: null,
+        });
+      setTimeout(() => toast.dismiss("socket-notify"), 2000);
+    });
+    return () => socket.disconnect();
+  }, []);
 
   return (
     <Fragment>
