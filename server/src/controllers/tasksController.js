@@ -1,6 +1,7 @@
 import db from "../../db/index.js";
 import socketStore from "../sockets/connectedUsers.js";
 import orderTasks from "../utils/orderTasks.js";
+import getAllSubTasksRecursive from "../utils/getAllSubTasksRecursive.js";
 
 export const getAllTasks = async (req, res) => {
   try {
@@ -108,6 +109,37 @@ export const deleteTask = async (req, res) => {
   } catch (error) {
     console.error(error);
     await dbConn.rollback();
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  } finally {
+    dbConn.release();
+  }
+};
+
+export const decreaseLevelOfTasks = async (req, res) => {
+  const dbConn = await db.getConnection();
+  try {
+    const { t_id } = req.params;
+    await dbConn.beginTransaction();
+    const [[{ targetNext, targetLevel }]] = await dbConn.execute(
+      "SELECT level as targetLevel, next as targetNext FROM tasks WHERE t_id = ?",
+      [t_id]
+    );
+    if (targetLevel === 0)
+      return res.status(400).json({ error: "Task is already on minimum level" }); // Don't allow decreasing below 0
+    const [tasks] = await dbConn.execute("SELECT t_id, level, next FROM TASKS WHERE p_id = ?", [
+      req.p_id,
+    ]);
+    // Update the target task with level = level - 1
+    await dbConn.execute("UPDATE tasks SET level = level - 1 WHERE t_id = ?", [t_id]);
+    // Get the subtasks and update their levels with level - 1
+    const subtasks = getAllSubTasksRecursive(targetNext, targetLevel, tasks);
+    subtasks.forEach(async (subtask) => {
+      await dbConn.execute("UPDATE tasks SET level = level - 1 WHERE t_id = ?", [subtask.t_id]);
+    });
+    await dbConn.commit();
+    return res.status(200).send({ message: "Task level decreased" });
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: "Oops! Something went wrong" });
   } finally {
     dbConn.release();
