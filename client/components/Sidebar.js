@@ -5,14 +5,16 @@ import SettingsIcon from "@/public/icons/settings.svg";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
+import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import NewProjectModal from "@/components/NewProjectModal";
 import ModifyProjectModal from "./ModifyProjectModal";
 import { AnimatePresence } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
-import { toast } from "react-toastify";
 import SocketClient from "@/utils/socket";
+import { useRouter } from "next/router";
 
 export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProject }) {
+  const router = useRouter();
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showModifyProjectModal, setShowModifyProjectModal] = useState(false);
   const [modifyProjectId, setModifyProjectId] = useState(null);
@@ -26,8 +28,7 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
       setShowLoader(true);
       setProjects(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.error || error.message || "Error fetching projects");
-      console.error(error);
+      AxiosErrorHandler(error, router, "Error fetching projects");
     }
   };
 
@@ -36,7 +37,7 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
       const response = await api.get("/project/shared");
       setSharedProjects([...response.data]);
     } catch (error) {
-      console.error(error);
+      AxiosErrorHandler(error, router, "Error fetching projects");
     }
   };
 
