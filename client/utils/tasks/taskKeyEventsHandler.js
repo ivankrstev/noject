@@ -1,14 +1,13 @@
-import increaseLevel from "./increaseTaskLevel";
-import decreaseLevel from "./decreaseTaskLevel";
+import increaseTaskLevel from "./increaseTaskLevel";
+import decreaseTaskLevel from "./decreaseTaskLevel";
 
 export default function handleTaskInput(e, taskRef) {
-  console.log("======================================================");
   if (e.shiftKey && e.key === "Tab") {
     e.preventDefault();
-    if (e.target.parentNode.getAttribute("level") !== "0") decreaseLevel(taskRef);
+    if (e.target.parentNode.getAttribute("level") !== "0") decreaseTaskLevel(taskRef);
   } else if (e.key === "Tab") {
     e.preventDefault();
-    increaseLevel(taskRef);
+    increaseTaskLevel(taskRef);
   } else if (e.key === "Enter") {
     e.preventDefault();
     console.log("Enter new task!");
@@ -22,5 +21,4 @@ export default function handleTaskInput(e, taskRef) {
     e.target.parentNode.previousSibling?.lastChild.focus({ focusVisible: true });
   }
   console.log(e.key);
-  console.log(e.target);
 }

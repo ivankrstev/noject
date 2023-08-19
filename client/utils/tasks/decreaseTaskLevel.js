@@ -1,7 +1,7 @@
 import tasksProgressHandler, { getAllSubTasks } from "@/utils/tasks/tasksProgressHandler";
 import api from "../api";
 
-export default function decreaseLevel(taskRef) {
+export default function decreaseTaskLevel(taskRef) {
   const taskElement = taskRef.current;
   decreaseLevelApiRequest(taskElement.id);
   const currentLevel = parseInt(taskElement.getAttribute("level"));

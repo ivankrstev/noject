@@ -1,6 +1,6 @@
 import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
 
-export default function increaseLevel(taskRef) {
+export default function increaseTaskLevel(taskRef) {
   const taskElement = taskRef.current;
   const currentLevel = parseInt(taskElement.getAttribute("level"));
   const prevLevel = parseInt(taskElement.previousSibling?.getAttribute("level"));
