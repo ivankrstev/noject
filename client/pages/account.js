@@ -11,16 +11,7 @@ import api from "@/utils/api";
 import { toast } from "react-toastify";
 import GridLoader from "react-spinners/BeatLoader";
 import { useRouter } from "next/router";
-
-const catchError = (error, router) => {
-  console.error("error;", error);
-  if (error.code === "ERR_NETWORK") toast.error("Network Error");
-  else if (error.logInAgain) {
-    toast.error("Please log in");
-    router?.push("/login");
-  } else if (error.response) toast.error(error.response.data.error);
-  else toast.error("Oops! Something went wrong");
-};
+import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 
 export default function account() {
   const [tfaPage, setTfaPage] = useState(2);
@@ -42,7 +33,7 @@ export default function account() {
       setOpenModal(false);
       toast.success(response.data.message);
     } catch (error) {
-      catchError(error, router);
+      AxiosErrorHandler(error, router);
     }
   };
 
@@ -67,7 +58,7 @@ export default function account() {
       const responsePic = await api.get("/account/picture/get", { responseType: "blob" });
       convertImageToBase64(responsePic);
     } catch (error) {
-      catchError(error, router);
+      AxiosErrorHandler(error, router);
     }
   };
 
@@ -83,7 +74,7 @@ export default function account() {
       toast.success(response.data.message);
       document.querySelector("#change-password-form").reset();
     } catch (error) {
-      catchError(error, router);
+      AxiosErrorHandler(error, router);
     }
   };
 
@@ -108,8 +99,7 @@ export default function account() {
           const response = await api.post("/tfa/generate");
           setQrSecret(response.data.secret);
         } catch (error) {
-          toast.error(error.response?.data.error);
-          console.error(error);
+          AxiosErrorHandler(error, router);
         }
       };
       generateTfaSecret();
@@ -194,7 +184,7 @@ export default function account() {
                       const response = await api.post("/send-verify");
                       toast.success(response.data.message);
                     } catch (error) {
-                      catchError(error);
+                      AxiosErrorHandler(error, router);
                     }
                   }}>
                   Send confirmation link
