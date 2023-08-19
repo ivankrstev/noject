@@ -219,7 +219,7 @@ export const signOut = async (req, res) => {
       user,
       refreshToken,
     ]);
-    return res.clearCookie("refreshToken").redirect("/login");
+    return res.clearCookie("refreshToken").json({ message: "Successfully logged out" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Oops! Something went wrong" });

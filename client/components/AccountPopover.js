@@ -5,6 +5,8 @@ import BlankProfilePic from "@/public/icons/account_circle.svg";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 const closeProfilePopover = (event) => {
   if (
@@ -19,10 +21,21 @@ const closeProfilePopover = (event) => {
 
 export default function AccountPopover() {
   const [image, setImage] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     loadProfilePicture();
   }, []);
+
+  const signOut = async () => {
+    try {
+      await api.delete("/signout", { withCredentials: true });
+      toast.success("Successfully logged out");
+      router.push("/login/");
+    } catch (error) {
+      toast.error("Oops! Something went wrong");
+    }
+  };
 
   const loadProfilePicture = async () => {
     try {
@@ -69,7 +82,7 @@ export default function AccountPopover() {
       </button>
       <div id='profilePopover' className={styles.profilePopover}>
         <Link href='/account'>My account</Link>
-        <button>Sign out</button>
+        <button onClick={() => signOut()}>Sign out</button>
       </div>
     </div>
   );
