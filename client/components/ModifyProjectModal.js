@@ -8,8 +8,11 @@ import moment from "moment/moment";
 import ChangeCollaboratorsModal from "./ChangeCollaboratorsModal";
 import CollaboratorsIcon from "@/public/icons/group_users.svg";
 import DeleteIcon from "@/public/icons/delete.svg";
+import { useRouter } from "next/router";
+import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 
 export default function ModifyProjectModal({ closeModal, modifyProjectId, projects, setProjects }) {
+  const router = useRouter();
   const [projectData, setProjectData] = useState();
   const [newProjectName, setNewProjectName] = useState();
   const [showCollaboratorsModal, setCollaboratorsModal] = useState(false);
@@ -20,8 +23,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
       const response = await api.get("/project/" + projectId);
       setProjectData(response.data);
     } catch (error) {
-      console.error(error);
-      toast.error("Error getting project");
+      AxiosErrorHandler(error, router, "Error getting project");
     }
   };
 
@@ -60,8 +62,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
       setProjects([...projects]);
       toast.success("Project name updated");
     } catch (error) {
-      console.error(error);
-      toast.error(error?.response?.data.error || error.message);
+      AxiosErrorHandler(error, router);
     }
   };
 
@@ -74,8 +75,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
       setProjects([...projects]);
       closeModal();
     } catch (error) {
-      console.error(error);
-      toast.error(error?.response?.data.error || error.message);
+      AxiosErrorHandler(error, router);
     }
   };
 
@@ -93,7 +93,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
         setShareLinkProject(null);
       }
     } catch (error) {
-      toast.error(error?.response?.data.error || error.message);
+      AxiosErrorHandler(error, router);
     }
   };
 

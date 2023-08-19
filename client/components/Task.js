@@ -3,9 +3,11 @@ import handleTaskInput from "@/utils/tasks/taskKeyEventsHandler";
 import handleCheckBoxChange from "@/utils/tasks/handleCheckBoxChange";
 import { useRef, useEffect, useState } from "react";
 import api from "@/utils/api";
-import { toast } from "react-toastify";
+import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
+import { useRouter } from "next/router";
 
-export default function Task({ t_id, valueProp, levelProp, completed, projectId }) {
+export default function Task({ t_id, valueProp, levelProp, completed }) {
+  const router = useRouter();
   const taskRef = useRef(null);
   const [oldProps, setOldProps] = useState({ valueProp });
   const [value, setValue] = useState(valueProp);
@@ -23,12 +25,13 @@ export default function Task({ t_id, valueProp, levelProp, completed, projectId 
       console.log(response);
       setOldProps({ ...oldProps, valueProp: value });
     } catch (error) {
-      toast.error(error.response?.data?.error || error.message || "Error updating task");
+      AxiosErrorHandler(error, router, "Error updating task");
     }
   };
 
   return (
     <div
+      id={t_id}
       ref={taskRef}
       level={levelProp}
       style={{ marginLeft: (levelProp * 1.1).toFixed(1) + "em" }}

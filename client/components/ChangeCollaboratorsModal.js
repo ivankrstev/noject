@@ -8,8 +8,11 @@ import AddCollaboratorIcon from "@/public/icons/person_add_FILL1.svg";
 import RemoveCollaboratorIcon from "@/public/icons/person_remove_fill1.svg";
 import api from "@/utils/api";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
+import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 
 export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modifyProjectId }) {
+  const router = useRouter();
   const [collaborators, setCollaborators] = useState([]);
   const [searchData, setSearchData] = useState([]);
   const [search, setSearch] = useState(null);
@@ -23,7 +26,7 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
       setCollaborators([...collaborators, response.data]);
       toast.success("Collaborator added");
     } catch (error) {
-      toast.error(error?.response?.data.error || error.message);
+      AxiosErrorHandler(error, router);
     }
   };
 
@@ -37,7 +40,7 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
       collaborators.splice(indexToDelete, 1);
       setCollaborators([...collaborators]);
     } catch (error) {
-      toast.error(error?.response?.data.error || error.message);
+      AxiosErrorHandler(error, router);
     }
   };
 
@@ -46,7 +49,7 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
       const response = await api.get("/project-collaborators/" + modifyProjectId);
       if (response.data.length !== 0) setCollaborators(response.data);
     } catch (error) {
-      toast.error(error?.response?.data.error || error.message);
+      AxiosErrorHandler(error, router);
     }
   };
 
@@ -65,7 +68,7 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
           );
           setSearchData(response.data);
         } catch (error) {
-          toast.error(error?.response?.data.error || error.message);
+          AxiosErrorHandler(error, router);
         }
       }, 1000);
     return () => searchTimeout && clearTimeout(searchTimeout);

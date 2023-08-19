@@ -6,8 +6,11 @@ import api from "@/utils/api";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
 import SocketClient from "@/utils/socket";
+import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
+import { useRouter } from "next/router";
 
 export default function Project({ selectedProject }) {
+  const router = useRouter();
   const [tasks, setTasks] = useState();
 
   const textChangedListener = (data) => {
@@ -36,9 +39,10 @@ export default function Project({ selectedProject }) {
         setTasks(response.data);
       }
     } catch (error) {
-      toast.error(error.response?.data?.error || error.message || "Error fetching tasks");
+      AxiosErrorHandler(error, router, "Error fetching tasks");
     }
   };
+
   useEffect(() => {
     setTasks(null);
     const socket = SocketClient.getSocket();
