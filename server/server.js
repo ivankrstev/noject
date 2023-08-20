@@ -38,9 +38,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 
-app.use(
-  morgan(":date :method :url :status :remote-addr | : res[content - length] - : response - time ms")
-);
+app.use(morgan(":date :method :url :status - :total-time ms"));
 
 app.use(authRouter);
 app.use("/account", accountRouter);
