@@ -1,7 +1,6 @@
 import styles from "@/styles/Navbar.module.css";
 import Image from "next/image";
 import openMenuIcon from "@/public/icons/open-menu.svg";
-import ProjectSettingsPopover from "./ProjectSettingsPopover";
 import AccountPopover from "./AccountPopover";
 import Link from "next/link";
 
@@ -25,7 +24,6 @@ export default function Navbar(props) {
             Go to dashboard
           </Link>
         )}
-        <ProjectSettingsPopover />
         <AccountPopover />
       </div>
     </div>
