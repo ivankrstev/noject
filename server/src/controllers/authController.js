@@ -7,6 +7,7 @@ import speakeasy from "speakeasy";
 const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 import { v4 } from "uuid";
 import sendVerifyEmail from "../utils/sendVerifyEmail.js";
+import sendResetPwEmail from "../utils/sendResetPwEmail.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -265,6 +266,30 @@ export const sendVerifyEmailLink = async (req, res) => {
     if (results.length === 0) return res.status(500).json({ error: "Oops! Something went wrong" });
     sendVerifyEmail(results[0]);
     return res.status(200).json({ message: "Confirmation email sent" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || email === "") return res.status(400).json({ error: "email can't be empty" });
+    const reset_token = v4();
+    const resetTokenExpiration = new Date(Date.now() + 3600000);
+    const [rows] = await db.execute(
+      "UPDATE users SET reset_token = ?, reset_token_expiration = ? WHERE u_id = ?",
+      [reset_token, resetTokenExpiration, email]
+    );
+    if (rows.affectedRows === 0) return res.status(404).json({ error: "User was not found" });
+    const [[user]] = await db.execute(
+      "SELECT u_id, first_name, last_name, reset_token FROM users WHERE u_id = ?",
+      [email]
+    );
+    if (!user) return res.status(404).json({ error: "User was not found" });
+    sendResetPwEmail(user);
+    return res.status(201).json({ message: "Reset link was sent" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Oops! Something went wrong" });
