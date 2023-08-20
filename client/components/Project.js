@@ -52,6 +52,7 @@ export default function Project({ selectedProject }) {
       });
     };
     if (selectedProject?.id) {
+      document.querySelector("#projectProgressSpan").innerText = "";
       getProjectTasks();
       projectRoomJoinListener();
       socket.io.on("reconnect", projectRoomJoinListener);
@@ -111,7 +112,21 @@ export default function Project({ selectedProject }) {
                     />
                   ))
                 ) : (
-                  <p>No tasks</p>
+                  <div style={{ marginTop: "6em", textAlign: "center" }}>
+                    <p>No tasks</p>
+                    <button
+                      className={styles.newTaskBtn}
+                      onClick={async () => {
+                        try {
+                          const response = await api.post(`/tasks/${selectedProject.id}`);
+                          setTasks([response.data]);
+                        } catch (error) {
+                          AxiosErrorHandler(error, router);
+                        }
+                      }}>
+                      Create new task
+                    </button>
+                  </div>
                 )}
               </Fragment>
             </div>

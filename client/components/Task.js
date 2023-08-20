@@ -13,7 +13,7 @@ export default function Task({ t_id, valueProp, levelProp, completed }) {
   const [value, setValue] = useState(valueProp);
 
   useEffect(() => {
-    if (value && value !== oldProps.valueProp) {
+    if (value && value !== oldProps.valueProp && value.replace(/\s+/g, "") !== "") {
       const debounceTaskValue = setTimeout(() => updateTaskValue(), 1000);
       return () => clearTimeout(debounceTaskValue);
     }
