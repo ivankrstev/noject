@@ -11,6 +11,8 @@ import {
   sendVerifyEmailLink,
   verifyEmail,
   forgotPassword,
+  isResetTokenValid,
+  resetPasswordWithToken,
 } from "../controllers/authController.js";
 import authenticateUser from "../middlewares/authenticateUser.js";
 
@@ -21,6 +23,8 @@ router.get("/verify-email", verifyEmail);
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/forgot-password", forgotPassword);
+router.get("/reset-password/:reset_token", isResetTokenValid);
+router.post("/reset-password/:reset_token", resetPasswordWithToken);
 router.post("/tfa/verify", verifyTFA);
 router.post("/refresh-token", refreshToken);
 router.put("/tfa/enable", authenticateUser, enableTFA);

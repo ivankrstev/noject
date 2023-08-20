@@ -8,6 +8,7 @@ const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + strin
 import { v4 } from "uuid";
 import sendVerifyEmail from "../utils/sendVerifyEmail.js";
 import sendResetPwEmail from "../utils/sendResetPwEmail.js";
+import resetPasswordSchema from "../schemas/resetPasswordSchema.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -292,6 +293,56 @@ export const forgotPassword = async (req, res) => {
     return res.status(201).json({ message: "Reset link was sent" });
   } catch (error) {
     console.error(error);
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
+
+export const isResetTokenValid = async (req, res) => {
+  try {
+    const { reset_token } = req.params;
+    if (!reset_token || reset_token === "")
+      return res.status(400).json({ error: "The link is expired or invalid" });
+    const [[result]] = await db.execute(
+      "SELECT reset_token_expiration > NOW() as reset_token_valid FROM users WHERE reset_token = ?",
+      [reset_token]
+    );
+    if (!result || !result.reset_token_valid)
+      return res.status(400).json({ error: "The link is expired or invalid" });
+    return res.status(200).json({ message: "The link is valid" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
+
+export const resetPasswordWithToken = async (req, res) => {
+  try {
+    const { reset_token } = req.params;
+    if (!reset_token || reset_token === "")
+      return res.status(400).json({ error: "The link is expired or invalid" });
+    const value = await resetPasswordSchema.validateAsync(req.body);
+    const hashedPassword = await bcrypt.hash(value.password, 10);
+    const [rows] = await db.execute(
+      "UPDATE users SET password = ? WHERE reset_token = ? AND reset_token_expiration > NOW()",
+      [hashedPassword, reset_token]
+    );
+    if (rows.affectedRows === 0)
+      return res.status(400).json({ message: "Invalid or expired token" });
+    await db.execute(
+      "DELETE FROM refresh_tokens WHERE u_id IN (SELECT u_id FROM users WHERE reset_token = ?)",
+      [reset_token]
+    );
+    await db.execute(
+      "UPDATE users SET reset_token_expiration = NULL, reset_token = NULL WHERE reset_token = ?",
+      [reset_token]
+    );
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error(error);
+    if (error instanceof Joi.ValidationError)
+      return res
+        .status(400)
+        .json({ error: capitalizeFirstLetter(error.details[0].message.replaceAll(`"`, ``)) });
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
 };
