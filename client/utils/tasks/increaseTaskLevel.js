@@ -1,7 +1,9 @@
 import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
+import api from "../api";
 
 export default function increaseTaskLevel(taskRef) {
   const taskElement = taskRef.current;
+  increaseLevelApiRequest(taskElement.id);
   const currentLevel = parseInt(taskElement.getAttribute("level"));
   const prevLevel = parseInt(taskElement.previousSibling?.getAttribute("level"));
   if (currentLevel <= prevLevel) {
@@ -10,3 +12,11 @@ export default function increaseTaskLevel(taskRef) {
   }
   tasksProgressHandler();
 }
+
+export const increaseLevelApiRequest = async (t_id) => {
+  try {
+    await api.put(`/tasks/${t_id}/increase-level`);
+  } catch (error) {
+    console.error(error);
+  }
+};
