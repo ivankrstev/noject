@@ -1,5 +1,6 @@
 import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
 import api from "../api";
+import AxiosErrorHandler from "../AxiosErrorHandler";
 
 export default function increaseTaskLevel(taskRef) {
   const taskElement = taskRef.current;
@@ -17,6 +18,6 @@ export const increaseLevelApiRequest = async (t_id) => {
   try {
     await api.put(`/tasks/${t_id}/increase-level`);
   } catch (error) {
-    console.error(error);
+    AxiosErrorHandler(error);
   }
 };
