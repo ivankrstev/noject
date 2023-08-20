@@ -145,3 +145,27 @@ export const decreaseLevelOfTasks = async (req, res) => {
     dbConn.release();
   }
 };
+
+export const increaseLevelOfTasks = async (req, res) => {
+  const dbConn = await db.getConnection();
+  try {
+    const { t_id } = req.params;
+    await dbConn.beginTransaction();
+    const [[{ targetLevel, prevTaskLevel }]] = await dbConn.execute(
+      "SELECT level as targetLevel, (SELECT level FROM tasks WHERE next = ?) as prevTaskLevel FROM tasks WHERE t_id = ?",
+      [t_id, t_id]
+    );
+    if (prevTaskLevel === null || targetLevel > prevTaskLevel)
+      return res.status(400).json({ error: "Task is already on maximum level" }); // Don't allow increasing
+    // Update the target task with level = level + 1
+    await dbConn.execute("UPDATE tasks SET level = level + 1 WHERE t_id = ?", [t_id]);
+    await dbConn.commit();
+    return res.status(200).send({ message: "Task level decreased" });
+  } catch (error) {
+    console.error(error);
+    await dbConn.rollback();
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  } finally {
+    dbConn.release();
+  }
+};
