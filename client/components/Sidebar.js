@@ -42,6 +42,18 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
   };
 
   useEffect(() => {
+    const localStorageSelectedProject = JSON.parse(localStorage.getItem("selectedProject"));
+    if (localStorageSelectedProject) {
+      const id = parseInt(localStorageSelectedProject.id);
+      let isValidProject = false;
+      if (projects.length !== 0) isValidProject = projects.some((project) => project.p_id === id);
+      if (sharedProjects.length !== 0 && !isValidProject)
+        isValidProject = sharedProjects.some((sharedProject) => sharedProject.p_id === id);
+      isValidProject && setSelectedProject(localStorageSelectedProject);
+    }
+  }, [projects, sharedProjects]);
+
+  useEffect(() => {
     const orderProjectsSelect = document.getElementById("orderProjectsSelect");
     if (!localStorage.getItem("OrderProjects")) localStorage.setItem("OrderProjects", "name_a-z");
     const orderProjectsSavedType = localStorage.getItem("OrderProjects");
@@ -127,12 +139,12 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
               id={project.p_id}
               className={styles.sidebarProjectItem}
               title={project.name}
-              onClick={(e) =>
-                setSelectedProject({
-                  id: e.currentTarget.id,
-                  name: e.currentTarget.childNodes[1].textContent,
-                })
-              }>
+              onClick={(e) => {
+                const id = e.currentTarget.id;
+                const name = e.currentTarget.childNodes[1].textContent;
+                localStorage.setItem("selectedProject", JSON.stringify({ id, name }));
+                setSelectedProject({ id, name });
+              }}>
               <span
                 style={{ color: project.color, backgroundColor: project.background_color }}
                 className={styles.sidebarProjectSquare}>
@@ -158,12 +170,12 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
             id={project.p_id}
             className={styles.sidebarProjectItem}
             title={project.name}
-            onClick={(e) =>
-              setSelectedProject({
-                id: e.currentTarget.id,
-                name: e.currentTarget.lastChild.textContent,
-              })
-            }>
+            onClick={(e) => {
+              const id = e.currentTarget.id;
+              const name = e.currentTarget.lastChild.textContent;
+              localStorage.setItem("selectedProject", JSON.stringify({ id, name }));
+              setSelectedProject({ id, name });
+            }}>
             <span
               style={{ color: project.color, backgroundColor: project.background_color }}
               className={styles.sidebarProjectSquare}>
