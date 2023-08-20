@@ -139,7 +139,7 @@ export const decreaseLevelOfTasks = async (req, res) => {
     await dbConn.commit();
     return res.status(200).send({ message: "Task level decreased" });
   } catch (error) {
-    console.error(error);
+    await dbConn.rollback();
     return res.status(500).json({ error: "Oops! Something went wrong" });
   } finally {
     dbConn.release();
