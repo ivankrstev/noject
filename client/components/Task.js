@@ -10,7 +10,7 @@ import { AnimatePresence } from "framer-motion";
 import SettingsIcon from "@/public/icons/settings.svg";
 import Image from "next/image";
 
-export default function Task({ t_id, valueProp, levelProp, completed }) {
+export default function Task({ t_id, valueProp, levelProp, completed, projectId }) {
   const router = useRouter();
   const taskRef = useRef(null);
   const [oldProps, setOldProps] = useState({ valueProp });
@@ -61,7 +61,7 @@ export default function Task({ t_id, valueProp, levelProp, completed }) {
         title='Task text'
         className={styles.taskText}
         onInput={(e) => setValue(e.target.innerText)}
-        onKeyDown={(e) => handleTaskInput(e, taskRef)}
+        onKeyDown={(e) => handleTaskInput(e, taskRef, projectId)}
         suppressContentEditableWarning={true}
         contentEditable={true}
         style={{ minWidth: valueProp === "" ? "20vw" : "unset" }}>
