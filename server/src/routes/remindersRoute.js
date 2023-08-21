@@ -1,10 +1,16 @@
 import { Router } from "express";
 import verifyTaskAccess from "../middlewares/verifyTaskAccess.js";
 import authenticateUser from "../middlewares/authenticateUser.js";
-import { getReminder } from "../controllers/remindersController.js";
+import {
+  createReminder,
+  deleteReminder,
+  updateReminder,
+} from "../controllers/remindersController.js";
 
 const router = Router();
 
-router.get("/:t_id", authenticateUser, verifyTaskAccess, getReminder);
+router.post("/:t_id", authenticateUser, verifyTaskAccess, createReminder);
+router.put("/:t_id", authenticateUser, verifyTaskAccess, updateReminder);
+router.delete("/:t_id", authenticateUser, verifyTaskAccess, deleteReminder);
 
 export default router;

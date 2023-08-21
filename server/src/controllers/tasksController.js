@@ -178,7 +178,7 @@ export const getTaskInfo = async (req, res) => {
       [t_id]
     );
     const [[reminder]] = await db.execute(
-      "SELECT reminder_time, type, when_to_remind FROM reminders WHERE rt_id = ? AND ru_id = ?",
+      "SELECT reminder_time, when_to_remind FROM reminders WHERE rt_id = ? AND ru_id = ?",
       [t_id, req.user]
     );
     return res.status(200).json({ task, reminder });
