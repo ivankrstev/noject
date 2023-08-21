@@ -1,7 +1,9 @@
 import increaseTaskLevel from "./increaseTaskLevel";
 import decreaseTaskLevel from "./decreaseTaskLevel";
+import AxiosErrorHandler from "../AxiosErrorHandler";
+import api from "../api";
 
-export default function handleTaskInput(e, taskRef) {
+export default function handleTaskInput(e, taskRef, projectId) {
   if (e.shiftKey && e.key === "Tab") {
     e.preventDefault();
     if (e.target.parentNode.getAttribute("level") !== "0") decreaseTaskLevel(taskRef);
@@ -10,9 +12,9 @@ export default function handleTaskInput(e, taskRef) {
     increaseTaskLevel(taskRef);
   } else if (e.key === "Enter") {
     e.preventDefault();
-    console.log("Enter new task!");
+    handleTaskCreating(projectId, taskRef.current.id);
   } else if (e.key === "Delete") {
-    console.log("Delete the task");
+    handleTaskDeleting(taskRef.current.id);
   } else if (e.key === "ArrowDown") {
     e.preventDefault();
     e.target.parentNode.nextSibling?.lastChild.focus({ focusVisible: true });
@@ -22,3 +24,20 @@ export default function handleTaskInput(e, taskRef) {
   }
   console.log(e.key);
 }
+
+const handleTaskCreating = async (projectId, prev) => {
+  try {
+    await api.post(`/tasks/${projectId}`, { prev });
+  } catch (error) {
+    console.error(error);
+    AxiosErrorHandler(error);
+  }
+};
+const handleTaskDeleting = async (t_id) => {
+  try {
+    await api.delete(`/tasks/${t_id}`);
+  } catch (error) {
+    console.error(error);
+    AxiosErrorHandler(error);
+  }
+};
