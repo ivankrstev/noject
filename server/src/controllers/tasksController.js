@@ -169,3 +169,21 @@ export const increaseLevelOfTasks = async (req, res) => {
     dbConn.release();
   }
 };
+
+export const getTaskInfo = async (req, res) => {
+  try {
+    const { t_id } = req.params;
+    const [[task]] = await db.execute(
+      "SELECT creation_date, created_by, completed, completed_by FROM TASKS WHERE t_id = ?",
+      [t_id]
+    );
+    const [[reminder]] = await db.execute(
+      "SELECT reminder_time, type, when_to_remind FROM reminders WHERE rt_id = ? AND ru_id = ?",
+      [t_id, req.user]
+    );
+    return res.status(200).json({ task, reminder });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};
