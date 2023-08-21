@@ -21,6 +21,11 @@ export default function NewProjectModal({ closeModal, projects, setProjects }) {
     try {
       await new Promise((resolve) => setTimeout(resolve, 400));
       const response = await api.post("/project/create", { name });
+      if (projects.length === 0) {
+        setProjects([{ ...response.data }]);
+        closeModal();
+        return;
+      }
       const orderProjectsSavedType = localStorage.getItem("OrderProjects");
       if (orderProjectsSavedType === "creation_date_asc") setProjects([...projects, response.data]);
       else if (orderProjectsSavedType === "creation_date_desc")
