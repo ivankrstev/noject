@@ -15,7 +15,9 @@ import { Server } from "socket.io";
 import handleSocketIO from "./src/sockets/index.js";
 import authenticateUserSocket from "./src/middlewares/authenticateUserSocket.js";
 import parseSocketCookies from "./src/middlewares/parseSocketCookies.js";
+import runCronJob from "./src/cron/index.js";
 
+runCronJob();
 const app = express();
 config();
 
