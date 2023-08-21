@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 export default function Project({ selectedProject }) {
   const router = useRouter();
   const [tasks, setTasks] = useState();
+  const [updateTasks, setUpdateTasks] = useState(false);
 
   const textChangedListener = (data) => {
     const { t_id, value } = data;
@@ -89,7 +90,27 @@ export default function Project({ selectedProject }) {
 
   return (
     <Fragment>
-      <div id='projectMainDiv' className={styles.projectMain}>
+      <div
+        id='projectMainDiv'
+        style={{ position: updateTasks ? "relative" : "unset" }}
+        className={styles.projectMain}>
+        {updateTasks && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              width: "100%",
+              backgroundColor: "rgba(255,255,255,0.6)",
+              zIndex: 1500,
+            }}>
+            <HashLoader
+              style={{ left: "50%", top: "50%", position: "absolute" }}
+              size={120}
+              color='#0570eb'
+            />
+          </div>
+        )}
         {selectedProject && (
           <div className={styles.projectHeaderDiv}>
             <h2>{selectedProject.name}</h2>
