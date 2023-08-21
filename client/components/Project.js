@@ -23,12 +23,19 @@ export default function Project({ selectedProject }) {
     }
   };
 
+  const tasksReloadRequired = () => {
+    setUpdateTasks(true);
+    getProjectTasks();
+  };
+
   useEffect(() => {
     if (tasks && tasks.length !== 0) tasksProgressHandler();
     const socket = SocketClient.getSocket();
     socket.on("tasks:value-changed", textChangedListener);
+    socket.on("tasks:reload-required", tasksReloadRequired);
     return () => {
       socket.off("tasks:value-changed");
+      socket.off("tasks:reload-required");
     };
   }, [tasks]);
 
@@ -38,6 +45,7 @@ export default function Project({ selectedProject }) {
       if (selectedProject) {
         const response = await api.get("/tasks/" + selectedProject.id);
         setTasks(response.data);
+        setUpdateTasks(false);
       }
     } catch (error) {
       AxiosErrorHandler(error, router, "Error fetching tasks");
