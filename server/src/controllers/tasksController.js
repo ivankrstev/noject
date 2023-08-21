@@ -80,6 +80,10 @@ export const createTask = async (req, res) => {
     await dbConn.commit(); // Commit transaction
     const [rows] = await dbConn.execute("SELECT * FROM tasks WHERE t_id = ?", [insertId]);
     if (rows.length === 0) return res.status(500).json({ error: "Oops! Something went wrong" });
+    req.app
+      .get("io")
+      .to("p-" + p_id)
+      .emit("tasks:reload-required");
     return res.status(201).json(rows[0]);
   } catch (error) {
     console.error(error);
@@ -105,6 +109,10 @@ export const deleteTask = async (req, res) => {
     );
     await dbConn.execute("DELETE FROM tasks WHERE t_id = ?", [t_id]);
     dbConn.commit();
+    req.app
+      .get("io")
+      .to("p-" + req.p_id)
+      .emit("tasks:reload-required");
     res.status(200).json({ message: "Task was deleted" });
   } catch (error) {
     console.error(error);
@@ -137,6 +145,10 @@ export const decreaseLevelOfTasks = async (req, res) => {
       await dbConn.execute("UPDATE tasks SET level = level - 1 WHERE t_id = ?", [subtask.t_id]);
     });
     await dbConn.commit();
+    req.app
+      .get("io")
+      .to("p-" + req.p_id)
+      .emit("tasks:reload-required");
     return res.status(200).send({ message: "Task level decreased" });
   } catch (error) {
     await dbConn.rollback();
@@ -160,6 +172,10 @@ export const increaseLevelOfTasks = async (req, res) => {
     // Update the target task with level = level + 1
     await dbConn.execute("UPDATE tasks SET level = level + 1 WHERE t_id = ?", [t_id]);
     await dbConn.commit();
+    req.app
+      .get("io")
+      .to("p-" + req.p_id)
+      .emit("tasks:reload-required");
     return res.status(200).send({ message: "Task level decreased" });
   } catch (error) {
     console.error(error);
