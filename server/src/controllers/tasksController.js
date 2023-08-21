@@ -203,3 +203,23 @@ export const getTaskInfo = async (req, res) => {
     return res.status(500).json({ error: "Oops! Something went wrong" });
   }
 };
+
+export const toggleCompletion = async (req, res) => {
+  try {
+    const { t_id } = req.params;
+    const [rows] = await db.execute(
+      "UPDATE tasks SET completed_by = CASE WHEN completed = 0 THEN ? ELSE NULL END, completed = NOT completed WHERE t_id = ?",
+      [req.user, t_id]
+    );
+    if (rows.affectedRows === 0)
+      return res.status(500).json({ error: "Oops! Something went wrong" });
+    req.app
+      .get("io")
+      .to("p-" + req.p_id)
+      .emit("tasks:reload-required");
+    return res.status(200).json({ message: "Task completion changed" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Oops! Something went wrong" });
+  }
+};

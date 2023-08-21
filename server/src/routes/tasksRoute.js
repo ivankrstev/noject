@@ -8,6 +8,7 @@ import {
   increaseLevelOfTasks,
   decreaseLevelOfTasks,
   getTaskInfo,
+  toggleCompletion,
 } from "../controllers/tasksController.js";
 import verifyProjectAccess from "../middlewares/verifyProjectAccess.js";
 import verifyTaskAccess from "../middlewares/verifyTaskAccess.js";
@@ -18,6 +19,7 @@ router.get("/:p_id", authenticateUser, verifyProjectAccess, getAllTasks);
 router.get("/details/:t_id", authenticateUser, verifyTaskAccess, getTaskInfo);
 router.put("/:t_id/value", authenticateUser, verifyTaskAccess, updateTaskValue);
 router.put("/:t_id/increase-level", authenticateUser, verifyTaskAccess, increaseLevelOfTasks);
+router.put("/:t_id/toggle-complete", authenticateUser, verifyTaskAccess, toggleCompletion);
 router.put("/:t_id/decrease-level", authenticateUser, verifyTaskAccess, decreaseLevelOfTasks);
 router.post("/:p_id", authenticateUser, verifyProjectAccess, createTask);
 router.delete("/:t_id", authenticateUser, verifyTaskAccess, deleteTask);
