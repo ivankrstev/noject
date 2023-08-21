@@ -205,12 +205,32 @@ export const getTaskInfo = async (req, res) => {
 };
 
 export const toggleCompletion = async (req, res) => {
+  const dbConn = await db.getConnection();
   try {
+    await dbConn.beginTransaction();
     const { t_id } = req.params;
+    const [[isCompleted]] = await dbConn.execute("SELECT completed FROM tasks WHERE t_id = ?", [
+      t_id,
+    ]);
     const [rows] = await db.execute(
       "UPDATE tasks SET completed_by = CASE WHEN completed = 0 THEN ? ELSE NULL END, completed = NOT completed WHERE t_id = ?",
       [req.user, t_id]
     );
+    const [[{ targetNext, targetLevel }]] = await dbConn.execute(
+      "SELECT level as targetLevel, next as targetNext FROM tasks WHERE t_id = ?",
+      [t_id]
+    );
+    const [tasks] = await dbConn.execute("SELECT t_id, level, next FROM TASKS WHERE p_id = ?", [
+      req.p_id,
+    ]);
+    const subtasks = getAllSubTasksRecursive(targetNext, targetLevel, tasks);
+    subtasks.forEach(async (subtask) => {
+      await dbConn.execute(
+        "UPDATE tasks SET completed_by = CASE WHEN completed = 0 THEN ? ELSE NULL END, completed = ? WHERE t_id = ?",
+        [req.user, !isCompleted.completed, subtask.t_id]
+      );
+    });
+    await dbConn.commit();
     if (rows.affectedRows === 0)
       return res.status(500).json({ error: "Oops! Something went wrong" });
     req.app
@@ -220,6 +240,9 @@ export const toggleCompletion = async (req, res) => {
     return res.status(200).json({ message: "Task completion changed" });
   } catch (error) {
     console.error(error);
+    await dbConn.rollback();
     return res.status(500).json({ error: "Oops! Something went wrong" });
+  } finally {
+    dbConn.release();
   }
 };
