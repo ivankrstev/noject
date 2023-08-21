@@ -20,6 +20,11 @@ export const searchUsers = async (req, res) => {
 export const addCollaborator = async (req, res) => {
   try {
     const { userToAdd, p_id } = req.body;
+    const [[user]] = await db.execute("SELECT verified_email FROM users WHERE u_id = ?", [
+      req.user,
+    ]);
+    if (user && !user.verified_email)
+      return res.status(404).json({ error: "You must have verified email to add collaborators" });
     if (!userToAdd || userToAdd === "")
       return res.status(400).json({ error: "User Id(userToAdd) is missing" });
     await db.execute("INSERT INTO project_collaborators (p_id, u_id) VALUES (?, ?)", [
