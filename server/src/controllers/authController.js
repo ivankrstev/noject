@@ -55,9 +55,10 @@ export const loginUser = async (req, res) => {
     const refreshToken = jwt.sign(data, process.env.REFRESH_JWT_SECRET, {
       expiresIn: "14d",
     });
-    await db.execute("INSERT INTO refresh_tokens (u_id, refresh_token) VALUES (?,?)", [
+    await db.execute("INSERT INTO refresh_tokens (u_id, refresh_token,expires_at) VALUES (?,?,?)", [
       user.u_id,
       refreshToken,
+      new Date(Date.now() + 1209600000),
     ]);
     const accessToken = jwt.sign(data, process.env.ACCESS_JWT_SECRET, {
       expiresIn: "1m",
@@ -68,7 +69,7 @@ export const loginUser = async (req, res) => {
         httpOnly: true,
         expires: new Date(Date.now() + 1209600000),
         secure: true,
-        sameSite: "strict",
+        sameSite: process.env.SAME_SITE_COOKIE,
       })
       .json({ accessToken: accessToken });
   } catch (error) {
