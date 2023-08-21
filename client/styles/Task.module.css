@@ -50,3 +50,16 @@
 .taskCheckbox:checked ~ .taskText::after {
   width: 100%;
 }
+.taskSettingsButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border: 0;
+  margin-right: 0.3em;
+  border-radius: 5px;
+  transition: all 0.15s linear;
+}
+.taskSettingsButton:hover {
+  background-color: #0570eb;
+}
