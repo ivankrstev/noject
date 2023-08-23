@@ -28,13 +28,13 @@ export const getProjects = async (req, res) => {
     const user = req.user;
     const { order_by_type } = req.query;
     // Default ordering by name a-z if not specified
-    let sqlString = "SELECT * FROM Projects WHERE created_by = ? ORDER BY name ASC";
+    let sqlString = "SELECT * FROM projects WHERE created_by = ? ORDER BY name ASC";
     if (order_by_type === "name_z-a")
-      sqlString = "SELECT * FROM Projects WHERE created_by = ? ORDER BY name DESC";
+      sqlString = "SELECT * FROM projects WHERE created_by = ? ORDER BY name DESC";
     else if (order_by_type === "creation_date_asc")
-      sqlString = "SELECT * FROM Projects WHERE created_by = ? ORDER BY creation_date ASC";
+      sqlString = "SELECT * FROM projects WHERE created_by = ? ORDER BY creation_date ASC";
     else if (order_by_type === "creation_date_desc")
-      sqlString = "SELECT * FROM Projects WHERE created_by = ? ORDER BY creation_date DESC";
+      sqlString = "SELECT * FROM projects WHERE created_by = ? ORDER BY creation_date DESC";
     const [rows] = await db.execute(sqlString, [user]);
     return res.status(200).json(rows);
   } catch (error) {

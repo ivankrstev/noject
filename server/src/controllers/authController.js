@@ -19,7 +19,7 @@ export const registerUser = async (req, res) => {
     const tfa_token = speakeasy.generateSecret().base32;
     const verification_token = v4();
     await db.execute(
-      "INSERT INTO USERS (u_id, first_name, last_name, password, tfa_token, verification_token) VALUES (?,?,?,?,?,?)",
+      "INSERT INTO users (u_id, first_name, last_name, password, tfa_token, verification_token) VALUES (?,?,?,?,?,?)",
       [value.email, value.firstName, value.lastName, hashedPassword, tfa_token, verification_token]
     );
     const [results] = await db.execute(

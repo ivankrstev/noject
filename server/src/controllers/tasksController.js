@@ -64,7 +64,7 @@ export const createTask = async (req, res) => {
     }
     if (!prev) return res.status(400).json({ error: "prev is missing or invalid" });
     const [[{ valid_task }]] = await dbConn.execute(
-      "SELECT EXISTS(SELECT t_id FROM TASKS WHERE p_id = ? AND t_id = ?) as valid_task",
+      "SELECT EXISTS(SELECT t_id FROM tasks WHERE p_id = ? AND t_id = ?) as valid_task",
       [p_id, prev]
     ); // Check if the target previous task is in the same project as the provided p_id
     if (!valid_task) return res.status(400).json({ error: "The provided value is invalid" });
@@ -134,7 +134,7 @@ export const decreaseLevelOfTasks = async (req, res) => {
     );
     if (targetLevel === 0)
       return res.status(400).json({ error: "Task is already on minimum level" }); // Don't allow decreasing below 0
-    const [tasks] = await dbConn.execute("SELECT t_id, level, next FROM TASKS WHERE p_id = ?", [
+    const [tasks] = await dbConn.execute("SELECT t_id, level, next FROM tasks WHERE p_id = ?", [
       req.p_id,
     ]);
     // Update the target task with level = level - 1
@@ -190,7 +190,7 @@ export const getTaskInfo = async (req, res) => {
   try {
     const { t_id } = req.params;
     const [[task]] = await db.execute(
-      "SELECT creation_date, created_by, completed, completed_by FROM TASKS WHERE t_id = ?",
+      "SELECT creation_date, created_by, completed, completed_by FROM tasks WHERE t_id = ?",
       [t_id]
     );
     const [[reminder]] = await db.execute(
@@ -220,7 +220,7 @@ export const toggleCompletion = async (req, res) => {
       "SELECT level as targetLevel, next as targetNext FROM tasks WHERE t_id = ?",
       [t_id]
     );
-    const [tasks] = await dbConn.execute("SELECT t_id, level, next FROM TASKS WHERE p_id = ?", [
+    const [tasks] = await dbConn.execute("SELECT t_id, level, next FROM tasks WHERE p_id = ?", [
       req.p_id,
     ]);
     const subtasks = getAllSubTasksRecursive(targetNext, targetLevel, tasks);
