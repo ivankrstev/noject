@@ -13,14 +13,14 @@ import { toast } from "react-toastify";
 const handleRegister = async (data) => {
   try {
     let body = {
-      firstName: data[0].value,
-      lastName: data[1].value,
+      fullName: data[0].value + " " + data[1].value,
       email: data[2].value,
       password: data[3].value,
+      confirmPassword: data[5].value,
     };
     // Just a short delay for showing the pending message for a moment if the request is quick
     await new Promise((resolve) => setTimeout(resolve, 400));
-    const response = await axios.post(process.env.NEXT_PUBLIC_SERVER_URL + "/register/", body);
+    const response = await axios.post(process.env.NEXT_PUBLIC_SERVER_URL + "/auth/register/", body);
     return response.data;
   } catch (error) {
     if (error.response) throw error.response.data;
@@ -99,6 +99,10 @@ export default function Signup() {
                 width={20}
               />
             </button>
+          </div>
+          <div className={styles.inputLabelWrapper}>
+            <label htmlFor='confirm-password'>Confirm password</label>
+            <input type='password' id='confirm-password' placeholder='Confirm your password' />
           </div>
           <button className={styles.btnSubmit}>Create account</button>
           <p className={[styles.offerLogin, "colorGrey"].join(" ")}>
