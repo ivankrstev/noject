@@ -10,7 +10,6 @@ import NewProjectModal from "@/components/NewProjectModal";
 import ModifyProjectModal from "./ModifyProjectModal";
 import { AnimatePresence } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
-import SocketClient from "@/utils/socket";
 import { useRouter } from "next/router";
 
 export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProject }) {
@@ -24,9 +23,9 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
 
   const getProjects = async (order_by_type) => {
     try {
-      const response = await api.get("/project/all?order_by_type=" + order_by_type);
+      const response = await api.get("/projects?orderByType=" + order_by_type);
       setShowLoader(true);
-      setProjects(response.data);
+      setProjects(response.data.projects);
     } catch (error) {
       AxiosErrorHandler(error, router, "Error fetching projects");
     }
@@ -34,8 +33,8 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
 
   const getSharedProjects = async () => {
     try {
-      const response = await api.get("/project/shared");
-      setSharedProjects([...response.data]);
+      const response = await api.get("/projects/shared");
+      setSharedProjects(response.data.sharedProjects);
     } catch (error) {
       AxiosErrorHandler(error, router, "Error fetching projects");
     }
@@ -60,9 +59,6 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
     orderProjectsSelect.value = orderProjectsSavedType;
     getProjects(orderProjectsSavedType);
     getSharedProjects();
-    SocketClient.getSocket().on("sharedproject:add", (data) => {
-      setSharedProjects([...sharedProjects, data]);
-    });
   }, []);
 
   const orderProjects = (type) => {
@@ -135,8 +131,8 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
         ) : (
           projects.map((project) => (
             <div
-              key={project.p_id}
-              id={project.p_id}
+              key={project.id}
+              id={project.id}
               className={styles.sidebarProjectItem}
               title={project.name}
               onClick={(e) => {
@@ -146,7 +142,7 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
                 setSelectedProject({ id, name });
               }}>
               <span
-                style={{ color: project.color, backgroundColor: project.background_color }}
+                style={{ color: project.color, backgroundColor: project.backgroundColor }}
                 className={styles.sidebarProjectSquare}>
                 {Array.from(project.name)[0].toUpperCase()}
               </span>
@@ -166,8 +162,8 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
         <h5>Shared projects</h5>
         {sharedProjects.map((project) => (
           <div
-            key={project.p_id}
-            id={project.p_id}
+            key={project.id}
+            id={project.id}
             className={styles.sidebarProjectItem}
             title={project.name}
             onClick={(e) => {
@@ -177,7 +173,7 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
               setSelectedProject({ id, name });
             }}>
             <span
-              style={{ color: project.color, backgroundColor: project.background_color }}
+              style={{ color: project.color, backgroundColor: project.backgroundColor }}
               className={styles.sidebarProjectSquare}>
               {Array.from(project.name)[0].toUpperCase()}
             </span>
