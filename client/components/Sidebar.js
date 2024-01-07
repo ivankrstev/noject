@@ -11,6 +11,7 @@ import ModifyProjectModal from "./ModifyProjectModal";
 import { AnimatePresence } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
 import { useRouter } from "next/router";
+import SharedProjectsSocketClient from "@/utils/signalr-hubs/sharedProjectsHub";
 
 export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProject }) {
   const router = useRouter();
@@ -59,6 +60,13 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
     orderProjectsSelect.value = orderProjectsSavedType;
     getProjects(orderProjectsSavedType);
     getSharedProjects();
+    SharedProjectsSocketClient.on("NewSharedProject", (data) => {
+      if (data.length > 1) setSharedProjects((state) => [...state, data[1].project]);
+    });
+    SharedProjectsSocketClient.on("RemovedSharedProject", (data) => {
+      if (data.length > 1)
+        setSharedProjects((state) => state.filter((p) => p.id !== data[1].idToDelete));
+    });
   }, []);
 
   const orderProjects = (type) => {
