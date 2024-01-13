@@ -61,7 +61,7 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
     getProjects(orderProjectsSavedType);
     getSharedProjects();
     SharedProjectsSocketClient.on("NewSharedProject", (data) => {
-      if (data.length > 1) setSharedProjects((state) => [...state, data[1].project]);
+      if (data.length > 1) setSharedProjects((state) => [data[1].project, ...state]);
     });
     SharedProjectsSocketClient.on("RemovedSharedProject", (data) => {
       if (data.length > 1)
