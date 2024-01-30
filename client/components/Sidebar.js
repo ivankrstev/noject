@@ -4,14 +4,14 @@ import addIcon from "@/public/icons/add_plus.svg";
 import SettingsIcon from "@/public/icons/settings.svg";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import api from "@/utils/api";
+import api, { getAccessToken } from "@/utils/api";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import NewProjectModal from "@/components/NewProjectModal";
 import ModifyProjectModal from "./ModifyProjectModal";
 import { AnimatePresence } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
 import { useRouter } from "next/router";
-import SharedProjectsSocketClient from "@/utils/signalr-hubs/sharedProjectsHub";
+import { HubConnectionBuilder } from "@microsoft/signalr";
 
 export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProject }) {
   const router = useRouter();
@@ -53,6 +53,23 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
     }
   }, [projects, sharedProjects]);
 
+  const handleSharedProjectsSocket = async () => {
+    const sharedProjectsSocket = new HubConnectionBuilder()
+      .withUrl("https://localhost:7161/sharedProjectsHub", {
+        accessTokenFactory: () => getAccessToken(),
+      })
+      .withAutomaticReconnect()
+      .build();
+    await sharedProjectsSocket.start();
+    sharedProjectsSocket.on("NewSharedProject", (...data) => {
+      if (data.length > 1) setSharedProjects((state) => [data[1].project, ...state]);
+    });
+    sharedProjectsSocket.on("RemovedSharedProject", (...data) => {
+      if (data.length > 1)
+        setSharedProjects((state) => state.filter((p) => p.id !== data[1].idToDelete));
+    });
+  };
+
   useEffect(() => {
     const orderProjectsSelect = document.getElementById("orderProjectsSelect");
     if (!localStorage.getItem("OrderProjects")) localStorage.setItem("OrderProjects", "name_a-z");
@@ -60,13 +77,7 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
     orderProjectsSelect.value = orderProjectsSavedType;
     getProjects(orderProjectsSavedType);
     getSharedProjects();
-    SharedProjectsSocketClient.on("NewSharedProject", (data) => {
-      if (data.length > 1) setSharedProjects((state) => [data[1].project, ...state]);
-    });
-    SharedProjectsSocketClient.on("RemovedSharedProject", (data) => {
-      if (data.length > 1)
-        setSharedProjects((state) => state.filter((p) => p.id !== data[1].idToDelete));
-    });
+    handleSharedProjectsSocket();
   }, []);
 
   const orderProjects = (type) => {
