@@ -11,6 +11,7 @@
     "export": "next export"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.0",
     "axios": "^1.6.0",
     "framer-motion": "^10.15.0",
     "moment": "^2.29.4",
