@@ -54,20 +54,22 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
   }, [projects, sharedProjects]);
 
   const handleSharedProjectsSocket = async () => {
-    const sharedProjectsSocket = new HubConnectionBuilder()
-      .withUrl("https://localhost:7161/sharedProjectsHub", {
-        accessTokenFactory: () => getAccessToken(),
-      })
-      .withAutomaticReconnect()
-      .build();
-    await sharedProjectsSocket.start();
-    sharedProjectsSocket.on("NewSharedProject", (...data) => {
-      if (data.length > 1) setSharedProjects((state) => [data[1].project, ...state]);
-    });
-    sharedProjectsSocket.on("RemovedSharedProject", (...data) => {
-      if (data.length > 1)
-        setSharedProjects((state) => state.filter((p) => p.id !== data[1].idToDelete));
-    });
+    try {
+      const sharedProjectsSocket = new HubConnectionBuilder()
+        .withUrl("https://localhost:7161/sharedProjectsHub", {
+          accessTokenFactory: () => getAccessToken(),
+        })
+        .withAutomaticReconnect()
+        .build();
+      await sharedProjectsSocket.start();
+      sharedProjectsSocket.on("NewSharedProject", (...data) => {
+        if (data.length > 1) setSharedProjects((state) => [data[1].project, ...state]);
+      });
+      sharedProjectsSocket.on("RemovedSharedProject", (...data) => {
+        if (data.length > 1)
+          setSharedProjects((state) => state.filter((p) => p.id !== data[1].idToDelete));
+      });
+    } catch (error) {}
   };
 
   useEffect(() => {
