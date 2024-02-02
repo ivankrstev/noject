@@ -5,7 +5,6 @@ import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
 import api from "@/utils/api";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
-import SocketClient from "@/utils/socket";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import { useRouter } from "next/router";
 
@@ -30,13 +29,6 @@ export default function Project({ selectedProject }) {
 
   useEffect(() => {
     if (tasks && tasks.length !== 0) tasksProgressHandler();
-    const socket = SocketClient.getSocket();
-    socket.on("tasks:value-changed", textChangedListener);
-    socket.on("tasks:reload-required", tasksReloadRequired);
-    return () => {
-      socket.off("tasks:value-changed");
-      socket.off("tasks:reload-required");
-    };
   }, [tasks]);
 
   const getProjectTasks = async () => {
@@ -44,7 +36,7 @@ export default function Project({ selectedProject }) {
       await new Promise((resolve) => setTimeout(resolve, 400));
       if (selectedProject) {
         const response = await api.get("/tasks/" + selectedProject.id);
-        setTasks(response.data);
+        setTasks(response.data.tasks);
         setUpdateTasks(false);
       }
     } catch (error) {
@@ -54,47 +46,13 @@ export default function Project({ selectedProject }) {
 
   useEffect(() => {
     setTasks(null);
-    const socket = SocketClient.getSocket();
-    const projectRoomJoinListener = () => {
-      socket.emit("projectRoom:join", { p_id: selectedProject.id }, (message) => {
-        if (message?.error) toast.error("Real-Time updates unavailable");
-      });
-    };
+    const projectRoomJoinListener = () => {};
     if (selectedProject?.id) {
       document.querySelector("#projectProgressSpan").innerText = "";
       getProjectTasks();
       projectRoomJoinListener();
-      socket.io.on("reconnect", projectRoomJoinListener);
     }
-    return () => {
-      socket.emit("projectRoom:leave", { p_id: selectedProject?.id });
-      socket.io.off("reconnect", projectRoomJoinListener);
-    };
   }, [selectedProject]);
-
-  useEffect(() => {
-    const socket = SocketClient.getSocket();
-    socket.io.on("reconnect", () => {
-      toast.info("Real-Time Connection Restored", { toastId: "socket-notify" });
-      toast.update("socket-notify", {
-        render: "Real-Time Connection Restored",
-        type: toast.TYPE.INFO,
-        delay: 400,
-        isLoading: false,
-        autoClose: 2000,
-      });
-    });
-    socket.io.on("reconnect_attempt", (attemptNumber) => {
-      if (attemptNumber === 1)
-        toast.error("Real-Time Connection Failed. Retrying", {
-          toastId: "socket-notify",
-          isLoading: true,
-          closeButton: null,
-        });
-      setTimeout(() => toast.dismiss("socket-notify"), 2000);
-    });
-    return () => socket.disconnect();
-  }, []);
 
   return (
     <Fragment>
@@ -132,8 +90,8 @@ export default function Project({ selectedProject }) {
                 {tasks.length !== 0 ? (
                   tasks.map((e) => (
                     <Task
-                      key={e.t_id}
-                      t_id={e.t_id}
+                      key={e.id}
+                      taskId={e.id}
                       levelProp={e.level}
                       completed={e.completed}
                       valueProp={e.value}

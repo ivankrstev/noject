@@ -10,7 +10,7 @@ import { AnimatePresence } from "framer-motion";
 import SettingsIcon from "@/public/icons/settings.svg";
 import Image from "next/image";
 
-export default function Task({ t_id, valueProp, levelProp, completed, projectId }) {
+export default function Task({ taskId, valueProp, levelProp, completed, projectId }) {
   const router = useRouter();
   const taskRef = useRef(null);
   const [oldProps, setOldProps] = useState({ valueProp });
@@ -36,7 +36,7 @@ export default function Task({ t_id, valueProp, levelProp, completed, projectId 
 
   return (
     <div
-      id={t_id}
+      id={taskId}
       ref={taskRef}
       level={levelProp}
       style={{ marginLeft: (levelProp * 1.1).toFixed(1) + "em" }}
@@ -69,7 +69,7 @@ export default function Task({ t_id, valueProp, levelProp, completed, projectId 
       </div>
       <AnimatePresence>
         {showRemindersModal && (
-          <RemindersModal t_id={t_id} closeModal={() => setShowRemindersModal(false)} />
+          <RemindersModal t_id={taskId} closeModal={() => setShowRemindersModal(false)} />
         )}
       </AnimatePresence>
     </div>
