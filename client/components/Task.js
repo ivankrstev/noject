@@ -5,17 +5,12 @@ import { useRef, useEffect, useState } from "react";
 import api from "@/utils/api";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import { useRouter } from "next/router";
-import RemindersModal from "./RemindersModal";
-import { AnimatePresence } from "framer-motion";
-import SettingsIcon from "@/public/icons/settings.svg";
-import Image from "next/image";
 
 export default function Task({ taskId, valueProp, levelProp, completed, projectId }) {
   const router = useRouter();
   const taskRef = useRef(null);
   const [oldProps, setOldProps] = useState({ valueProp });
   const [value, setValue] = useState(valueProp);
-  const [showRemindersModal, setShowRemindersModal] = useState(false);
 
   useEffect(() => {
     if (value && value !== oldProps.valueProp && value.replace(/\s+/g, "") !== "") {
@@ -51,12 +46,6 @@ export default function Task({ taskId, valueProp, levelProp, completed, projectI
         type='checkbox'
         className={styles.taskCheckbox}
       />
-      <button
-        onClick={() => setShowRemindersModal(true)}
-        className={styles.taskSettingsButton}
-        title='Task Settings'>
-        <Image src={SettingsIcon} width={21} alt='Task Settings' />
-      </button>
       <div
         title='Task text'
         className={styles.taskText}
@@ -67,11 +56,6 @@ export default function Task({ taskId, valueProp, levelProp, completed, projectI
         style={{ minWidth: valueProp === "" ? "20vw" : "unset" }}>
         {valueProp}
       </div>
-      <AnimatePresence>
-        {showRemindersModal && (
-          <RemindersModal t_id={taskId} closeModal={() => setShowRemindersModal(false)} />
-        )}
-      </AnimatePresence>
     </div>
   );
 }
