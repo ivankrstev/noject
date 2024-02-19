@@ -1,16 +1,17 @@
+import useTaskStore from "@/store/tasksStore";
 import styles from "@/styles/Project.module.css";
-import Task from "./Task";
-import { Fragment, useEffect, useState } from "react";
-import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
-import api from "@/utils/api";
-import { toast } from "react-toastify";
-import { HashLoader } from "react-spinners";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
+import api from "@/utils/api";
+import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
 import { useRouter } from "next/router";
+import { Fragment, useEffect, useState } from "react";
+import { HashLoader } from "react-spinners";
+import Task from "./Task";
 
 export default function Project({ selectedProject }) {
   const router = useRouter();
-  const [tasks, setTasks] = useState();
+  const tasks = useTaskStore((state) => state.tasks);
+  const setTasks = useTaskStore((state) => state.setTasks);
   const [updateTasks, setUpdateTasks] = useState(false);
 
   const textChangedListener = (data) => {
@@ -95,7 +96,7 @@ export default function Project({ selectedProject }) {
                       levelProp={e.level}
                       completed={e.completed}
                       valueProp={e.value}
-                      projectId={selectedProject.id}
+                      projectId={selectedProject?.id}
                     />
                   ))
                 ) : (
