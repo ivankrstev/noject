@@ -1,12 +1,12 @@
 import styles from "@/styles/Task.module.css";
-import handleTaskInput from "@/utils/tasks/taskKeyEventsHandler";
-import handleCheckBoxChange from "@/utils/tasks/handleCheckBoxChange";
-import { useRef, useEffect, useState } from "react";
-import api from "@/utils/api";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
+import handleCheckBoxChange from "@/utils/tasks/handleCheckBoxChange";
+import handleTaskInput from "@/utils/tasks/taskKeyEventsHandler";
+import tasksSocket from "@/utils/tasksSignalRHub";
 import { useRouter } from "next/router";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
-export default function Task({ taskId, valueProp, levelProp, completed, projectId }) {
+const Task = forwardRef(({ taskId, valueProp, levelProp, completed, projectId }, ref) => {
   const router = useRouter();
   const taskRef = useRef(null);
   const [oldProps, setOldProps] = useState({ valueProp });
@@ -21,8 +21,7 @@ export default function Task({ taskId, valueProp, levelProp, completed, projectI
 
   const updateTaskValue = async () => {
     try {
-      const response = await api.put(`/tasks/${t_id}/value`, { value });
-      console.log(response);
+      await tasksSocket.invoke("ChangeValue", projectId, taskId, value);
       setOldProps({ ...oldProps, valueProp: value });
     } catch (error) {
       AxiosErrorHandler(error, router, "Error updating task");
@@ -48,6 +47,7 @@ export default function Task({ taskId, valueProp, levelProp, completed, projectI
       />
       <div
         title='Task text'
+        ref={ref}
         className={styles.taskText}
         onInput={(e) => setValue(e.target.innerText)}
         onKeyDown={(e) => handleTaskInput(e, taskRef, projectId)}
@@ -58,4 +58,6 @@ export default function Task({ taskId, valueProp, levelProp, completed, projectI
       </div>
     </div>
   );
-}
+});
+
+export default Task;
