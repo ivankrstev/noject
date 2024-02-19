@@ -4,7 +4,7 @@ import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import api from "@/utils/api";
 import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { HashLoader } from "react-spinners";
 import Task from "./Task";
 
@@ -12,6 +12,8 @@ export default function Project({ selectedProject }) {
   const router = useRouter();
   const tasks = useTaskStore((state) => state.tasks);
   const setTasks = useTaskStore((state) => state.setTasks);
+  const taskToFocus = useTaskStore((state) => state.taskToFocus);
+  const taskRefs = useRef({});
   const [updateTasks, setUpdateTasks] = useState(false);
 
   const textChangedListener = (data) => {
@@ -31,6 +33,10 @@ export default function Project({ selectedProject }) {
   useEffect(() => {
     if (tasks && tasks.length !== 0) tasksProgressHandler();
   }, [tasks]);
+
+  useEffect(() => {
+    if (taskToFocus && taskRefs.current[taskToFocus]) taskRefs.current[taskToFocus]?.focus();
+  }, [tasks, taskToFocus]);
 
   const getProjectTasks = async () => {
     try {
@@ -85,40 +91,39 @@ export default function Project({ selectedProject }) {
           </div>
         )}
         {tasks && (
-          <Fragment>
-            <div id='projectTasksWrapperDiv' className={styles.projectTasksWrapper}>
-              <Fragment>
-                {tasks.length !== 0 ? (
-                  tasks.map((e) => (
-                    <Task
-                      key={e.id}
-                      taskId={e.id}
-                      levelProp={e.level}
-                      completed={e.completed}
-                      valueProp={e.value}
-                      projectId={selectedProject?.id}
-                    />
-                  ))
-                ) : (
-                  <div style={{ marginTop: "6em", textAlign: "center" }}>
-                    <p>No tasks</p>
-                    <button
-                      className={styles.newTaskBtn}
-                      onClick={async () => {
-                        try {
-                          const response = await api.post(`/tasks/${selectedProject.id}`);
-                          setTasks([response.data]);
-                        } catch (error) {
-                          AxiosErrorHandler(error, router);
-                        }
-                      }}>
-                      Create new task
-                    </button>
-                  </div>
-                )}
-              </Fragment>
-            </div>
-          </Fragment>
+          <div id='projectTasksWrapperDiv' className={styles.projectTasksWrapper}>
+            <Fragment>
+              {tasks.length !== 0 ? (
+                tasks.map((e) => (
+                  <Task
+                    key={e.id}
+                    taskId={e.id}
+                    ref={(el) => (taskRefs.current[e.id] = el)}
+                    levelProp={e.level}
+                    completed={e.completed}
+                    valueProp={e.value}
+                    projectId={selectedProject?.id}
+                  />
+                ))
+              ) : (
+                <div style={{ marginTop: "6em", textAlign: "center" }}>
+                  <p>No tasks</p>
+                  <button
+                    className={styles.newTaskBtn}
+                    onClick={async () => {
+                      try {
+                        const response = await api.post(`/tasks/${selectedProject.id}`);
+                        setTasks([response.data]);
+                      } catch (error) {
+                        AxiosErrorHandler(error, router);
+                      }
+                    }}>
+                    Create new task
+                  </button>
+                </div>
+              )}
+            </Fragment>
+          </div>
         )}
       </div>
       {!tasks && selectedProject && (
