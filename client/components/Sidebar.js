@@ -11,7 +11,7 @@ import ModifyProjectModal from "./ModifyProjectModal";
 import { AnimatePresence } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
 import { useRouter } from "next/router";
-import { HubConnectionBuilder } from "@microsoft/signalr";
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
 export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProject }) {
   const router = useRouter();
@@ -44,11 +44,12 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
   useEffect(() => {
     const localStorageSelectedProject = JSON.parse(localStorage.getItem("selectedProject"));
     if (localStorageSelectedProject) {
-      const id = parseInt(localStorageSelectedProject.id);
+      const id = localStorageSelectedProject.id;
       let isValidProject = false;
-      if (projects.length !== 0) isValidProject = projects.some((project) => project.p_id === id);
+      if (projects.length !== 0) isValidProject = projects.some((project) => project.id === id);
+      console.log(projects);
       if (sharedProjects.length !== 0 && !isValidProject)
-        isValidProject = sharedProjects.some((sharedProject) => sharedProject.p_id === id);
+        isValidProject = sharedProjects.some((sharedProject) => sharedProject.id === id);
       isValidProject && setSelectedProject(localStorageSelectedProject);
     }
   }, [projects, sharedProjects]);
@@ -56,9 +57,10 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
   const handleSharedProjectsSocket = async () => {
     try {
       const sharedProjectsSocket = new HubConnectionBuilder()
-        .withUrl("https://localhost:7161/sharedProjectsHub", {
+        .withUrl(`${process.env.NEXT_PUBLIC_SERVER_URL}/sharedProjectsHub`, {
           accessTokenFactory: () => getAccessToken(),
         })
+        .configureLogging(process.env.NEXT_PUBLIC_SIGNALR_LOGGING ? LogLevel.Debug : LogLevel.None)
         .withAutomaticReconnect()
         .build();
       await sharedProjectsSocket.start();
@@ -69,7 +71,9 @@ export default function Sidebar({ showSidebar, sidebarShowHide, setSelectedProje
         if (data.length > 1)
           setSharedProjects((state) => state.filter((p) => p.id !== data[1].idToDelete));
       });
-    } catch (error) {}
+    } catch (error) {
+      AxiosErrorHandler(null, router, "Real-time project updates are currently unavailable");
+    }
   };
 
   useEffect(() => {
