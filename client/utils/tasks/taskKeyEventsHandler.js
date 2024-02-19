@@ -17,13 +17,25 @@ export default function handleTaskInput(e, taskRef, projectId) {
     handleTaskDeleting(taskRef.current.id);
   } else if (e.key === "ArrowDown") {
     e.preventDefault();
-    e.target.parentNode.nextSibling?.lastChild.focus({ focusVisible: true });
+    const div = e.target.parentNode.nextSibling?.lastChild;
+    div && setFocusCursorOnEnd(div);
   } else if (e.key === "ArrowUp") {
     e.preventDefault();
-    e.target.parentNode.previousSibling?.lastChild.focus({ focusVisible: true });
+    const div = e.target.parentNode.previousSibling?.lastChild;
+    div && setFocusCursorOnEnd(div);
   }
   console.log(e.key);
 }
+
+const setFocusCursorOnEnd = (div) => {
+  div.focus({ focusVisible: true });
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.selectNodeContents(div);
+  range.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(range);
+};
 
 const handleTaskCreating = async (projectId, prev) => {
   try {
