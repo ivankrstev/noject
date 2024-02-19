@@ -1,9 +1,9 @@
-import increaseTaskLevel from "./increaseTaskLevel";
-import decreaseTaskLevel from "./decreaseTaskLevel";
-import AxiosErrorHandler from "../AxiosErrorHandler";
-import api from "../api";
+import decreaseTaskLevel from "@/utils/tasks/decreaseTaskLevel";
+import increaseTaskLevel from "@/utils/tasks/increaseTaskLevel";
+import { addTask, deleteTask } from "./taskOperations";
 
 export default function handleTaskInput(e, taskRef, projectId) {
+  const taskId = parseInt(taskRef.current.id);
   if (e.shiftKey && e.key === "Tab") {
     e.preventDefault();
     if (e.target.parentNode.getAttribute("level") !== "0") decreaseTaskLevel(taskRef);
@@ -12,9 +12,9 @@ export default function handleTaskInput(e, taskRef, projectId) {
     increaseTaskLevel(taskRef);
   } else if (e.key === "Enter") {
     e.preventDefault();
-    handleTaskCreating(projectId, taskRef.current.id);
+    addTask(projectId, taskId);
   } else if (e.key === "Delete") {
-    handleTaskDeleting(taskRef.current.id);
+    deleteTask(projectId, taskId);
   } else if (e.key === "ArrowDown") {
     e.preventDefault();
     const div = e.target.parentNode.nextSibling?.lastChild;
@@ -35,21 +35,4 @@ const setFocusCursorOnEnd = (div) => {
   range.collapse(false);
   sel.removeAllRanges();
   sel.addRange(range);
-};
-
-const handleTaskCreating = async (projectId, prev) => {
-  try {
-    await api.post(`/tasks/${projectId}`, { prev });
-  } catch (error) {
-    console.error(error);
-    AxiosErrorHandler(error);
-  }
-};
-const handleTaskDeleting = async (t_id) => {
-  try {
-    await api.delete(`/tasks/${t_id}`);
-  } catch (error) {
-    console.error(error);
-    AxiosErrorHandler(error);
-  }
 };
