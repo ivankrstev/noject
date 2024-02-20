@@ -1,16 +1,12 @@
 import "@/styles/globals.css";
-import "react-toastify/dist/ReactToastify.css";
-import "react-loading-skeleton/dist/skeleton.css";
 import { Space_Mono } from "next/font/google";
-import { AnimatePresence, motion } from "framer-motion";
+import "react-loading-skeleton/dist/skeleton.css";
 import { ToastContainer } from "react-toastify";
-import useFoucFix from "@/utils/use-fouc-fix";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Space_Mono({ subsets: ["latin"], weight: "400" });
 
-export default function App({ Component, pageProps, router }) {
-  useFoucFix();
-
+export default function App({ Component, pageProps }) {
   return (
     <div className={inter.className}>
       <ToastContainer
@@ -25,16 +21,7 @@ export default function App({ Component, pageProps, router }) {
         pauseOnHover
         theme='colored'
       />
-      <AnimatePresence mode='wait' initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
-        <motion.main
-          key={router._key}
-          initial={{ opacity: 0, x: -200, y: 0 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          exit={{ opacity: 0, x: 0, y: -100 }}
-          transition={{ ease: "easeInOut" }}>
-          <Component {...pageProps} />
-        </motion.main>
-      </AnimatePresence>
+      <Component {...pageProps} />
     </div>
   );
 }
