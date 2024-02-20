@@ -89,8 +89,9 @@ export default function calculateProject() {
   let projectProgress = 0;
   // Sum the progress from every main task in the variable percentages
   tasks.forEach((task) => (projectProgress += parseFloat(task.childNodes[0].innerText)));
-  // Get the span that shows the whole project progress
-  const projectProgressSpan = document.querySelector("#projectProgressSpan");
+  // Get the span that shows the whole project progress &
   // Assign the whole project progress to the span
-  projectProgressSpan.innerText = parseFloat((projectProgress / tasks.length).toFixed(2)) + "%";
+  document.querySelector("#projectProgressSpan") &&
+    (document.querySelector("#projectProgressSpan").innerText =
+      parseFloat((projectProgress / tasks.length).toFixed(2)) + "%");
 }
