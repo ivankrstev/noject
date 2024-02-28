@@ -15,6 +15,7 @@ export const addTask = async (projectId, prev) => {
 export const deleteTask = async (projectId, taskId) => {
   try {
     await tasksSocket.invoke("DeleteTask", projectId, taskId);
+    useTaskStore.getState().delete(taskId);
   } catch (error) {
     console.error(error);
     AxiosErrorHandler(error);
