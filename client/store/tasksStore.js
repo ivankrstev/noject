@@ -5,6 +5,7 @@ const useTaskStore = create((set) => ({
   setTasks: (tasks) => set(() => ({ tasks })),
   attachTaskOnPrev: (newTask, prev) =>
     set((state) => {
+      if (state.tasks.length === 0) return { tasks: [newTask], taskToFocus: newTask.id };
       let tasks = state.tasks;
       let indexToInsertAfter = tasks.findIndex((item) => item.id === parseInt(prev));
       if (indexToInsertAfter !== -1) tasks.splice(indexToInsertAfter + 1, 0, newTask);

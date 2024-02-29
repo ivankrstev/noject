@@ -2,6 +2,7 @@ import useTaskStore from "@/store/tasksStore";
 import styles from "@/styles/Project.module.css";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import api from "@/utils/api";
+import { addTask } from "@/utils/tasks/taskOperations";
 import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useRef, useState } from "react";
@@ -110,14 +111,7 @@ export default function Project({ selectedProject }) {
                   <p>No tasks</p>
                   <button
                     className={styles.newTaskBtn}
-                    onClick={async () => {
-                      try {
-                        const response = await api.post(`/tasks/${selectedProject.id}`);
-                        setTasks([response.data]);
-                      } catch (error) {
-                        AxiosErrorHandler(error, router);
-                      }
-                    }}>
+                    onClick={() => addTask(selectedProject?.id, null)}>
                     Create new task
                   </button>
                 </div>
