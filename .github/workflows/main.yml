@@ -22,6 +22,7 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
+      working-directory: ./client
 
     - name: Build and Export
       env:
@@ -29,6 +30,7 @@ jobs:
       run: |
         npm run build
         npm run export
+      working-directory: ./client
 
     - name: Deploy to Azure Static Web App
       uses: Azure/static-web-apps-deploy@v1
@@ -37,6 +39,6 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}  # Provided by GitHub
         action: "upload"
         ###### Repository/Build Configurations - These fields are optional ######
-        app_location: "/"  # App source code path
+        app_location: "client/"  # App source code path
         api_location: ""  # Api source code path - optional
-        output_location: "out"  # Built app content directory - point this to your 'out' directory
+        output_location: "client/out"  # Built app content directory - point this to your 'out' directory
