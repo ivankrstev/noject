@@ -8,7 +8,7 @@ export const addTask = async (projectId, prev) => {
     useTaskStore.getState().attachTaskOnPrev(task, prev);
   } catch (error) {
     console.error(error);
-    AxiosErrorHandler(error);
+    AxiosErrorHandler(error, null);
   }
 };
 
