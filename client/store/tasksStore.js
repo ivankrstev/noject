@@ -19,6 +19,12 @@ const useTaskStore = create((set) => ({
       while (tasks[indexToInsertAfter + 1] && tasks[indexToInsertAfter + 1].level > newTask.level)
         indexToInsertAfter++;
       if (indexToInsertAfter !== -1) tasks.splice(indexToInsertAfter + 1, 0, newTask);
+      let parentTaskIndex = getParentTaskIndex(indexToInsertAfter + 1);
+      while (parentTaskIndex !== -1) {
+        if (!tasks[parentTaskIndex].completed) break;
+        tasks[parentTaskIndex].completed = false;
+        parentTaskIndex = getParentTaskIndex(parentTaskIndex);
+      }
       return { tasks: [...tasks], taskToFocus: newTask.id };
     }),
   taskToFocus: null,
