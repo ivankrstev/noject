@@ -1,5 +1,13 @@
 import { create } from "zustand";
 
+const getParentTaskIndex = (taskIndex) => {
+  const tasks = useTaskStore.getState().tasks;
+  let parentTaskIndex = taskIndex - 1;
+  while (parentTaskIndex !== -1 && tasks[parentTaskIndex].level >= tasks[taskIndex].level)
+    parentTaskIndex--;
+  return parentTaskIndex;
+};
+
 const useTaskStore = create((set) => ({
   tasks: [],
   setTasks: (tasks) => set(() => ({ tasks })),
