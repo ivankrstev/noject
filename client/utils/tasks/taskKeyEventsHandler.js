@@ -1,6 +1,6 @@
 import decreaseTaskLevel from "@/utils/tasks/decreaseTaskLevel";
 import increaseTaskLevel from "@/utils/tasks/increaseTaskLevel";
-import { addTask, deleteTask } from "./taskOperations";
+import { addTask, deleteTask } from "@/utils/tasks/taskOperations";
 
 export default function handleTaskInput(e, taskRef, projectId) {
   const taskId = parseInt(taskRef.current.id);
@@ -14,6 +14,7 @@ export default function handleTaskInput(e, taskRef, projectId) {
     e.preventDefault();
     addTask(projectId, taskId);
   } else if (e.key === "Delete") {
+    e.preventDefault();
     deleteTask(projectId, taskId);
   } else if (e.key === "ArrowDown") {
     e.preventDefault();
