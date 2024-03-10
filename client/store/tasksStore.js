@@ -97,6 +97,34 @@ const useTaskStore = create((set) => ({
       return { tasks: [...tasks] };
     });
   },
+  increaseLevel: (targetTaskId) => {
+    set((state) => {
+      const tasks = state.tasks;
+      let targetTaskIndex = tasks.findIndex((item) => item.id === parseInt(targetTaskId));
+      tasks[targetTaskIndex].level++;
+      const newParentTaskIndex = getParentTaskIndex(targetTaskIndex);
+      if (!tasks[targetTaskIndex].completed && tasks[newParentTaskIndex].completed)
+        tasks[newParentTaskIndex].completed = false;
+      else if (tasks[targetTaskIndex].completed && !tasks[newParentTaskIndex].completed) {
+        let parentTaskIndex = newParentTaskIndex;
+        while (parentTaskIndex !== -1) {
+          const children = getTaskChildren(parentTaskIndex);
+          // If all children of the parent task are completed, complete the parent task
+          if (children.every((task) => task.completed)) tasks[parentTaskIndex].completed = true;
+          else break;
+          parentTaskIndex = getParentTaskIndex(parentTaskIndex);
+        }
+      }
+      return { tasks: [...state.tasks] };
+    });
+  },
+  canIncreaseLevel: (targetTaskId) => {
+    const tasks = useTaskStore.getState().tasks;
+    const targetTaskIndex = tasks.findIndex((item) => item.id === parseInt(targetTaskId));
+    const prevTaskIndex = targetTaskIndex - 1;
+    if (targetTaskIndex === 0) return false;
+    return tasks[prevTaskIndex].level >= tasks[targetTaskIndex].level;
+  },
 }));
 
 export default useTaskStore;
