@@ -8,6 +8,16 @@ const getParentTaskIndex = (taskIndex) => {
   return parentTaskIndex;
 };
 
+const getTaskChildren = (parentTaskIndex) => {
+  const tasks = useTaskStore.getState().tasks;
+  if (parentTaskIndex === -1) return [];
+  let children = [];
+  let parentTaskLevel = tasks[parentTaskIndex].level;
+  while (parentTaskIndex !== tasks.length - 1 && parentTaskLevel !== tasks[++parentTaskIndex].level)
+    if (parentTaskLevel + 1 === tasks[parentTaskIndex].level) children.push(tasks[parentTaskIndex]);
+  return children;
+};
+
 const useTaskStore = create((set) => ({
   tasks: [],
   setTasks: (tasks) => set(() => ({ tasks })),
