@@ -21,3 +21,14 @@ export const deleteTask = async (projectId, taskId) => {
     AxiosErrorHandler(error);
   }
 };
+
+export const increaseTaskLevel = async (projectId, taskId) => {
+  try {
+    if (!useTaskStore.getState().canIncreaseLevel(taskId)) return;
+    await tasksSocket.invoke("IncreaseLevel", projectId, taskId);
+    useTaskStore.getState().increaseLevel(taskId);
+  } catch (error) {
+    console.error(error);
+    AxiosErrorHandler(error);
+  }
+};

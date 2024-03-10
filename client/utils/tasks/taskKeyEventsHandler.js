@@ -1,6 +1,5 @@
 import decreaseTaskLevel from "@/utils/tasks/decreaseTaskLevel";
-import increaseTaskLevel from "@/utils/tasks/increaseTaskLevel";
-import { addTask, deleteTask } from "@/utils/tasks/taskOperations";
+import { addTask, deleteTask, increaseTaskLevel } from "@/utils/tasks/taskOperations";
 
 export default function handleTaskInput(e, taskRef, projectId) {
   const taskId = parseInt(taskRef.current.id);
@@ -9,7 +8,7 @@ export default function handleTaskInput(e, taskRef, projectId) {
     if (e.target.parentNode.getAttribute("level") !== "0") decreaseTaskLevel(taskRef);
   } else if (e.key === "Tab") {
     e.preventDefault();
-    increaseTaskLevel(taskRef);
+    increaseTaskLevel(projectId, taskId);
   } else if (e.key === "Enter") {
     e.preventDefault();
     addTask(projectId, taskId);
