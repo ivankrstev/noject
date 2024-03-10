@@ -39,8 +39,8 @@ const Task = forwardRef(({ taskId, valueProp, levelProp, completed, projectId },
         {completed ? "100%" : "0%"}
       </span>
       <input
-        onChange={(e) => handleCheckBoxChange(e)}
-        defaultChecked={completed}
+        onChange={(e) => handleCheckBoxChange(e, projectId)}
+        checked={completed}
         title='Complete task'
         type='checkbox'
         className={styles.taskCheckbox}
