@@ -51,6 +51,52 @@ const useTaskStore = create((set) => ({
       return { tasks: [...state.tasks] };
     });
   },
+  complete: (targetTaskId) => {
+    set((state) => {
+      let tasks = state.tasks;
+      const targetTaskIndex = tasks.findIndex((item) => item.id === parseInt(targetTaskId));
+      const targetTaskLevel = tasks[targetTaskIndex].level;
+      tasks[targetTaskIndex].completed = true;
+      let currentTaskIndex = targetTaskIndex;
+      while (
+        currentTaskIndex !== tasks.length - 1 &&
+        targetTaskLevel < tasks[++currentTaskIndex].level
+      )
+        tasks[currentTaskIndex].completed = true; // Complete all subtasks
+      // Check for the parent task and complete it if all its children are completed, and so on
+      let parentTaskIndex = getParentTaskIndex(targetTaskIndex);
+      while (parentTaskIndex !== -1) {
+        const children = getTaskChildren(parentTaskIndex);
+        // If all children of the parent task are completed, complete the parent task
+        if (children.every((task) => task.completed)) tasks[parentTaskIndex].completed = true;
+        else break;
+        parentTaskIndex = getParentTaskIndex(parentTaskIndex);
+      }
+      return { tasks: [...tasks] };
+    });
+  },
+  uncomplete: (targetTaskId) => {
+    set((state) => {
+      let tasks = state.tasks;
+      const targetTaskIndex = tasks.findIndex((item) => item.id === parseInt(targetTaskId));
+      const targetTaskLevel = tasks[targetTaskIndex].level;
+      tasks[targetTaskIndex].completed = false;
+      let currentTaskIndex = targetTaskIndex;
+      while (
+        currentTaskIndex !== tasks.length - 1 &&
+        targetTaskLevel < tasks[++currentTaskIndex].level
+      )
+        tasks[currentTaskIndex].completed = false; // Uncomplete all subtasks
+      // Uncomplete the parent task if it was completed
+      let parentTaskIndex = getParentTaskIndex(targetTaskIndex);
+      while (parentTaskIndex !== -1) {
+        if (!tasks[parentTaskIndex].completed) break;
+        tasks[parentTaskIndex].completed = false;
+        parentTaskIndex = getParentTaskIndex(parentTaskIndex);
+      }
+      return { tasks: [...tasks] };
+    });
+  },
 }));
 
 export default useTaskStore;
