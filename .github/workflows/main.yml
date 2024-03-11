@@ -44,4 +44,4 @@ jobs:
         ###### Repository/Build Configurations - These fields are optional ######
         app_location: "client/"  # App source code path
         api_location: ""  # Api source code path - optional
-        output_location: "client/out"  # Built app content directory - point this to your 'out' directory
+        output_location: "client/out/"  # Built app content directory - point this to your 'out' directory
