@@ -40,8 +40,10 @@ jobs:
         run: npm install
         working-directory: ./client/
 
-      - name: Build Next.js app
-        run: npm run build
+      - name: Build and Export Next.js app
+        run: |
+          npm run build
+          npm run export
         working-directory: ./client/
 
       - name: Build And Deploy
