@@ -36,8 +36,6 @@ const getParentTask = (node) => {
 // Calculate progress only for a main task
 const calculateMainTask = (mainTask) => {
   let allSubTasks = getAllSubTasks(mainTask);
-  if (allSubTasks.length === 0)
-    mainTask.childNodes[0].innerText = mainTask.childNodes[1].checked ? "100%" : "0%";
   // Find the maximum level of the siblings of the mainTask
   let maximumLevel = 0;
   allSubTasks.forEach((subtask) => {
@@ -50,9 +48,6 @@ const calculateMainTask = (mainTask) => {
     allSubTasks.forEach((subtask) => {
       // If the current subtask level is matching the target currentLevel
       if (parseInt(subtask.getAttribute("level")) === currentLevel) {
-        if (currentLevel === maximumLevel)
-          // Set the progress of the subtask that has no childs (maximum level)
-          subtask.childNodes[0].innerText = subtask.childNodes[1].checked ? "100%" : "0%";
         const parentTask = getParentTask(subtask);
         const parentTaskChilds = getChildTasks(parentTask);
         let completeParent = true;
