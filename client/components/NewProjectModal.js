@@ -1,7 +1,7 @@
 import styles from "@/styles/Modals.module.css";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import api from "@/utils/api";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function NewProjectModal({ closeModal, projects, setProjects }) {
@@ -20,7 +20,7 @@ export default function NewProjectModal({ closeModal, projects, setProjects }) {
   const postProject = async () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 400));
-      const response = await api.post("/project/create", { name });
+      const response = await api.post("/projects", { name });
       if (projects.length === 0) {
         setProjects([{ ...response.data }]);
         closeModal();
