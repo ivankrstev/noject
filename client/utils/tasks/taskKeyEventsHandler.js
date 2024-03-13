@@ -1,11 +1,15 @@
-import decreaseTaskLevel from "@/utils/tasks/decreaseTaskLevel";
-import { addTask, deleteTask, increaseTaskLevel } from "@/utils/tasks/taskOperations";
+import {
+  addTask,
+  decreaseTaskLevel,
+  deleteTask,
+  increaseTaskLevel,
+} from "@/utils/tasks/taskOperations";
 
 export default function handleTaskInput(e, taskRef, projectId) {
   const taskId = parseInt(taskRef.current.id);
   if (e.shiftKey && e.key === "Tab") {
     e.preventDefault();
-    if (e.target.parentNode.getAttribute("level") !== "0") decreaseTaskLevel(taskRef);
+    decreaseTaskLevel(projectId, taskId);
   } else if (e.key === "Tab") {
     e.preventDefault();
     increaseTaskLevel(projectId, taskId);
@@ -24,7 +28,6 @@ export default function handleTaskInput(e, taskRef, projectId) {
     const div = e.target.parentNode.previousSibling?.lastChild;
     div && setFocusCursorOnEnd(div);
   }
-  console.log(e.key);
 }
 
 const setFocusCursorOnEnd = (div) => {

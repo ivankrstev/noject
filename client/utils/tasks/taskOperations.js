@@ -32,3 +32,14 @@ export const increaseTaskLevel = async (projectId, taskId) => {
     AxiosErrorHandler(error);
   }
 };
+
+export const decreaseTaskLevel = async (projectId, taskId) => {
+  try {
+    if (!useTaskStore.getState().canDecreaseLevel(taskId)) return;
+    await tasksSocket.invoke("DecreaseLevel", projectId, taskId);
+    useTaskStore.getState().decreaseLevel(taskId);
+  } catch (error) {
+    console.error(error);
+    AxiosErrorHandler(error);
+  }
+};
