@@ -17,27 +17,13 @@ export default function Project({ selectedProject }) {
   const taskRefs = useRef({});
   const [updateTasks, setUpdateTasks] = useState(false);
 
-  const textChangedListener = (data) => {
-    const { t_id, value } = data;
-    const indexToUpdate = tasks.findIndex((item) => parseInt(item.t_id) === parseInt(t_id));
-    if (indexToUpdate !== undefined && indexToUpdate !== -1) {
-      tasks[indexToUpdate].value = value;
-      setTasks([...tasks]);
-    }
-  };
-
-  const tasksReloadRequired = () => {
-    setUpdateTasks(true);
-    getProjectTasks();
-  };
-
   useEffect(() => {
     if (tasks && tasks.length !== 0) tasksProgressHandler();
   }, [tasks]);
 
   useEffect(() => {
     if (taskToFocus && taskRefs.current[taskToFocus]) taskRefs.current[taskToFocus]?.focus();
-  }, [tasks, taskToFocus]);
+  }, [taskToFocus]);
 
   const getProjectTasks = async () => {
     try {
