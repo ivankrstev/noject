@@ -8,8 +8,8 @@ const getParentTaskIndex = (taskIndex) => {
   return parentTaskIndex;
 };
 
-const getTaskChildren = (parentTaskIndex) => {
-  const tasks = useTaskStore.getState().tasks;
+const getTaskChildren = (parentTaskIndex, tasksState) => {
+  const tasks = tasksState ? tasksState : useTaskStore.getState().tasks;
   if (parentTaskIndex === -1) return [];
   let children = [];
   let parentTaskLevel = tasks[parentTaskIndex].level;
@@ -124,6 +124,29 @@ const useTaskStore = create((set) => ({
     const prevTaskIndex = targetTaskIndex - 1;
     if (targetTaskIndex === 0) return false;
     return tasks[prevTaskIndex].level >= tasks[targetTaskIndex].level;
+  },
+  decreaseLevel: (targetTaskId) => {
+    set((state) => {
+      let targetTaskIndex = state.tasks.findIndex((item) => item.id === parseInt(targetTaskId));
+      const targetTaskLevel = state.tasks[targetTaskIndex].level;
+      if (targetTaskLevel === 0) return;
+      const oldParentTaskIndex = getParentTaskIndex(targetTaskIndex);
+      state.tasks[targetTaskIndex].level--;
+      while (
+        targetTaskIndex !== state.tasks.length - 1 &&
+        targetTaskLevel < state.tasks[++targetTaskIndex].level
+      )
+        state.tasks[targetTaskIndex].level--;
+      const children = getTaskChildren(oldParentTaskIndex, state.tasks);
+      if (children.length !== 0 && children.every((task) => task.completed))
+        state.tasks[oldParentTaskIndex].completed = true;
+      return { tasks: [...state.tasks] };
+    });
+  },
+  canDecreaseLevel: (targetTaskId) => {
+    const tasks = useTaskStore.getState().tasks;
+    const targetTaskIndex = tasks.findIndex((item) => item.id === parseInt(targetTaskId));
+    return tasks[targetTaskIndex].level !== 0;
   },
 }));
 
