@@ -1,3 +1,4 @@
+import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import { getAccessToken } from "@/utils/api";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
@@ -18,7 +19,7 @@ class TasksSignalRService {
       await this.#connection.start();
       console.log("signalr connection established");
     } catch (err) {
-      AxiosErrorHandler(null, router, "Real-time task operations are currently unavailable");
+      AxiosErrorHandler(null, null, "Real-time task operations are currently unavailable");
     }
   }
 
