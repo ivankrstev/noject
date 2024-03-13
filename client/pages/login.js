@@ -1,15 +1,15 @@
-import Head from "next/head";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
-import styles from "@/styles/SignUpLogIn.module.css";
-import visibilityOnIcon from "@/public/icons/visibility-on.svg";
-import visibilityOffIcon from "@/public/icons/visibility-off.svg";
-import Link from "next/link";
 import Logo from "@/components/Logo";
-import { motion } from "framer-motion";
+import visibilityOffIcon from "@/public/icons/visibility-off.svg";
+import visibilityOnIcon from "@/public/icons/visibility-on.svg";
+import styles from "@/styles/SignUpLogIn.module.css";
 import { setAccessToken } from "@/utils/api";
 import axios from "axios";
+import { motion } from "framer-motion";
+import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const handleLogin = async (body, setTfaToken, setShow2FA) => {
@@ -18,7 +18,7 @@ const handleLogin = async (body, setTfaToken, setShow2FA) => {
     await new Promise((resolve) => setTimeout(resolve, 400));
     if (!body.email) body.email = document.querySelector("#email-login").value;
     if (!body.password) body.password = document.querySelector("#password-login").value;
-    const response = await axios.post(process.env.NEXT_PUBLIC_SERVER_URL + "/login/", body, {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login/`, body, {
       withCredentials: true,
     });
     setAccessToken(response.data.accessToken);
@@ -39,9 +39,13 @@ const handleTFAVerify = async (body, setShow2FA) => {
   try {
     // Just a short delay for showing the pending message for a moment if the request is quick
     await new Promise((resolve) => setTimeout(resolve, 400));
-    const response = await axios.post(process.env.NEXT_PUBLIC_SERVER_URL + "/tfa/verify/", body, {
-      withCredentials: true,
-    });
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/tfa/verify/`,
+      body,
+      {
+        withCredentials: true,
+      }
+    );
     setAccessToken(response.data.accessToken);
     return;
   } catch (error) {
