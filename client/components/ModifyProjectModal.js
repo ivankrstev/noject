@@ -1,27 +1,26 @@
-import styles from "@/styles/Modals.module.css";
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import api from "@/utils/api";
-import { toast } from "react-toastify";
-import moment from "moment/moment";
-import ChangeCollaboratorsModal from "./ChangeCollaboratorsModal";
-import CollaboratorsIcon from "@/public/icons/group_users.svg";
 import DeleteIcon from "@/public/icons/delete.svg";
-import { useRouter } from "next/router";
+import CollaboratorsIcon from "@/public/icons/group_users.svg";
+import styles from "@/styles/Modals.module.css";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
+import api from "@/utils/api";
+import { AnimatePresence, motion } from "framer-motion";
+import moment from "moment/moment";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import ChangeCollaboratorsModal from "./ChangeCollaboratorsModal";
 
 export default function ModifyProjectModal({ closeModal, modifyProjectId, projects, setProjects }) {
   const router = useRouter();
   const [projectData, setProjectData] = useState();
   const [newProjectName, setNewProjectName] = useState();
   const [showCollaboratorsModal, setCollaboratorsModal] = useState(false);
-  const [shareLinkProject, setShareLinkProject] = useState();
 
   const getProjectData = async (projectId) => {
     try {
-      const response = await api.get("/project/" + projectId);
-      setProjectData(response.data);
+      const response = await api.get(`/projects/${projectId}`);
+      setProjectData(response.data.project);
     } catch (error) {
       AxiosErrorHandler(error, router, "Error getting project");
     }
@@ -79,18 +78,14 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
     }
   };
 
-  useEffect(() => {
-    if (projectData?.public_link) setShareLinkProject(projectData.public_link);
-  }, [projectData]);
-
   const handleProjectSharing = async (status) => {
     try {
       if (status) {
-        const response = await api.post("/project/share/" + modifyProjectId);
-        setShareLinkProject(response.data.public_link);
+        await api.put(`/projects/${modifyProjectId}/share`);
+        setProjectData({ ...projectData, isPublic: true });
       } else {
-        await api.delete("/project/share/" + modifyProjectId);
-        setShareLinkProject(null);
+        await api.delete(`/projects/${modifyProjectId}/share`);
+        setProjectData({ ...projectData, isPublic: false });
       }
     } catch (error) {
       AxiosErrorHandler(error, router);
@@ -108,7 +103,9 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
         <h3 className={styles.modalHeading}>Project Details: Id {modifyProjectId}</h3>
         <h5>
           Creation date:{" "}
-          {projectData ? moment(projectData.creation_date).format("Do MMMM YYYY, HH:mm") : ""}
+          {projectData && projectData.createdOn
+            ? moment(projectData.createdOn).format("Do MMMM YYYY, HH:mm")
+            : ""}
         </h5>
         <label htmlFor='textInput' className={styles.textLabel}>
           Change project name:
@@ -126,18 +123,18 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
             <h4>Project sharing</h4>
             <label className={styles.shareProjectSwitch}>
               <input
-                defaultChecked={projectData?.public_link}
+                defaultChecked={projectData?.isPublic}
                 onInput={(e) => handleProjectSharing(e.target.checked)}
                 type='checkbox'
               />
               <span className={styles.switchSlider}></span>
             </label>
           </div>
-          {shareLinkProject && (
+          {projectData?.isPublic && (
             <div className={styles.shareLink}>
               <p>
                 <span className='no-select'>Link: </span>
-                {"/share/" + shareLinkProject}
+                {`/share/${modifyProjectId}`}
               </p>
               <button
                 onClick={(e) => {
