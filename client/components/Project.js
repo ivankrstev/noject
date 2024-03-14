@@ -1,13 +1,14 @@
+import Task from "@/components/Task";
 import useTaskStore from "@/store/tasksStore";
 import styles from "@/styles/Project.module.css";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import api from "@/utils/api";
+import { setFocusCursorOnEnd } from "@/utils/tasks/taskKeyEventsHandler";
 import { addTask } from "@/utils/tasks/taskOperations";
 import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { HashLoader } from "react-spinners";
-import Task from "./Task";
 
 export default function Project({ selectedProject }) {
   const router = useRouter();
@@ -22,7 +23,9 @@ export default function Project({ selectedProject }) {
   }, [tasks]);
 
   useEffect(() => {
-    if (taskToFocus && taskRefs.current[taskToFocus]) taskRefs.current[taskToFocus]?.focus();
+    if (taskToFocus && taskRefs.current[taskToFocus])
+      setFocusCursorOnEnd(taskRefs.current[taskToFocus]);
+    if (taskToFocus !== null) useTaskStore.getState().setTaskToFocus(null);
   }, [taskToFocus]);
 
   const getProjectTasks = async () => {

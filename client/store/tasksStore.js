@@ -38,9 +38,11 @@ const useTaskStore = create((set) => ({
       return { tasks: [...tasks], taskToFocus: newTask.id };
     }),
   taskToFocus: null,
+  setTaskToFocus: (taskId) => set(() => ({ taskToFocus: taskId })),
   delete: (targetTaskId) => {
     set((state) => {
       let targetTaskIndex = state.tasks.findIndex((item) => item.id === parseInt(targetTaskId));
+      const prevTaskId = state.tasks[targetTaskIndex + 1]?.id ?? null;
       const targetTaskLevel = state.tasks[targetTaskIndex].level;
       while (
         targetTaskIndex !== state.tasks.length - 1 &&
@@ -48,7 +50,7 @@ const useTaskStore = create((set) => ({
       )
         state.tasks[targetTaskIndex].level--;
       state.tasks = state.tasks.filter((task) => task.id !== targetTaskId);
-      return { tasks: [...state.tasks] };
+      return { tasks: [...state.tasks], taskToFocus: prevTaskId };
     });
   },
   complete: (targetTaskId) => {

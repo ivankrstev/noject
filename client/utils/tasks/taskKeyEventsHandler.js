@@ -30,7 +30,7 @@ export default function handleTaskInput(e, taskRef, projectId) {
   }
 }
 
-const setFocusCursorOnEnd = (div) => {
+export const setFocusCursorOnEnd = (div) => {
   div.focus({ focusVisible: true });
   const range = document.createRange();
   const sel = window.getSelection();
