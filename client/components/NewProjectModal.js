@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function NewProjectModal({ closeModal, projects, setProjects }) {
-  const [name, setName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCloseOnKey = (e) => e.code === "Escape" && closeModal();
   useEffect(() => {
@@ -17,12 +17,13 @@ export default function NewProjectModal({ closeModal, projects, setProjects }) {
     };
   }, []);
 
-  const postProject = async () => {
+  const handleCreatingProject = async (event) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 400));
+      const name = event.target[0].value;
       const response = await api.post("/projects", { name });
       if (projects.length === 0) {
-        setProjects([{ ...response.data }]);
+        setProjects([response.data]);
         closeModal();
         return;
       }
@@ -31,11 +32,12 @@ export default function NewProjectModal({ closeModal, projects, setProjects }) {
       else if (orderProjectsSavedType === "creation_date_desc")
         setProjects([response.data, ...projects]);
       else {
+        projects.push(response.data);
         if (orderProjectsSavedType === "name_a-z")
           projects.sort((a, b) => a.name.localeCompare(b.name));
         else if (orderProjectsSavedType === "name_z-a")
           projects.sort((b, a) => a.name.localeCompare(b.name));
-        setProjects(projects);
+        setProjects([...projects]);
       }
       closeModal();
     } catch (error) {
@@ -44,20 +46,23 @@ export default function NewProjectModal({ closeModal, projects, setProjects }) {
     }
   };
 
-  const handleCreatingProject = async () => {
+  const handleSubmit = async (event) => {
     try {
-      await toast.promise(postProject(), {
-        pending: "Creating project",
-        success: "Project created",
-        error: {
-          render({ data }) {
-            return data?.message || data?.error || "Error creating project";
+      event.preventDefault();
+      if (!isSubmitting) {
+        setIsSubmitting(true);
+        await toast.promise(handleCreatingProject(event), {
+          pending: "Creating project",
+          success: "Project created",
+          error: {
+            render({ data }) {
+              setIsSubmitting(false);
+              return data?.message || data?.error || "Error creating project";
+            },
           },
-        },
-      });
-    } catch (error) {
-      console.error(error);
-    }
+        });
+      }
+    } catch (error) {}
   };
 
   return (
@@ -68,26 +73,26 @@ export default function NewProjectModal({ closeModal, projects, setProjects }) {
         exit={{ opacity: 0, scale: 0.7 }}
         transition={{ ease: "easeInOut", duration: 0.3 }}
         className={styles.modalContent}>
-        <h3 className={styles.modalHeading}>Create a new project</h3>
-        <label htmlFor='textInput' className={styles.textLabel}>
-          Project Name:
-        </label>
-        <input
-          id='textInput'
-          type='text'
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder='Enter the project name'
-          className={styles.textInput}
-        />
-        <div className={styles.buttonGroup}>
-          <button className={styles.confirmButton} onClick={() => handleCreatingProject()}>
-            Create
-          </button>
-          <button className={styles.cancelButton} onClick={() => closeModal()}>
-            Cancel
-          </button>
-        </div>
+        <form onSubmit={handleSubmit}>
+          <h3 className={styles.modalHeading}>Create a new project</h3>
+          <label htmlFor='textInput' className={styles.textLabel}>
+            Project Name:
+          </label>
+          <input
+            id='textInput'
+            type='text'
+            placeholder='Enter the project name'
+            className={styles.textInput}
+          />
+          <div className={styles.buttonGroup}>
+            <button className={styles.confirmButton} onSubmit={handleSubmit}>
+              {isSubmitting ? "Creating..." : "Create"}
+            </button>
+            <button type='button' className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </form>
       </motion.div>
     </div>
   );
