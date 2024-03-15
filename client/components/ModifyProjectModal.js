@@ -50,9 +50,9 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
   const handleUpdate = async () => {
     try {
       if (!newProjectName || newProjectName === "" || newProjectName === projectData?.name) return;
-      const response = await api.put("/project/" + modifyProjectId, { name: newProjectName });
-      const indexToUpdate = projects.findIndex((item) => item.p_id === parseInt(modifyProjectId));
-      if (indexToUpdate !== -1) projects[indexToUpdate].name = response.data.name;
+      await api.put(`/projects/${modifyProjectId}`, { name: newProjectName });
+      const indexToUpdate = projects.findIndex((item) => item.id === modifyProjectId);
+      if (indexToUpdate !== -1) projects[indexToUpdate].name = newProjectName;
       const orderProjectsSavedType = localStorage.getItem("OrderProjects");
       if (orderProjectsSavedType === "name_a-z")
         projects.sort((a, b) => a.name.localeCompare(b.name));
@@ -67,11 +67,13 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
 
   const handleDelete = async () => {
     try {
-      await api.delete("/project/" + modifyProjectId);
+      await api.delete(`/projects/${modifyProjectId}`);
       toast.success("Project deleted");
-      const indexToDelete = projects.findIndex((item) => item.p_id === parseInt(modifyProjectId));
-      projects.splice(indexToDelete, 1);
-      setProjects([...projects]);
+      const indexToDelete = projects.findIndex((item) => item.id === modifyProjectId);
+      if (indexToDelete !== -1) {
+        projects.splice(indexToDelete, 1);
+        setProjects([...projects]);
+      }
       closeModal();
     } catch (error) {
       AxiosErrorHandler(error, router);
