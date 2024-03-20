@@ -1,8 +1,10 @@
 .task {
   padding: 0.1em 0;
-  margin: 0.3em 0;
+  margin: 0.3em 0.5em 0.3em 0;
+  width: fit-content;
   display: flex;
   align-items: center;
+  position: relative;
 }
 .taskPercentages {
   min-width: 41.14px;
@@ -29,6 +31,11 @@
 }
 .taskText {
   position: relative;
+  transition: all 0.3s ease;
+}
+.taskText:empty:before {
+  color: #6e6e6e;
+  content: "Task name";
 }
 .taskText::after {
   content: "";

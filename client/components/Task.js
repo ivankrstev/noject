@@ -19,6 +19,11 @@ const Task = forwardRef(({ taskId, valueProp, levelProp, completed, projectId },
     }
   }, [value]);
 
+  useEffect(() => {
+    const childDiv = taskRef.current.querySelector("div");
+    childDiv.innerHTML = valueProp;
+  }, [valueProp]);
+
   const updateTaskValue = async () => {
     try {
       await tasksSocket.invoke("ChangeValue", projectId, taskId, value);
@@ -48,14 +53,14 @@ const Task = forwardRef(({ taskId, valueProp, levelProp, completed, projectId },
       <div
         title='Task text'
         ref={ref}
+        tabIndex={0}
         className={styles.taskText}
-        onInput={(e) => setValue(e.target.innerText)}
+        onInput={(e) => setValue(e.target.innerHTML)}
         onKeyDown={(e) => handleTaskInput(e, taskRef, projectId)}
         suppressContentEditableWarning={true}
         contentEditable={true}
-        style={{ minWidth: valueProp === "" ? "20vw" : "unset" }}>
-        {valueProp}
-      </div>
+        style={{ minWidth: valueProp === "" ? "1em" : "unset" }}
+      />
     </div>
   );
 });
