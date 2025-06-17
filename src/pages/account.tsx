@@ -1,110 +1,138 @@
-import styles from "@/styles/Account.module.css";
-import Pic from "@/public/icons/account_circle.svg";
-import { Fragment, useState, useEffect } from "react";
-import Head from "next/head";
 import Navbar from "@/components/Navbar";
-import { QRCodeCanvas } from "qrcode.react";
-import Modal from "react-modal";
-import Image from "next/image";
-import CloseIcon from "@/public/icons/close.svg";
+import Pic from "@/public/icons/account_circle.svg";
+// import CloseIcon from "@/public/icons/close.svg";
+import styles from "@/styles/Account.module.css";
+import { AuthReloginError } from "@/types";
 import api from "@/utils/api";
-import { toast } from "react-toastify";
-import GridLoader from "react-spinners/BeatLoader";
-import { useRouter } from "next/router";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
+import { AxiosResponse } from "axios";
+import Head from "next/head";
+import Image from "next/image";
+import { useRouter } from "next/router";
+// import { QRCodeCanvas } from "qrcode.react";
+import { ChangeEvent, FormEvent, Fragment, useCallback, useEffect, useState } from "react";
+// import Modal from "react-modal";
+import GridLoader from "react-spinners/BeatLoader";
+import { toast } from "react-toastify";
 
-export default function account() {
-  const [tfaPage, setTfaPage] = useState(2);
-  const [openModal, setOpenModal] = useState(false);
-  const [tfaActivated, setTfaActivated] = useState(true);
-  const [verifiedEmail, setVerifiedEmail] = useState();
-  const [data, setData] = useState();
-  const [qrSecret, setQrSecret] = useState("");
-  const [image, setImage] = useState("");
+interface UserData {
+  first_name: string;
+  last_name: string;
+  u_id: string;
+  verified_email: boolean;
+  tfa_activated: boolean;
+  created_at?: string;
+}
+
+interface PasswordChangeData {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+interface ApiResponse {
+  message: string;
+  [key: string]: unknown;
+}
+
+export default function Account() {
+  // const [tfaPage, setTfaPage] = useState<number>(2);
+  // const [openModal, setOpenModal] = useState<boolean>(false);
+  // const [tfaActivated, setTfaActivated] = useState<boolean>(true);
+  const [verifiedEmail, setVerifiedEmail] = useState<boolean | undefined>(undefined);
+  const [data, setData] = useState<UserData | undefined>(undefined);
+  // const [qrSecret, setQrSecret] = useState<string>("");
+  const [image, setImage] = useState<string | null>("");
   const router = useRouter();
 
-  const enableDisableTFA = async () => {
-    try {
-      const userToken = document.querySelector("#userTokenTFA").value;
-      const response = await api.put(tfaActivated ? "/tfa/disable/" : "tfa/enable/", { userToken });
-      if (response.data.message === "Two Factor Authenitication is disabled")
-        setTfaActivated(false);
-      else setTfaActivated(true);
-      setOpenModal(false);
-      toast.success(response.data.message);
-    } catch (error) {
-      AxiosErrorHandler(error, router);
-    }
-  };
+  // const enableDisableTFA = async (): Promise<void> => {
+  //   try {
+  //     const userTokenInput = document.querySelector("#userTokenTFA") as HTMLInputElement;
+  //     const userToken = userTokenInput.value;
+  //     const response = await api.put<ApiResponse>(tfaActivated ? "/tfa/disable/" : "tfa/enable/", {
+  //       userToken,
+  //     });
+  //     if (response.data.message === "Two Factor Authenitication is disabled")
+  //       setTfaActivated(false);
+  //     else setTfaActivated(true);
+  //     setOpenModal(false);
+  //     toast.success(response.data.message);
+  //   } catch (error) {
+  //     AxiosErrorHandler(error as AuthReloginError, router);
+  //   }
+  // };
 
-  const convertImageToBase64 = (response) => {
+  const convertImageToBase64 = useCallback((response: AxiosResponse): void => {
     if (response.data.size === 0) setImage(null);
     else {
       const blob = new Blob([response.data], { type: "image/jpg" });
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
-        let base64 = reader.result;
+        const base64 = reader.result as string;
         setImage(base64);
       };
     }
-  };
+  }, []);
 
-  const getDetails = async () => {
+  const getDetails = useCallback(async (): Promise<void> => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 400));
-      const response = await api.get("/account/all");
+      const response = await api.get<UserData>("/account/all");
       setData(response.data);
       const responsePic = await api.get("/account/picture/get", { responseType: "blob" });
       convertImageToBase64(responsePic);
     } catch (error) {
-      AxiosErrorHandler(error, router);
+      AxiosErrorHandler(error as AuthReloginError, router);
     }
-  };
+  }, [convertImageToBase64, router]);
 
-  const changePassword = async (formData) => {
+  const changePassword = async (formElements: HTMLFormControlsCollection): Promise<void> => {
     try {
-      const data = {
-        currentPassword: formData[0].value,
-        newPassword: formData[1].value,
-        confirmNewPassword: formData[2].value,
+      const data: PasswordChangeData = {
+        currentPassword: (formElements[0] as HTMLInputElement).value,
+        newPassword: (formElements[1] as HTMLInputElement).value,
+        confirmNewPassword: (formElements[2] as HTMLInputElement).value,
       };
       await new Promise((resolve) => setTimeout(resolve, 400));
-      const response = await api.put("/account/password/change", data);
+      const response = await api.put<ApiResponse>("/account/password/change", data);
       toast.success(response.data.message);
-      document.querySelector("#change-password-form").reset();
+      const form = document.querySelector("#change-password-form") as HTMLFormElement;
+      form.reset();
     } catch (error) {
-      AxiosErrorHandler(error, router);
+      AxiosErrorHandler(error as AuthReloginError, router);
     }
   };
 
   useEffect(() => {
     getDetails();
-  }, []);
+  }, [getDetails]);
 
   useEffect(() => {
     if (data) {
       setVerifiedEmail(data.verified_email);
-      if (data.tfa_activated) setTfaActivated(true);
-      else setTfaActivated(false);
+      // setTfaActivated(data.tfa_activated);
     }
   }, [data]);
 
-  useEffect(() => (tfaActivated ? setTfaPage(2) : setTfaPage(1)), [tfaActivated]);
+  // useEffect(() => {
+  //   if (tfaActivated) setTfaPage(2);
+  //   else setTfaPage(1);
+  // }, [tfaActivated]);
 
-  useEffect(() => {
-    if (tfaPage === 1 && openModal) {
-      const generateTfaSecret = async () => {
-        try {
-          const response = await api.post("/tfa/generate");
-          setQrSecret(response.data.secret);
-        } catch (error) {
-          AxiosErrorHandler(error, router);
-        }
-      };
-      generateTfaSecret();
-    }
-  }, [tfaPage, openModal]);
+  // useEffect(() => {
+  //   if (tfaPage === 1 && openModal) {
+  //     const generateTfaSecret = async (): Promise<void> => {
+  //       try {
+  //         const response = await api.post<{ secret: string }>("/tfa/generate");
+  //         setQrSecret(response.data.secret);
+  //       } catch (error) {
+  //         AxiosErrorHandler(error as AuthReloginError, router);
+  //       }
+  //     };
+  //     generateTfaSecret();
+  //   }
+  // }, [tfaPage, openModal, router]);
 
   return (
     <Fragment>
@@ -112,9 +140,10 @@ export default function account() {
         <title>Noject - My account</title>
         <meta
           name='description'
-          content='Manage your account settings, profile picture, email verification, and two-factor authentication on Noject.'
+          content='Manage your account settings, profile picture, email verification and two-factor authentication on Noject.'
         />
       </Head>
+
       <Navbar showSidebar={true} showBtnDashboard={true} />
       <div className={styles.account}>
         <GridLoader
@@ -127,7 +156,7 @@ export default function account() {
         {data && (
           <Fragment>
             <div className={styles.profileInfo}>
-              <img
+              <Image
                 src={image ? image : Pic.src}
                 style={{
                   filter: image
@@ -143,9 +172,10 @@ export default function account() {
                   accept='image/*'
                   multiple={false}
                   name='profile_picture'
-                  onChange={async (e) => {
+                  onChange={async (e: ChangeEvent<HTMLInputElement>) => {
                     try {
-                      const formData = new FormData(e.target.parentNode);
+                      const formElement = e.target.parentNode as HTMLFormElement;
+                      const formData = new FormData(formElement);
                       const responsePic = await api.post("/account/picture/upload", formData, {
                         headers: {
                           "Content-Type": "multipart/form-data",
@@ -161,9 +191,10 @@ export default function account() {
                   }}
                 />
                 <button
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.preventDefault();
-                    e.target.previousSibling.click();
+                    const fileInput = e.currentTarget.previousSibling as HTMLInputElement;
+                    fileInput.click();
                   }}>
                   Change Picture
                 </button>
@@ -174,27 +205,29 @@ export default function account() {
               <p>{data.u_id}</p>
               <p>Created on: </p>
             </div>
+
             <form className={styles.changeEmailForm}>
               <p>Your email is {verifiedEmail ? "verified." : "not verified."}</p>
               {!verifiedEmail && (
                 <button
-                  onClick={async (e) => {
+                  onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                     e.preventDefault();
                     try {
-                      const response = await api.post("/send-verify");
+                      const response = await api.post<ApiResponse>("/send-verify");
                       toast.success(response.data.message);
                     } catch (error) {
-                      AxiosErrorHandler(error, router);
+                      AxiosErrorHandler(error as AuthReloginError, router);
                     }
                   }}>
                   Send confirmation link
                 </button>
               )}
             </form>
+
             <form
-              onSubmit={(e) => {
+              onSubmit={(e: FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
-                changePassword(e.target.elements);
+                changePassword(e.currentTarget.elements);
               }}
               id='change-password-form'
               className={styles.changePasswordForm}>
@@ -224,7 +257,8 @@ export default function account() {
               />
               <button>Change password</button>
             </form>
-            <div className={styles.twoFactorAuth}>
+
+            {/* <div className={styles.twoFactorAuth}>
               <p>
                 Two Factor Authentication is {tfaActivated ? "enabled. " : "disabled. "}
                 <button
@@ -288,7 +322,7 @@ export default function account() {
                   )}
                 </div>
               </Modal>
-            </div>
+            </div> */}
           </Fragment>
         )}
       </div>
