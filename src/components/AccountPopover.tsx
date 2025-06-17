@@ -1,50 +1,53 @@
-import Image from "next/image";
-import styles from "@/styles/Navbar.module.css";
-import ExpandMoreIcon from "@/public/icons/expand_circle_down.svg";
 import BlankProfilePic from "@/public/icons/account_circle.svg";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import ExpandMoreIcon from "@/public/icons/expand_circle_down.svg";
+import styles from "@/styles/Navbar.module.css";
 import api from "@/utils/api";
-import { toast } from "react-toastify";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const closeProfilePopover = (event) => {
+const closeProfilePopover = (event: MouseEvent): void => {
+  const profilePopover = document.querySelector("#profilePopover") as HTMLDivElement;
+  const profilePopoverBtn = document.querySelector("#profilePopoverBtn") as HTMLButtonElement;
+
   if (
-    event.target !== document.querySelector("#profilePopover") &&
-    event.target !== document.querySelector("#profilePopoverBtn") &&
-    !document.querySelector("#profilePopoverBtn").contains(event.target)
+    event.target !== profilePopover &&
+    event.target !== profilePopoverBtn &&
+    !profilePopoverBtn.contains(event.target as Node)
   ) {
-    document.querySelector("#profilePopover").style.display = "none";
+    profilePopover.style.display = "none";
     document.removeEventListener("click", closeProfilePopover);
   }
 };
 
 export default function AccountPopover() {
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     loadProfilePicture();
   }, []);
 
-  const signOut = async () => {
+  const signOut = async (): Promise<void> => {
     try {
       await api.delete("/signout", { withCredentials: true });
       toast.success("Successfully logged out");
       router.push("/login/");
-    } catch (error) {
+    } catch {
       toast.error("Oops! Something went wrong");
     }
   };
 
-  const loadProfilePicture = async () => {
+  const loadProfilePicture = async (): Promise<void> => {
     try {
       const response = await api.get("/account/picture/get", { responseType: "blob" });
       if (response.data.size !== 0) {
         const blob = new Blob([response.data], { type: "image/jpg" });
         const reader = new FileReader();
         reader.readAsDataURL(blob);
-        reader.onloadend = () => setImage(reader.result);
+        reader.onloadend = () => setImage(reader.result as string);
       }
     } catch (error) {
       console.error(error);
@@ -55,7 +58,7 @@ export default function AccountPopover() {
     <div>
       <button
         onClick={() => {
-          const profilePopover = document.querySelector("#profilePopover");
+          const profilePopover = document.querySelector("#profilePopover") as HTMLDivElement;
           if (profilePopover.style.display === "flex") {
             profilePopover.style.display = "none";
             document.removeEventListener("click", closeProfilePopover);
