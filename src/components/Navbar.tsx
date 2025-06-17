@@ -1,25 +1,31 @@
+import openMenuIcon from "@/public/icons/open-menu.svg";
 import styles from "@/styles/Navbar.module.css";
 import Image from "next/image";
-import openMenuIcon from "@/public/icons/open-menu.svg";
-import AccountPopover from "./AccountPopover";
 import Link from "next/link";
+import AccountPopover from "./AccountPopover";
 
-export default function Navbar(props) {
+interface NavbarProps {
+  showSidebar?: boolean;
+  sidebarShowHide?: () => void;
+  showBtnDashboard?: boolean;
+}
+
+export default function Navbar({ showSidebar, sidebarShowHide, showBtnDashboard }: NavbarProps) {
   return (
     <div id='navbar' className={styles.navbar}>
       <div>
-        {!props.showSidebar && (
+        {!showSidebar && (
           <button
             title='Open Sidebar'
             className={styles.sidebarOpenBtn}
-            onClick={() => props.sidebarShowHide()}>
+            onClick={() => sidebarShowHide && sidebarShowHide()}>
             <Image src={openMenuIcon} alt='Open Sidebar Icon' width={25} />
           </button>
         )}
         <h3 className={styles.projectName}>Noject</h3>
       </div>
       <div>
-        {props.showBtnDashboard && (
+        {showBtnDashboard && (
           <Link style={{ marginRight: "0.5em" }} href='/dashboard'>
             Go to dashboard
           </Link>
