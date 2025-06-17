@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import type { AppProps } from "next/app";
 import { Space_Mono } from "next/font/google";
 import "react-loading-skeleton/dist/skeleton.css";
 import { ToastContainer } from "react-toastify";
@@ -6,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const inter = Space_Mono({ subsets: ["latin"], weight: "400" });
 
-export default function App({ Component, pageProps }) {
+export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className={inter.className}>
       <ToastContainer
