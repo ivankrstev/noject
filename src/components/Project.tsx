@@ -7,7 +7,7 @@ import api from "@/utils/api";
 import { setFocusCursorOnEnd } from "@/utils/tasks/taskKeyEventsHandler";
 import { addTask } from "@/utils/tasks/taskOperations";
 import tasksProgressHandler from "@/utils/tasks/tasksProgressHandler";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { HashLoader } from "react-spinners";
 
@@ -122,7 +122,7 @@ export default function Project({ selectedProject }: ProjectProps) {
                   <p>No tasks</p>
                   <button
                     className={styles.newTaskBtn}
-                    onClick={() => addTask(selectedProject?.id, null)}>
+                    onClick={() => addTask(selectedProject?.id || "", null)}>
                     Create new task
                   </button>
                 </div>

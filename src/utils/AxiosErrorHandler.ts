@@ -1,4 +1,5 @@
 import { AuthReloginError } from "@/types";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { NextRouter } from "next/router";
 import { toast } from "react-toastify";
 
@@ -32,7 +33,7 @@ let routedToLogin: boolean | undefined;
  */
 export default function AxiosErrorHandler(
   error?: AuthReloginError | null,
-  router?: NextRouter | null,
+  router?: NextRouter | AppRouterInstance | null,
   customMessage?: string
 ): void {
   // Handle authentication errors by redirecting to login

@@ -4,15 +4,7 @@ import { AxiosError } from "axios";
 import { motion } from "framer-motion";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-  backgroundColor: string;
-  creation_date: string;
-  [key: string]: unknown;
-}
+import { Project } from "@/types";
 
 interface NewProjectModalProps {
   closeModal: () => void;

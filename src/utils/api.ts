@@ -40,7 +40,7 @@ export const getAccessToken = async (): Promise<string | null> => {
     // Update the in-memory token
     setAccessToken(response.data.access_token);
     return response.data.access_token;
-  } catch (error) {
+  } catch {
     return null;
   }
 };

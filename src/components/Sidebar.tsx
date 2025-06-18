@@ -3,24 +3,24 @@ import addIcon from "@/public/icons/add_plus.svg";
 import closeMenuIcon from "@/public/icons/close-menu.svg";
 import SettingsIcon from "@/public/icons/settings.svg";
 import styles from "@/styles/Sidebar.module.css";
-import { AuthReloginError } from "@/types";
+import { AuthReloginError, Project } from "@/types";
 import api, { getAccessToken } from "@/utils/api";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import ModifyProjectModal from "./ModifyProjectModal";
 
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-  backgroundColor: string;
-  creation_date: string;
-}
+// interface Project {
+//   id: string;
+//   name: string;
+//   color: string;
+//   backgroundColor: string;
+//   creation_date: string;
+// }
 
 interface SelectedProject {
   id: string;
@@ -153,11 +153,11 @@ export default function Sidebar({
       sortedProjects.sort((b, a) => a.name.localeCompare(b.name));
     } else if (type === "creation_date_asc") {
       sortedProjects.sort(
-        (a, b) => new Date(a.creation_date).getTime() - new Date(b.creation_date).getTime()
+        (a, b) => new Date(a.createdOn).getTime() - new Date(b.createdOn).getTime()
       );
     } else if (type === "creation_date_desc") {
       sortedProjects.sort(
-        (b, a) => new Date(a.creation_date).getTime() - new Date(b.creation_date).getTime()
+        (b, a) => new Date(a.createdOn).getTime() - new Date(b.createdOn).getTime()
       );
     }
 
@@ -294,7 +294,7 @@ export default function Sidebar({
       <AnimatePresence>
         {showModifyProjectModal && (
           <ModifyProjectModal
-            modifyProjectId={modifyProjectId}
+            modifyProjectId={modifyProjectId || ""}
             projects={projects}
             setProjects={setProjects}
             closeModal={() => setShowModifyProjectModal(false)}

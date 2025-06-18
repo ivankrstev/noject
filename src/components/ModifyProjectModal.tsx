@@ -8,20 +8,10 @@ import api from "@/utils/api";
 import { AnimatePresence, motion } from "framer-motion";
 import moment from "moment/moment";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-  backgroundColor: string;
-  creation_date: string;
-  createdOn?: string;
-  isPublic?: boolean;
-  [key: string]: unknown;
-}
+import { Project } from "@/types";
 
 interface ProjectData {
   name: string;

@@ -8,7 +8,7 @@ import api from "@/utils/api";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 

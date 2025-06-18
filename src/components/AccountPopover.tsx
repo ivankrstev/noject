@@ -4,7 +4,7 @@ import styles from "@/styles/Navbar.module.css";
 import api from "@/utils/api";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 

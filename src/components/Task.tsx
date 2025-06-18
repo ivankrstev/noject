@@ -4,8 +4,16 @@ import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import handleCheckBoxChange from "@/utils/tasks/handleCheckBoxChange";
 import handleTaskInput from "@/utils/tasks/taskKeyEventsHandler";
 import tasksSocket from "@/utils/tasksSignalRHub";
-import { useRouter } from "next/router";
-import { forwardRef, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  forwardRef,
+  KeyboardEvent,
+  RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 interface TaskProps {
   taskId: number;
@@ -79,7 +87,9 @@ const Task = forwardRef<HTMLDivElement, TaskProps>(function Task(
           const target = e.target as HTMLDivElement;
           setValue(target.innerHTML);
         }}
-        onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => handleTaskInput(e, taskRef, projectId)}
+        onKeyDown={(e: KeyboardEvent<HTMLDivElement>) =>
+          handleTaskInput(e, taskRef as RefObject<HTMLDivElement>, projectId)
+        }
         suppressContentEditableWarning={true}
         contentEditable={true}
         style={{ minWidth: valueProp === "" ? "1em" : "unset" }}
