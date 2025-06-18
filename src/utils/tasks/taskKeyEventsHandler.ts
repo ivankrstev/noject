@@ -4,9 +4,17 @@ import {
   deleteTask,
   increaseTaskLevel,
 } from "@/utils/tasks/taskOperations";
+import { RefObject } from "react";
 
-export default function handleTaskInput(e, taskRef, projectId) {
+export default function handleTaskInput(
+  e: React.KeyboardEvent<HTMLDivElement>,
+  taskRef: RefObject<HTMLDivElement>,
+  projectId: string
+): void {
+  if (!taskRef.current) return;
+
   const taskId = parseInt(taskRef.current.id);
+
   if (e.shiftKey && e.key === "Tab") {
     e.preventDefault();
     decreaseTaskLevel(projectId, taskId);
@@ -21,21 +29,23 @@ export default function handleTaskInput(e, taskRef, projectId) {
     deleteTask(projectId, taskId);
   } else if (e.key === "ArrowDown") {
     e.preventDefault();
-    const div = e.target.parentNode.nextSibling?.lastChild;
-    div && setFocusCursorOnEnd(div);
+    const currentElement = e.target as HTMLElement;
+    const div = currentElement.parentNode?.nextSibling?.lastChild as HTMLDivElement | undefined;
+    if (div) setFocusCursorOnEnd(div);
   } else if (e.key === "ArrowUp") {
     e.preventDefault();
-    const div = e.target.parentNode.previousSibling?.lastChild;
-    div && setFocusCursorOnEnd(div);
+    const currentElement = e.target as HTMLElement;
+    const div = currentElement.parentNode?.previousSibling?.lastChild as HTMLDivElement | undefined;
+    if (div) setFocusCursorOnEnd(div);
   }
 }
 
-export const setFocusCursorOnEnd = (div) => {
-  div.focus({ focusVisible: true });
+export const setFocusCursorOnEnd = (div: HTMLDivElement): void => {
+  div.focus();
   const range = document.createRange();
   const sel = window.getSelection();
   range.selectNodeContents(div);
   range.collapse(false);
-  sel.removeAllRanges();
-  sel.addRange(range);
+  sel?.removeAllRanges();
+  sel?.addRange(range);
 };
