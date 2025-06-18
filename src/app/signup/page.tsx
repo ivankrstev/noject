@@ -1,3 +1,4 @@
+"use client";
 import Logo from "@/components/Logo";
 import visibilityOffIcon from "@/public/icons/visibility-off.svg";
 import visibilityOnIcon from "@/public/icons/visibility-on.svg";
@@ -6,8 +7,8 @@ import axios, { AxiosError } from "axios";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { FormEvent, Fragment, JSX, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FormEvent, Fragment, useState } from "react";
 import { toast } from "react-toastify";
 
 interface RegisterFormData {
@@ -19,13 +20,13 @@ interface RegisterFormData {
 
 interface RegisterResponse {
   message: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface ErrorResponse {
   message?: string;
   error?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 const handleRegister = async (data: HTMLFormControlsCollection): Promise<RegisterResponse> => {

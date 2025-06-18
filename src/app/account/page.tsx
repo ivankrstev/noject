@@ -1,3 +1,4 @@
+"use client";
 import Navbar from "@/components/Navbar";
 import Pic from "@/public/icons/account_circle.svg";
 // import CloseIcon from "@/public/icons/close.svg";
@@ -8,7 +9,7 @@ import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import { AxiosResponse } from "axios";
 import Head from "next/head";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 // import { QRCodeCanvas } from "qrcode.react";
 import { ChangeEvent, FormEvent, Fragment, useCallback, useEffect, useState } from "react";
 // import Modal from "react-modal";

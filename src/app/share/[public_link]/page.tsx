@@ -1,12 +1,13 @@
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { Fragment, useCallback, useEffect, useState } from "react";
-import styles from "@/styles/Project.module.css";
+"use client";
 import TaskViewProject from "@/components/TaskViewProject";
+import styles from "@/styles/Project.module.css";
 import calculateProject from "@/utils/tasks/tasksProgressHandler";
 import axios, { AxiosError } from "axios";
-import { toast } from "react-toastify";
+import Head from "next/head";
+import { useParams, useRouter } from "next/navigation";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { HashLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 interface Task {
   t_id: number;
@@ -33,6 +34,9 @@ interface ApiError {
 
 export default function ViewProject() {
   const router = useRouter();
+  const params = useParams();
+  const publicLink = params.public_link as string;
+
   const [tasks, setTasks] = useState<Task[] | undefined>(undefined);
   const [projectData, setProjectData] = useState<Project | undefined>(undefined);
 
@@ -58,11 +62,10 @@ export default function ViewProject() {
   );
 
   useEffect(() => {
-    const publicLink = router.query.public_link;
-    if (publicLink && typeof publicLink === "string") {
+    if (publicLink) {
       getProjectTasks(publicLink);
     }
-  }, [router.query.public_link, getProjectTasks]);
+  }, [publicLink, getProjectTasks]);
 
   useEffect(() => {
     if (tasks && tasks.length !== 0) calculateProject();

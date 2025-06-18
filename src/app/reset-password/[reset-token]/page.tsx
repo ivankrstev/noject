@@ -1,9 +1,10 @@
+"use client";
 import Logo from "@/components/Logo";
 import styles from "@/styles/SignUpLogIn.module.css";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import axios, { AxiosError } from "axios";
 import Head from "next/head";
-import { useRouter } from "next/router";
+import { useParams, useRouter } from "next/navigation";
 import { Fragment, MouseEvent, useCallback, useEffect, useState } from "react";
 import { HashLoader } from "react-spinners";
 
@@ -19,6 +20,9 @@ interface ApiError {
 
 export default function ResetPassword() {
   const router = useRouter();
+  const params = useParams();
+  const resetToken = params["reset-token"] as string;
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [renderForm, setRenderForm] = useState<boolean>(false);
 
@@ -40,11 +44,10 @@ export default function ResetPassword() {
   );
 
   useEffect(() => {
-    const resetToken = router.query.reset_token;
-    if (resetToken && typeof resetToken === "string") {
+    if (resetToken) {
       checkResetTokenValidity(resetToken);
     }
-  }, [router.query.reset_token, checkResetTokenValidity]);
+  }, [resetToken, checkResetTokenValidity]);
 
   const postResetPassword = async (password: string, confirmPassword: string): Promise<void> => {
     try {
@@ -53,8 +56,7 @@ export default function ResetPassword() {
         confirmPassword,
       };
 
-      const resetToken = router.query.reset_token;
-      if (!resetToken || typeof resetToken !== "string") {
+      if (!resetToken) {
         throw new Error("Invalid reset token");
       }
 

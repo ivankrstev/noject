@@ -1,3 +1,4 @@
+"use client";
 import Logo from "@/components/Logo";
 import styles from "@/styles/SignUpLogIn.module.css";
 import { AuthReloginError } from "@/types";
@@ -5,7 +6,7 @@ import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import axios from "axios";
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { FormEvent, Fragment } from "react";
 import { toast } from "react-toastify";
 

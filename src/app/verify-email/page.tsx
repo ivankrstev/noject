@@ -1,7 +1,8 @@
+"use client";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { Fragment, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Fragment, useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
 
 interface VerifyEmailResponse {
@@ -14,9 +15,11 @@ interface ErrorResponse {
 
 export default function VerifyEmail() {
   const router = useRouter();
-  const { token = "", email = "" } = router.query as { token?: string; email?: string };
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") || "";
+  const email = searchParams.get("email") || "";
 
-  const verifyToken = async (): Promise<void> => {
+  const verifyToken = useCallback(async (): Promise<void> => {
     try {
       const response: AxiosResponse<VerifyEmailResponse> = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/verify-email?token=${token}&email=${email}`
@@ -35,11 +38,11 @@ export default function VerifyEmail() {
       }
       router.push("/login");
     }
-  };
+  }, [token, email, router]);
 
   useEffect(() => {
     if (token && email) verifyToken();
-  }, [token]);
+  }, [token, email, verifyToken]);
 
   return (
     <Fragment>

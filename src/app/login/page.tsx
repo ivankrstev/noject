@@ -1,3 +1,4 @@
+"use client";
 import Logo from "@/components/Logo";
 import visibilityOffIcon from "@/public/icons/visibility-off.svg";
 import visibilityOnIcon from "@/public/icons/visibility-on.svg";
@@ -8,7 +9,7 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, Fragment, MouseEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
