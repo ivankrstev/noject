@@ -1,96 +1,150 @@
+import ChangeCollaboratorsModal from "@/components/ChangeCollaboratorsModal";
 import DeleteIcon from "@/public/icons/delete.svg";
 import CollaboratorsIcon from "@/public/icons/group_users.svg";
 import styles from "@/styles/Modals.module.css";
+import { AuthReloginError } from "@/types";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
 import api from "@/utils/api";
 import { AnimatePresence, motion } from "framer-motion";
 import moment from "moment/moment";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import ChangeCollaboratorsModal from "./ChangeCollaboratorsModal";
 
-export default function ModifyProjectModal({ closeModal, modifyProjectId, projects, setProjects }) {
+interface Project {
+  id: string;
+  name: string;
+  color: string;
+  backgroundColor: string;
+  creation_date: string;
+  createdOn?: string;
+  isPublic?: boolean;
+  [key: string]: unknown;
+}
+
+interface ProjectData {
+  name: string;
+  createdOn?: string;
+  isPublic?: boolean;
+  [key: string]: unknown;
+}
+
+interface ModifyProjectModalProps {
+  closeModal: () => void;
+  modifyProjectId: string;
+  projects: Project[];
+  setProjects: (projects: Project[]) => void;
+}
+
+export default function ModifyProjectModal({
+  closeModal,
+  modifyProjectId,
+  projects,
+  setProjects,
+}: ModifyProjectModalProps) {
   const router = useRouter();
-  const [projectData, setProjectData] = useState();
-  const [newProjectName, setNewProjectName] = useState();
-  const [showCollaboratorsModal, setCollaboratorsModal] = useState(false);
+  const [projectData, setProjectData] = useState<ProjectData | undefined>();
+  const [newProjectName, setNewProjectName] = useState<string | undefined>();
+  const [showCollaboratorsModal, setCollaboratorsModal] = useState<boolean>(false);
 
-  const getProjectData = async (projectId) => {
-    try {
-      const response = await api.get(`/projects/${projectId}`);
-      setProjectData(response.data.project);
-    } catch (error) {
-      AxiosErrorHandler(error, router, "Error getting project");
-    }
-  };
+  const getProjectData = useCallback(
+    async (projectId: string): Promise<void> => {
+      try {
+        const response = await api.get<{ project: ProjectData }>(`/projects/${projectId}`);
+        setProjectData(response.data.project);
+      } catch (error) {
+        AxiosErrorHandler(error as AuthReloginError, router, "Error getting project");
+      }
+    },
+    [router]
+  );
 
   useEffect(() => {
-    const handleCloseOnKey = (e) => e.code === "Escape" && closeModal();
+    const handleCloseOnKey = (e: KeyboardEvent): void => {
+      if (e.code === "Escape") closeModal();
+    };
+
     getProjectData(modifyProjectId);
     document.documentElement.style.overflowY = "hidden";
     document.addEventListener("keydown", handleCloseOnKey);
+
     return () => {
       document.documentElement.style.overflowY = "auto";
       document.removeEventListener("keydown", handleCloseOnKey);
     };
-  }, []);
+  }, [closeModal, modifyProjectId, router, getProjectData]);
+
+  const handleUpdate = useCallback(async () => {
+    try {
+      if (!newProjectName || newProjectName === "" || newProjectName === projectData?.name) return;
+
+      await api.put(`/projects/${modifyProjectId}`, { name: newProjectName });
+
+      const updatedProjects = [...projects];
+      const indexToUpdate = updatedProjects.findIndex((item) => item.id === modifyProjectId);
+
+      if (indexToUpdate !== -1) {
+        updatedProjects[indexToUpdate].name = newProjectName;
+      }
+
+      const orderProjectsSavedType = localStorage.getItem("OrderProjects");
+      if (orderProjectsSavedType === "name_a-z") {
+        updatedProjects.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (orderProjectsSavedType === "name_z-a") {
+        updatedProjects.sort((b, a) => a.name.localeCompare(b.name));
+      }
+
+      setProjects(updatedProjects);
+      toast.success("Project name updated");
+    } catch (error) {
+      AxiosErrorHandler(error as AuthReloginError, router);
+    }
+  }, [modifyProjectId, newProjectName, projectData, projects, setProjects, router]);
 
   useEffect(() => {
     const updateTimeout = setTimeout(() => {
-      if (newProjectName !== projectData?.name) {
+      if (newProjectName !== undefined && projectData && newProjectName !== projectData.name) {
         handleUpdate();
-        projectData.name = newProjectName;
+        if (projectData) {
+          projectData.name = newProjectName;
+        }
       }
     }, 1000);
-    return () => clearTimeout(updateTimeout);
-  }, [newProjectName]);
 
-  const handleUpdate = async () => {
-    try {
-      if (!newProjectName || newProjectName === "" || newProjectName === projectData?.name) return;
-      await api.put(`/projects/${modifyProjectId}`, { name: newProjectName });
-      const indexToUpdate = projects.findIndex((item) => item.id === modifyProjectId);
-      if (indexToUpdate !== -1) projects[indexToUpdate].name = newProjectName;
-      const orderProjectsSavedType = localStorage.getItem("OrderProjects");
-      if (orderProjectsSavedType === "name_a-z")
-        projects.sort((a, b) => a.name.localeCompare(b.name));
-      else if (orderProjectsSavedType === "name_z-a")
-        projects.sort((b, a) => a.name.localeCompare(b.name));
-      setProjects([...projects]);
-      toast.success("Project name updated");
-    } catch (error) {
-      AxiosErrorHandler(error, router);
-    }
-  };
+    return () => clearTimeout(updateTimeout);
+  }, [newProjectName, projectData, handleUpdate]);
 
   const handleDelete = async () => {
     try {
       await api.delete(`/projects/${modifyProjectId}`);
       toast.success("Project deleted");
-      const indexToDelete = projects.findIndex((item) => item.id === modifyProjectId);
+
+      const updatedProjects = [...projects];
+      const indexToDelete = updatedProjects.findIndex((item) => item.id === modifyProjectId);
+
       if (indexToDelete !== -1) {
-        projects.splice(indexToDelete, 1);
-        setProjects([...projects]);
+        updatedProjects.splice(indexToDelete, 1);
+        setProjects(updatedProjects);
       }
+
       closeModal();
     } catch (error) {
-      AxiosErrorHandler(error, router);
+      AxiosErrorHandler(error as AuthReloginError, router);
     }
   };
 
-  const handleProjectSharing = async (status) => {
+  const handleProjectSharing = async (status: boolean): Promise<void> => {
     try {
       if (status) {
         await api.put(`/projects/${modifyProjectId}/share`);
-        setProjectData({ ...projectData, isPublic: true });
+        setProjectData((prevData) => ({ ...prevData, isPublic: true } as ProjectData));
       } else {
         await api.delete(`/projects/${modifyProjectId}/share`);
-        setProjectData({ ...projectData, isPublic: false });
+        setProjectData((prevData) => ({ ...prevData, isPublic: false } as ProjectData));
       }
     } catch (error) {
-      AxiosErrorHandler(error, router);
+      AxiosErrorHandler(error as AuthReloginError, router);
     }
   };
 
@@ -126,7 +180,9 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
             <label className={styles.shareProjectSwitch}>
               <input
                 defaultChecked={projectData?.isPublic}
-                onInput={(e) => handleProjectSharing(e.target.checked)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleProjectSharing(e.target.checked)
+                }
                 type='checkbox'
               />
               <span className={styles.switchSlider}></span>
@@ -139,10 +195,12 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
                 {`/share/${modifyProjectId}`}
               </p>
               <button
-                onClick={(e) => {
-                  navigator.clipboard.writeText(
-                    window.location.origin + e.currentTarget.previousSibling.lastChild.textContent
-                  );
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  const linkElement = (e.currentTarget.previousSibling as HTMLParagraphElement)
+                    .lastChild as Text;
+                  if (linkElement && linkElement.textContent) {
+                    navigator.clipboard.writeText(window.location.origin + linkElement.textContent);
+                  }
                 }}>
                 Copy
               </button>
@@ -169,6 +227,7 @@ export default function ModifyProjectModal({ closeModal, modifyProjectId, projec
           </button>
         </div>
       </motion.div>
+
       <AnimatePresence>
         {showCollaboratorsModal && (
           <ChangeCollaboratorsModal

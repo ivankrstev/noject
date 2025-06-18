@@ -1,38 +1,52 @@
-import styles from "@/styles/Modals.module.css";
-import Image from "next/image";
-import { Fragment, useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import SearchIcon from "@/public/icons/search.svg";
 import CloseIcon from "@/public/icons/close.svg";
 import AddCollaboratorIcon from "@/public/icons/person_add_FILL1.svg";
 import RemoveCollaboratorIcon from "@/public/icons/person_remove_fill1.svg";
+import SearchIcon from "@/public/icons/search.svg";
+import styles from "@/styles/Modals.module.css";
+import { AuthReloginError } from "@/types";
 import api from "@/utils/api";
-import { toast } from "react-toastify";
-import { useRouter } from "next/router";
 import AxiosErrorHandler from "@/utils/AxiosErrorHandler";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { Fragment, useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modifyProjectId }) {
+interface Collaborator {
+  u_id: string;
+  [key: string]: unknown;
+}
+
+interface ChangeCollaboratorsModalProps {
+  closeCollaboratorModal: () => void;
+  modifyProjectId: string;
+}
+
+export default function ChangeCollaboratorsModal({
+  closeCollaboratorModal,
+  modifyProjectId,
+}: ChangeCollaboratorsModalProps) {
   const router = useRouter();
-  const [collaborators, setCollaborators] = useState([]);
-  const [searchData, setSearchData] = useState([]);
-  const [search, setSearch] = useState(null);
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
+  const [searchData, setSearchData] = useState<Collaborator[]>([]);
+  const [search, setSearch] = useState<string | null>(null);
 
-  const addCollaborator = async (u_id) => {
+  const addCollaborator = async (u_id: string): Promise<void> => {
     try {
-      const response = await api.post("/project-collaborators/add", {
+      const response = await api.post<Collaborator>("/project-collaborators/add", {
         userToAdd: u_id,
         p_id: modifyProjectId,
       });
       setCollaborators([...collaborators, response.data]);
       toast.success("Collaborator added");
     } catch (error) {
-      AxiosErrorHandler(error, router);
+      AxiosErrorHandler(error as AuthReloginError, router);
     }
   };
 
-  const removeCollaborator = async (u_id) => {
+  const removeCollaborator = async (u_id: string): Promise<void> => {
     try {
-      const response = await api.delete(
+      const response = await api.delete<{ u_id: string }>(
         "/project-collaborators/" + modifyProjectId + "?u_id=" + u_id
       );
       toast.success("Collaborator removed");
@@ -40,39 +54,41 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
       collaborators.splice(indexToDelete, 1);
       setCollaborators([...collaborators]);
     } catch (error) {
-      AxiosErrorHandler(error, router);
+      AxiosErrorHandler(error as AuthReloginError, router);
     }
   };
 
-  const getCollaborators = async () => {
+  const getCollaborators = useCallback(async (): Promise<void> => {
     try {
-      const response = await api.get("/project-collaborators/" + modifyProjectId);
+      const response = await api.get<Collaborator[]>("/project-collaborators/" + modifyProjectId);
       if (response.data.length !== 0) setCollaborators(response.data);
     } catch (error) {
-      AxiosErrorHandler(error, router);
+      AxiosErrorHandler(error as AuthReloginError, router);
     }
-  };
+  }, [modifyProjectId, router]);
 
   useEffect(() => {
     getCollaborators();
-  }, []);
+  }, [getCollaborators]);
 
   useEffect(() => {
-    let searchTimeout;
+    let searchTimeout: NodeJS.Timeout | undefined;
     if (!search || search === "") setSearchData([]);
     else if (search)
       searchTimeout = setTimeout(async () => {
         try {
-          const response = await api.get(
+          const response = await api.get<Collaborator[]>(
             "/project-collaborators/search/" + modifyProjectId + "?q=" + search
           );
           setSearchData(response.data);
         } catch (error) {
-          AxiosErrorHandler(error, router);
+          AxiosErrorHandler(error as AuthReloginError, router);
         }
       }, 1000);
-    return () => searchTimeout && clearTimeout(searchTimeout);
-  }, [search]);
+    return () => {
+      if (searchTimeout) clearTimeout(searchTimeout);
+    };
+  }, [search, modifyProjectId, router]);
 
   return (
     <div className={styles.fullscreenModal}>
@@ -98,7 +114,10 @@ export default function ChangeCollaboratorsModal({ closeCollaboratorModal, modif
               className={styles.cancelSearchBtn}
               onClick={() => {
                 setSearchData([]);
-                document.querySelector("#search-input-collaborators").value = "";
+                const searchInput = document.querySelector(
+                  "#search-input-collaborators"
+                ) as HTMLInputElement;
+                if (searchInput) searchInput.value = "";
               }}>
               <Image src={CloseIcon} alt='Search' width={20} />
             </button>
