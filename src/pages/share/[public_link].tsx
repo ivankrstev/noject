@@ -1,39 +1,72 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import styles from "@/styles/Project.module.css";
 import TaskViewProject from "@/components/TaskViewProject";
 import calculateProject from "@/utils/tasks/tasksProgressHandler";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
 
+interface Task {
+  t_id: number;
+  value: string;
+  level: number;
+  completed: boolean;
+}
+
+interface Project {
+  name: string;
+  id: string;
+  [key: string]: unknown;
+}
+
+interface ApiResponse {
+  project: Project;
+  tasks: Task[];
+}
+
+interface ApiError {
+  error?: string;
+  message?: string;
+}
+
 export default function ViewProject() {
   const router = useRouter();
-  const [tasks, setTasks] = useState();
-  const [projectData, setProjectData] = useState();
+  const [tasks, setTasks] = useState<Task[] | undefined>(undefined);
+  const [projectData, setProjectData] = useState<Project | undefined>(undefined);
+
+  const getProjectTasks = useCallback(
+    async (public_link: string): Promise<void> => {
+      try {
+        const response = await axios.get<ApiResponse>(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/project/share/${public_link}`
+        );
+        setProjectData(response.data.project);
+        setTasks(response.data.tasks);
+      } catch (error) {
+        console.error(error);
+        const axiosError = error as AxiosError<ApiError>;
+        if (axiosError.response?.status === 404) router.push("/404");
+
+        toast.error(
+          axiosError.response?.data?.error || axiosError.message || "Something went wrong!"
+        );
+      }
+    },
+    [router]
+  );
 
   useEffect(() => {
-    if (router.query.public_link) getProjectTasks(router.query.public_link);
-  }, [router.query.public_link]);
+    const publicLink = router.query.public_link;
+    if (publicLink && typeof publicLink === "string") {
+      getProjectTasks(publicLink);
+    }
+  }, [router.query.public_link, getProjectTasks]);
 
   useEffect(() => {
     if (tasks && tasks.length !== 0) calculateProject();
   }, [tasks]);
-
-  const getProjectTasks = async (public_link) => {
-    try {
-      const response = await axios.get(
-        process.env.NEXT_PUBLIC_SERVER_URL + "/project/share/" + public_link
-      );
-      setProjectData(response.data.project);
-      setTasks(response.data.tasks);
-    } catch (error) {
-      console.error(error);
-      if (error.response?.status === 404) router.push("/404");
-      toast.error(error.response?.data?.error || error.message || "Something went wrong!");
-    }
-  };
 
   return (
     <Fragment>
