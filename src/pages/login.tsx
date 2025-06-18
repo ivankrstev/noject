@@ -3,39 +3,76 @@ import visibilityOffIcon from "@/public/icons/visibility-off.svg";
 import visibilityOnIcon from "@/public/icons/visibility-on.svg";
 import styles from "@/styles/SignUpLogIn.module.css";
 import { setAccessToken } from "@/utils/api";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { motion } from "framer-motion";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
+import { ChangeEvent, Fragment, MouseEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const handleLogin = async (body, setTfaToken, setShow2FA) => {
+interface LoginCredentials {
+  email?: string;
+  password?: string;
+}
+
+interface TfaCredentials {
+  userToken: string;
+  tfaToken: string;
+}
+
+interface LoginResponse {
+  accessToken: string;
+  message?: string;
+  tfaToken?: string;
+}
+
+interface ErrorResponse {
+  error?: string;
+  message?: string;
+  tfaToken?: string;
+}
+
+const handleLogin = async (
+  body: LoginCredentials,
+  setTfaToken: (token: string) => void,
+  setShow2FA: (show: boolean) => void
+): Promise<void> => {
   try {
     // Just a short delay for showing the pending message for a moment if the request is quick
     await new Promise((resolve) => setTimeout(resolve, 400));
-    if (!body.email) body.email = document.querySelector("#email-login").value;
-    if (!body.password) body.password = document.querySelector("#password-login").value;
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login/`, body, {
-      withCredentials: true,
-    });
+    if (!body.email)
+      body.email = (document.querySelector("#email-login") as HTMLInputElement).value;
+    if (!body.password)
+      body.password = (document.querySelector("#password-login") as HTMLInputElement).value;
+    const response = await axios.post<LoginResponse>(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login/`,
+      body,
+      {
+        withCredentials: true,
+      }
+    );
     setAccessToken(response.data.accessToken);
     return;
   } catch (error) {
-    if (error.response) {
-      if (error.response.data.tfaToken) {
-        setTfaToken(error.response.data.tfaToken);
+    console.error(error);
+    if ((error as AxiosError<ErrorResponse>).response) {
+      const errorResponse = (error as AxiosError<ErrorResponse>).response?.data;
+      if (errorResponse?.tfaToken) {
+        setTfaToken(errorResponse.tfaToken);
         setShow2FA(true);
       }
-      throw error.response.data;
+      throw errorResponse;
     }
     throw error;
   }
 };
 
-const handleTFAVerify = async (body, setShow2FA) => {
+const handleTFAVerify = async (
+  body: TfaCredentials,
+  setShow2FA: (show: boolean) => void
+): Promise<void> => {
   try {
     // Just a short delay for showing the pending message for a moment if the request is quick
     await new Promise((resolve) => setTimeout(resolve, 400));
@@ -49,34 +86,41 @@ const handleTFAVerify = async (body, setShow2FA) => {
     setAccessToken(response.data.accessToken);
     return;
   } catch (error) {
-    if (error.response) {
-      if (error.response.data.error === "Please log in again") setShow2FA(false);
-      throw error.response.data;
+    console.error(error);
+    if ((error as AxiosError<ErrorResponse>).response) {
+      const errorResponse = (error as AxiosError<ErrorResponse>).response?.data;
+      if (errorResponse?.error === "Please log in again") setShow2FA(false);
+      throw errorResponse;
     }
     throw error;
   }
 };
 
 export default function Login() {
-  const [totpInputs, setTotpInputs] = useState([]);
-  const [showPassword, setShowPassword] = useState(false);
-  const [show2FA, setShow2FA] = useState(false);
-  const [tfaToken, setTfaToken] = useState();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [totpInputs, setTotpInputs] = useState<HTMLInputElement[]>([]);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [show2FA, setShow2FA] = useState<boolean>(false);
+  const [tfaToken, setTfaToken] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const router = useRouter();
 
-  useEffect(() => !show2FA && setPassword(null), [show2FA]);
+  useEffect(() => {
+    if (!show2FA) setPassword("");
+  }, [show2FA]);
 
-  const postLogin = async () => {
+  const postLogin = async (): Promise<void> => {
     try {
       await toast.promise(handleLogin({ email, password }, setTfaToken, setShow2FA), {
         pending: "Logging in",
         success: "Logged in successfully",
         error: {
           render({ data, toastProps }) {
-            if (data.error === "Two-Factor Authentication needed") toastProps.type = "warning";
-            return data.message || data.error || "Error logging in";
+            if ((data as ErrorResponse).error === "Two-Factor Authentication needed")
+              toastProps.type = "warning";
+            return (
+              (data as ErrorResponse).message || (data as ErrorResponse).error || "Error logging in"
+            );
           },
         },
       });
@@ -86,13 +130,13 @@ export default function Login() {
     }
   };
 
-  const postTFAVerify = async (userToken) => {
+  const postTFAVerify = async (userToken: string): Promise<void> => {
     try {
       await toast.promise(handleTFAVerify({ userToken, tfaToken }, setShow2FA), {
         pending: "Logging in",
         success: "Logged in successfully",
         error: {
-          render({ data }) {
+          render({ data }: { data: ErrorResponse }) {
             return data.message || data.error || "Error logging in";
           },
         },
@@ -124,7 +168,7 @@ export default function Login() {
                 type='email'
                 id='email-login'
                 placeholder='Enter your email'
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                 value={email ? email : ""}
               />
             </div>
@@ -134,7 +178,7 @@ export default function Login() {
                 type={showPassword ? "text" : "password"}
                 id='password-login'
                 placeholder='Enter your password'
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
               />
               <button
                 className={styles.btnShowPass}
@@ -148,7 +192,7 @@ export default function Login() {
               </button>
             </div>
             <button
-              onClick={(e) => {
+              onClick={(e: MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
                 postLogin();
               }}
@@ -159,13 +203,14 @@ export default function Login() {
               Forgot password?
             </Link>
             <p className={[styles.offerLogin, "mt-0", "colorGrey"].join(" ")}>
-              Don't have an account?{" "}
+              {"Don't have an account? "}
               <Link className={styles.alterBtns} href='/signup'>
                 Sign Up
               </Link>
             </p>
           </form>
         </motion.div>
+
         <motion.div
           key='2fa'
           className={[styles.vh100, styles.flipLoginBack, "center"].join(" ")}
@@ -181,55 +226,71 @@ export default function Login() {
                 <div id='totpInputsWrapper' className={styles.totpCodeWrapper}>
                   <input
                     onPaste={async () => {
-                      const code = await window.navigator.clipboard.readText();
-                      for (let i = 1; i < totpInputs.length; i++) totpInputs[i].value = code[i];
-                      document.activeElement.blur();
+                      const code = await navigator.clipboard.readText();
+                      for (let i = 1; i < totpInputs.length; i++) {
+                        if (code[i]) totpInputs[i].value = code[i];
+                      }
+                      (document.activeElement as HTMLElement)?.blur();
                     }}
                     id='totpCode'
                     onFocus={() =>
-                      setTotpInputs(document.querySelectorAll("#totpInputsWrapper input"))
+                      setTotpInputs(
+                        Array.from(
+                          document.querySelectorAll<HTMLInputElement>("#totpInputsWrapper input")
+                        )
+                      )
                     }
                     aria-labelledby='First TOTP digit'
-                    onChange={(e) => e.target.value.length > 0 && totpInputs[1].focus()}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      e.target.value.length > 0 && totpInputs[1]?.focus()
+                    }
                     className={styles.totpCode}
                     required
-                    maxLength='1'
+                    maxLength={1}
                     pattern='[0-9]{1}'
                     type='text'
                   />
                   <input
                     aria-labelledby='Second TOTP digit'
-                    onChange={(e) => e.target.value.length > 0 && totpInputs[2].focus()}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      e.target.value.length > 0 && totpInputs[2]?.focus()
+                    }
                     className={styles.totpCode}
                     required
-                    maxLength='1'
+                    maxLength={1}
                     pattern='[0-9]{1}'
                     type='text'
                   />
                   <input
                     aria-labelledby='Third TOTP digit'
-                    onChange={(e) => e.target.value.length > 0 && totpInputs[3].focus()}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      e.target.value.length > 0 && totpInputs[3]?.focus()
+                    }
                     className={styles.totpCode}
                     required
-                    maxLength='1'
+                    maxLength={1}
                     pattern='[0-9]{1}'
                     type='text'
                   />
                   <input
                     aria-labelledby='Fourth TOTP digit'
-                    onChange={(e) => e.target.value.length > 0 && totpInputs[4].focus()}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      e.target.value.length > 0 && totpInputs[4]?.focus()
+                    }
                     className={styles.totpCode}
                     required
-                    maxLength='1'
+                    maxLength={1}
                     pattern='[0-9]{1}'
                     type='text'
                   />
                   <input
                     aria-labelledby='Fifth TOTP digit'
-                    onChange={(e) => e.target.value.length > 0 && totpInputs[5].focus()}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      e.target.value.length > 0 && totpInputs[5]?.focus()
+                    }
                     className={styles.totpCode}
                     required
-                    maxLength='1'
+                    maxLength={1}
                     pattern='[0-9]{1}'
                     type='text'
                   />
@@ -237,14 +298,14 @@ export default function Login() {
                     aria-labelledby='Sixth TOTP digit'
                     className={styles.totpCode}
                     required
-                    maxLength='1'
+                    maxLength={1}
                     pattern='[0-9]{1}'
                     type='text'
                   />
                 </div>
               </div>
               <button
-                onClick={(e) => {
+                onClick={(e: MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
                   let userToken = "";
                   totpInputs.forEach((e) => (userToken += e.value));
@@ -255,7 +316,7 @@ export default function Login() {
               </button>
               <button
                 className={styles.totpGoBack}
-                onClick={(e) => {
+                onClick={(e: MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
                   setShow2FA(false);
                 }}>
