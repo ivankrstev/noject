@@ -1,0 +1,76 @@
+/* IMPORTS */
+@import "./vars.css";
+@import "./utilities.css";
+
+/* BASE RESETS & DOCUMENT SETUP */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  font-family: var(--font-mono);
+}
+
+html,
+body {
+  max-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: var(--background);
+}
+
+/* Interactive/Links elements */
+a,
+button,
+button *,
+img {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+a {
+  text-decoration: none;
+}
+button,
+button * {
+  cursor: pointer;
+}
+
+/* Form elements */
+input[type="search"]::-webkit-search-cancel-button {
+  position: relative;
+  left: -3px;
+  cursor: pointer;
+}
+
+/* SCROLLBARS */
+*::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-track {
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* DARK MODE */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+  input::placeholder {
+    color: #a5a5a5;
+    opacity: 1;
+  }
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media only screen and (max-width: 499px) {
+  .Toastify__toast-container {
+    max-width: 90vw !important;
+    margin-left: auto !important;
+    right: 0 !important;
+  }
+}

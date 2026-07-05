@@ -1,0 +1,39 @@
+{
+  "name": "noject-client",
+  "version": "0.1.0",
+  "description": "Client Application for Noject",
+  "private": true,
+  "author": "Ivan Krstev",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
+    "axios": "^1.10.0",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.18.1",
+    "moment": "^2.30.1",
+    "next": "15.3.3",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.0.0",
+    "react-datepicker": "^8.4.0",
+    "react-dom": "^19.0.0",
+    "react-loading-skeleton": "^3.5.0",
+    "react-modal": "^3.16.3",
+    "react-spinners": "^0.17.0",
+    "react-toastify": "^11.0.5",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.3",
+    "typescript": "^5"
+  }
+}
